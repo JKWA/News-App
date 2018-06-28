@@ -1,0 +1,18 @@
+
+.news-card{
+    margin: 20px 10px; 
+    } 
+    
+    mat-card-header{
+        padding-top: 10px;
+    }
+    
+    .spacer {
+        flex: 1 1 auto;
+    }
+    
+    a{
+        color: rgb(46, 46, 46)
+    }
+    
+    

@@ -1,0 +1,8 @@
+
+<mat-tab-group>
+<div *ngFor="let tab of tabs">
+    <mat-tab label="{{tab.display}}">
+        <app-article category="{{tab.id}}"></app-article>
+    </mat-tab>
+</div>
+</mat-tab-group>

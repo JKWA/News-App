@@ -1,0 +1,23 @@
+
+<div class="page">
+  <nav>
+    <a routerLink="/news"> <mat-icon>arrow_back</mat-icon> Back to News</a>
+  </nav>
+  <h3>
+    <div fxLayout="row"> 
+      <div *ngFor="let category of tabs"><span class="category-item">{{category.display}}</span></div>
+    </div>
+  </h3>
+
+
+  <div *ngFor="let category of allCategories">
+      <div class="button-wrapper">
+
+        <button mat-stroked-button (click)="onClick(category.category)">
+          Add {{category.display}}
+        </button>
+      
+      </div>
+  </div>
+</div>
+
