@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Category } from '../news';
-import { AddCategory, CategoryState } from '../app.state';
+import { Category } from '../category';
+import { AddCategory, RemoveCategory, CategoryState } from '../state/state.category';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-
 
 @Component({
   selector: 'app-category',
@@ -11,35 +10,45 @@ import { Observable } from 'rxjs';
   styleUrls: ['./category.component.css']
 })
 
-
 export class CategoryComponent implements OnInit {
     allCategories: CategoryItem[];
     tabs = [];
 
-    @Select(CategoryState) tabCategories: Observable<Category[]>;
-
+    @Select(CategoryState) tabCategories: Observable<Set<Category>>;
     constructor(private store: Store) {
       this.allCategories = [
-        CategoryMaker.create(Category.Business, 'Business'),
-        CategoryMaker.create(Category.Entertainment, 'Entertainment'),
-        CategoryMaker.create(Category.General, 'General'),
-        CategoryMaker.create(Category.Health, 'Health'),
-        CategoryMaker.create(Category.Science, 'Science'),
-        CategoryMaker.create(Category.Sports, 'Sports'),
-        CategoryMaker.create(Category.Technology, 'Technology'),
+        CategoryMaker.create(Category.Business, 'Business', 'business'),
+        CategoryMaker.create(Category.Entertainment, 'Entertainment', 'entertainment'),
+        CategoryMaker.create(Category.General, 'General', 'general'),
+        CategoryMaker.create(Category.Health, 'Health', 'health'),
+        CategoryMaker.create(Category.Science, 'Science', 'science'),
+        CategoryMaker.create(Category.Sports, 'Sports', 'sports'),
+        CategoryMaker.create(Category.Technology, 'Technology', 'technology')
       ];
    }
 
   ngOnInit() {
     this.setCategories(this.tabCategories);
+    this.watchCat(this.tabCategories);
+  }
 
+  watchCat(categories) {
+    categories.subscribe(result => {
+
+      this.allCategories.map(category => {
+        if ( result.categories.has(category.id)) {
+          category.checked = true;
+        } else {
+          category.checked = false;
+        }
+      });
+    });
   }
 
   setCategories(categories) {
     categories.subscribe(result => {
-      window.localStorage.setItem('categories', result.categories);
       const tabs = [];
-      result.categories.map(category => {
+      result.categories.forEach(category => {
         let tabItem: any;
         switch (category) {
           case Category.Science :
@@ -102,9 +111,15 @@ export class CategoryComponent implements OnInit {
     });
   }
 
-  onClick(category: Category) {
-    console.log(category);
-    this.store.dispatch(new AddCategory(category));
+  onClick(category: Category, {checked}) {
+
+    if ( checked ) {
+      // console.log('add: ' + category);
+      this.store.dispatch(new AddCategory(category));
+    } else {
+      // console.log('delete:' + category);
+      this.store.dispatch(new RemoveCategory(category));
+    }
   }
 
 }
@@ -112,16 +127,19 @@ export class CategoryComponent implements OnInit {
 class CategoryItem {
   constructor(
     readonly category: Category,
-    readonly display: string
+    readonly display: string,
+    readonly id: string,
+    public checked: boolean,
   ) { }
 }
 
 class CategoryMaker {
   static create(
     category: Category,
-    display: string
+    display: string,
+    id: string,
   ) {
-    return new CategoryItem(category, display);
+    return new CategoryItem(category, display, id, false);
   }
 }
 

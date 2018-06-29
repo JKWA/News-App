@@ -1,13 +1,6 @@
 
-enum Category {
-    Business = 'business',
-    Entertainment = 'entertainment',
-    General = 'general',
-    Health = 'health',
-    Science = 'science',
-    Sports = 'sports',
-    Technology = 'technology',
-  }
+
+import { Category } from './category';
 
   class News {
     constructor(
@@ -15,4 +8,4 @@ enum Category {
     ) { }
   }
 
-  export { Category, News };
+  export { News };

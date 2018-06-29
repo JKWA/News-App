@@ -1,18 +1,29 @@
 <div>
-
     <mat-toolbar color="primary">
         <span>Marty News</span>
         <span class="fill-space"></span>
-        <span>
-            <nav>
-                <a routerLink="/category"><mat-icon>settings</mat-icon></a>
-            </nav>
-        </span>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>settings</mat-icon>
+        </button>
+        <nav>
+            <mat-menu #menu="matMenu">
+                <a routerLink="/category">
+                    <button mat-menu-item>
+                    <mat-icon>category</mat-icon>
+                    <span>Category</span>
+                    </button>
+                </a>
+                <a routerLink="/filter">
+                    <button mat-menu-item>
+                    <mat-icon>filter_list</mat-icon>
+                    <span>Filter</span>
+                    </button>
+                </a>
+            </mat-menu>
+        </nav>       
     </mat-toolbar>
 
-  
     <router-outlet></router-outlet>
-
 
 </div>
 

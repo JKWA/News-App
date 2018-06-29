@@ -11,20 +11,19 @@ import { MessageService } from './message.service';
 import { NewsResponse } from './newsResponse';
 
 
-
-
 @Injectable({ providedIn: 'root' })
 export class NewsService {
   private endpoint = 'https://newsapi.org/v2/top-headlines';
   private topic = '-trump';
   private country = 'us';
+  private pageSize = '50';
 
   constructor(
     private http: HttpClient,
     private messageService: MessageService) { }
 
   getNews ( category: string ): Observable<Article[]> {
-    const url = `${this.endpoint}?category=${category}&country=${this.country}&apiKey=${getKey()}`;
+    const url = `${this.endpoint}?category=${category}&country=${this.country}&pageSize${this.pageSize}&apiKey=${getKey()}`;
 
     return this.http.get<NewsResponse>(url)
       .pipe(

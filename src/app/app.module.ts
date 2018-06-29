@@ -1,16 +1,21 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+
 import { HttpClientModule } from '@angular/common/http';
 import { NgxsModule } from '@ngxs/store';
-import { CategoryState } from './app.state';
-import {FlexLayoutModule} from '@angular/flex-layout';
+import { CategoryState } from './state/state.category';
+import { FilterState } from './state/state.filter';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout';
 import {
   MatToolbarModule,
   MatButtonModule,
+  MatInputModule,
   MatSidenavModule,
+  MatSlideToggleModule,
   MatIconModule,
   MatListModule,
   MatGridListModule,
@@ -24,6 +29,7 @@ import { environment } from '../environments/environment';
 import { CategoryComponent } from './category/category.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { ArticleComponent } from './article/article.component';
+import { FilterComponent } from './filter/filter.component';
 
 @NgModule({
   declarations: [
@@ -31,18 +37,22 @@ import { ArticleComponent } from './article/article.component';
     NewsComponent,
     MessagesComponent,
     CategoryComponent,
-    ArticleComponent
+    ArticleComponent,
+    FilterComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    NgxsModule.forRoot([CategoryState]),
+    NgxsModule.forRoot([CategoryState, FilterState]),
     BrowserAnimationsModule,
     FlexLayoutModule,
+    FormsModule,
     LayoutModule,
     MatToolbarModule,
     MatButtonModule,
+    MatInputModule,
     MatSidenavModule,
+    MatSlideToggleModule,
     MatIconModule,
     MatListModule,
     MatGridListModule,

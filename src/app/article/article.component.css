@@ -12,7 +12,8 @@
     }
     
     a{
-        color: rgb(46, 46, 46)
+        color: rgb(46, 46, 46);
+        text-decoration: none;
     }
     
     

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { CategoryState } from '../app.state';
-import { Category } from '../news';
+import { CategoryState } from '../state/state.category';
+import { Category } from '../category';
 
 @Component({
   selector: 'app-news',
@@ -11,7 +11,7 @@ import { Category } from '../news';
 })
 export class NewsComponent implements OnInit {
   tabs = [];
-  @Select(CategoryState) categories: Observable<Category[]>;
+  @Select(CategoryState) categories: Observable<Set<Category>>;
   constructor(private store: Store) {}
 
   ngOnInit() {
@@ -19,9 +19,8 @@ export class NewsComponent implements OnInit {
   }
   setCategories(categories) {
     categories.subscribe(result => {
-      window.localStorage.setItem('categories', result.categories);
       const tabs = [];
-      result.categories.map(category => {
+      result.categories.forEach(category => {
         let tabItem: any;
         switch (category) {
           case Category.Science :

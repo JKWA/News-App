@@ -1,15 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { NewsComponent } from './news/news.component';
 import { CategoryComponent } from './category/category.component';
-// import { HeroDetailComponent } from './hero-detail/hero-detail.component';
+import { FilterComponent } from './filter/filter.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/news', pathMatch: 'full' },
   { path: 'news', component: NewsComponent },
   { path: 'category', component: CategoryComponent },
-  // { path: 'heroes', component: HeroesComponent }
+  { path: 'filter', component: FilterComponent }
 ];
 
 @NgModule({

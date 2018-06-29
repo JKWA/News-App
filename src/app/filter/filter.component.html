@@ -1,0 +1,26 @@
+
+<div class="page mat-typography" fxLayout="column">
+  
+  <nav>
+    <a routerLink="/news"> 
+      <div fxLayout="row">
+        <mat-icon>arrow_back</mat-icon> 
+        <h4>Back to News</h4>
+      </div>
+    </a>
+  </nav>
+
+  <h2>Filters</h2>
+  <div fxLayout="row">
+    <mat-form-field>
+      <input matInput [(ngModel)]="newFilter" placeholder="Filter">
+    </mat-form-field>
+    <button (click) = "addFilter()" mat-stroked-button>Add</button>
+  </div>
+
+  <div *ngFor="let filter of filterList" class="mat-typography" fxLayout="row">
+    <h3 class="filter-item">{{filter | uppercase}}</h3>
+    <button (click) = "removeFilter(filter)" mat-stroked-button>Delete</button>
+  </div>
+</div>
+

@@ -1,6 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Article } from '../article';
 import { NewsService } from '../news.service';
+import { Store, Select } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { Filter, FilterStateModel, FilterState } from '../state/state.filter';
 
 @Component({
   selector: 'app-article',
@@ -12,28 +15,42 @@ export class ArticleComponent implements OnInit {
 
   articles: Article[];
   @Input() category: string;
+  @Select(FilterState) listOfFilters: Observable<Set<string>>;
 
   constructor(private newsService: NewsService) { }
 
   ngOnInit() {
-    this.getNews();
+    this.getNews(this.listOfFilters);
   }
 
-  onSelect(article: Article): void {
+  onScroll () {
+    console.log('scrolled!!');
+    // this.getMovies()
   }
 
-  getNews(): void {
+  getNews(filters): void {
+
     this.newsService.getNews(this.category)
-        .subscribe(news => {
-          // const filterWords = ['trump'];
+      .subscribe(news => {
+        filters.subscribe(result => {
 
-          this.articles = news.filter(article => article.description
-            ? article.description.toLowerCase().indexOf('trump') === -1
-            : false)
-            .filter(article => article.title
-            ? article.title.toLowerCase().indexOf('trump') === -1
+          const allFilters: string[] = [];
+          const regString = result.listOfFilters.forEach(filter => {
+            allFilters.push(filter);
+          });
+
+          const regFilter = new RegExp(allFilters.join('|'), 'i');
+
+          // news.map(art => {
+          //   console.log(art.title.match(filterSring));
+          // });
+
+          this.articles = news.filter(article => article.title && article.description
+            ? !(article.title.match(regFilter) || article.description.match(regFilter))
             : false);
         });
+      });
+
   }
 }
 

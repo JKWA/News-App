@@ -1,23 +1,36 @@
 
-<div class="page">
+<div class="page mat-typography" fxLayout="column">
   <nav>
-    <a routerLink="/news"> <mat-icon>arrow_back</mat-icon> Back to News</a>
+    <a routerLink="/news"> 
+      <div fxLayout="row">
+        <mat-icon>arrow_back</mat-icon> 
+        <h4>Back to News</h4>
+      </div>
+    </a>
   </nav>
-  <h3>
+  <!-- <h3>
     <div fxLayout="row"> 
       <div *ngFor="let category of tabs"><span class="category-item">{{category.display}}</span></div>
     </div>
-  </h3>
-
+  </h3> -->
+  <h2>Categories</h2>
 
   <div *ngFor="let category of allCategories">
       <div class="button-wrapper">
-
-        <button mat-stroked-button (click)="onClick(category.category)">
-          Add {{category.display}}
-        </button>
-      
+        <mat-slide-toggle 
+          id="{{category.id}}" 
+          checked="{{category.checked}}"  
+          (change)="onClick(category.category, $event)">
+          {{category.display}}
+        </mat-slide-toggle> 
       </div>
   </div>
+
+  <!-- <h2>Filters</h2>
+
+  <app-filter></app-filter> -->
+
+
+  
 </div>
 

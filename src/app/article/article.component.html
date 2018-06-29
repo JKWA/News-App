@@ -1,4 +1,5 @@
-  
+<div>
+
   <div *ngFor="let article of articles">
       <mat-card class="news-card mat-elevation-z8">
         <mat-card-header>
@@ -7,7 +8,9 @@
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div class="mat-title">{{article.title}}</div> 
+            <a href="{{article.url}}">
+              <div class="mat-title">{{article.title}}</div> 
+            </a>
           <div class="mat-body-2">{{article.source.name}}</div>
           <div class="mat-body-1">{{article.description}}</div>
         </mat-card-content>
@@ -17,5 +20,8 @@
             </a> 
        </mat-card-actions>
       </mat-card>
+    </div>
+
+    
     </div>
   
