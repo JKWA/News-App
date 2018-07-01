@@ -37,7 +37,7 @@ export class ArticleComponent implements OnInit {
     const percent = ev.currentScrollPosition / document.body.offsetHeight;
     // console.log(percent);
 
-    if ( percent > .7 && !this.retrieving ) {
+    if ( percent > .7 && !this.retrieving && this.pageNumber <= 5 ) {
       this.pageNumber++;
       this.getNews(this.listOfFilters, this.pageNumber);
     }

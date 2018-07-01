@@ -16,7 +16,7 @@ export class NewsService {
   private endpoint = 'https://newsapi.org/v2/everything';
   private country = 'us';
   private language = 'en';
-  private pageSize = '20';
+  private pageSize = '25';
   private sort = 'publishedAt';
 
   constructor(
@@ -32,10 +32,11 @@ export class NewsService {
    ): Observable<Article[]> {
     const sources: string = getSources(category).map(item => item.id).join();
     const filterString: string = '-' + Array.from(filters).join(',-');
+    // const page = (this.pageNumber)
     let url = `${this.endpoint}?q=${filterString}`;
     url += `&sources=${sources}&language=${this.language}&sortBy=${this.sort}`;
-    url += `&page=${pageNumber}&pageSize=${this.pageSize}&apiKey=${getKey()}`;
-    // console.log(url);
+    url += `&page=${pageNumber < 5 ? pageNumber : 2}&pageSize=${pageNumber < 5 ? this.pageSize : 100}&apiKey=${getKey()}`;
+    console.log(url);
     const news = this.http.get<NewsResponse>(url)
       .pipe(
         map(response => {
@@ -57,19 +58,36 @@ export class NewsService {
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      let userMessage: string;
+      switch (error.status) {
 
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
+        case 400 :
+          userMessage = 'There was a problem with the news request';
+          break;
 
-      // Let the app keep running by returning an empty result.
+        case 401 :
+          userMessage = 'This was an unauthorized request';
+          break;
+
+        case 429 :
+          userMessage = 'We are over the limit, please try again later';
+          break;
+
+        case 500 :
+          userMessage = 'There was a problem with the news server, please try again later';
+          break;
+
+        default :
+        userMessage = 'Something broke';
+      }
+
+      this.log(userMessage);
+
       return of(result as T);
     };
   }
 
-  /** Log a HeroService message with the MessageService */
   private log(message: string) {
-    this.messageService.add('HeroService: ' + message);
+    this.messageService.add('NewsService: ' + message);
   }
 }
