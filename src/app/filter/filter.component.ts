@@ -19,6 +19,8 @@ export class FilterComponent implements OnInit {
 
   ngOnInit() {
     this.setFilters(this.listOfFilters);
+    // this.store.dispatch(new AddFilter('bozo'));
+
   }
 
   setFilters(filters) {

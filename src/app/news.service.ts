@@ -1,31 +1,42 @@
-
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-
+import { Store, Select } from '@ngxs/store';
+import { Category } from './category';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { getKey } from './key';
 import { Article } from './article';
 import { MessageService } from './message.service';
 import { NewsResponse } from './newsResponse';
-
+import { getSources } from './source';
+import { Filter, FilterStateModel, FilterState } from './state/state.filter';
 
 @Injectable({ providedIn: 'root' })
 export class NewsService {
-  private endpoint = 'https://newsapi.org/v2/top-headlines';
-  private topic = '-trump';
+  private endpoint = 'https://newsapi.org/v2/everything';
   private country = 'us';
-  private pageSize = '50';
+  private language = 'en';
+  private pageSize = '20';
+  private sort = 'publishedAt';
 
   constructor(
+    private store: Store,
     private http: HttpClient,
     private messageService: MessageService) { }
 
-  getNews ( category: string ): Observable<Article[]> {
-    const url = `${this.endpoint}?category=${category}&country=${this.country}&pageSize${this.pageSize}&apiKey=${getKey()}`;
+  getNews (
+    category: Category,
+    pageNumber: number,
+    filters: Set<Filter>,
 
-    return this.http.get<NewsResponse>(url)
+   ): Observable<Article[]> {
+    const sources: string = getSources(category).map(item => item.id).join();
+    const filterString: string = '-' + Array.from(filters).join(',-');
+    let url = `${this.endpoint}?q=${filterString}`;
+    url += `&sources=${sources}&language=${this.language}&sortBy=${this.sort}`;
+    url += `&page=${pageNumber}&pageSize=${this.pageSize}&apiKey=${getKey()}`;
+    // console.log(url);
+    const news = this.http.get<NewsResponse>(url)
       .pipe(
         map(response => {
          return response.articles;
@@ -33,6 +44,8 @@ export class NewsService {
         tap(_ => this.log(`fetched ${category} news`)),
         catchError(this.handleError('getNews', []))
       );
+
+      return news;
   }
 
   /**

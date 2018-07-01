@@ -1,11 +1,14 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 import { HttpClientModule } from '@angular/common/http';
 import { NgxsModule } from '@ngxs/store';
 import { CategoryState } from './state/state.category';
 import { FilterState } from './state/state.filter';
+import { NewsState } from './state/state.news';
+
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -43,10 +46,11 @@ import { FilterComponent } from './filter/filter.component';
   imports: [
     BrowserModule,
     HttpClientModule,
-    NgxsModule.forRoot([CategoryState, FilterState]),
+    NgxsModule.forRoot([CategoryState, FilterState, NewsState]),
     BrowserAnimationsModule,
     FlexLayoutModule,
     FormsModule,
+    InfiniteScrollModule,
     LayoutModule,
     MatToolbarModule,
     MatButtonModule,

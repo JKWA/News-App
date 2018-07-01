@@ -10,6 +10,39 @@ export enum Category {
     Technology = 'technology',
 }
 
+export function stringToCategory(cat: string): Category {
+  let returnCat;
+
+    switch (cat) {
+      case 'business' :
+        returnCat = Category.Business;
+        break;
+      case 'entertainment' :
+        returnCat = Category.Entertainment;
+        break;
+      case 'general' :
+        returnCat = Category.General;
+        break;
+      case 'health' :
+        returnCat = Category.Health;
+        break;
+      case 'science' :
+        returnCat = Category.Science;
+        break;
+      case 'sports' :
+        returnCat = Category.Sports;
+      break;
+        case 'technology' :
+        returnCat = Category.Technology;
+        break;
+      default :
+      returnCat = Category.General;
+    }
+
+  return returnCat;
+
+}
+
 export function stringToCategories(cat: string): Set<Category> {
     const categorySet = new Set();
     cat.split(',').map(category => {
