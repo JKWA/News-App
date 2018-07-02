@@ -37,10 +37,8 @@ export class ArticleComponent implements OnInit {
 
   onScrollDown (ev) {
     const percent = ev.currentScrollPosition / document.body.offsetHeight;
-    // console.log(percent);
     this.pageNumber++;
     if ( percent > .7 && !this.retrieving && this.pageNumber <= 5 ) {
-
       this.getNews(this.listOfFilters, this.pageNumber);
     }
 
@@ -71,10 +69,11 @@ export class ArticleComponent implements OnInit {
 
   removeDuplicateTitles(articles: Article[]): Article[] {
     const articleMap = new Map ();
-    articles.map(article => articleMap.set(article.title, article));
     const deDupped = [];
-    articleMap.forEach(item => deDupped.push(item));
-    return deDupped;
 
+    articles.map(article => articleMap.set(article.title, article));
+    articleMap.forEach(item => deDupped.push(item));
+
+    return deDupped;
   }
 }

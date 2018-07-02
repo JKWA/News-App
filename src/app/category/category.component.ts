@@ -114,10 +114,8 @@ export class CategoryComponent implements OnInit {
   onClick(category: Category, {checked}) {
 
     if ( checked ) {
-      // console.log('add: ' + category);
       this.store.dispatch(new AddCategory(category));
     } else {
-      // console.log('delete:' + category);
       this.store.dispatch(new RemoveCategory(category));
     }
   }

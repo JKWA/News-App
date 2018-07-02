@@ -1,6 +1,4 @@
 import { State, Action, StateContext } from '@ngxs/store';
-// import { join } from 'path';
-import { forEach } from '@angular/router/src/utils/collection';
 import {stringToCategories, Category} from '../category';
 
 export class AddCategory {

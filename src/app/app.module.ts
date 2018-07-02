@@ -34,7 +34,6 @@ import { CategoryComponent } from './category/category.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { ArticleComponent } from './article/article.component';
 import { FilterComponent } from './filter/filter.component';
-import { FabComponent } from './fab/fab.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +43,6 @@ import { FabComponent } from './fab/fab.component';
     CategoryComponent,
     ArticleComponent,
     FilterComponent,
-    FabComponent,
   ],
   imports: [
     BrowserModule,
