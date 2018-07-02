@@ -34,6 +34,7 @@ import { CategoryComponent } from './category/category.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { ArticleComponent } from './article/article.component';
 import { FilterComponent } from './filter/filter.component';
+import { FabComponent } from './fab/fab.component';
 
 @NgModule({
   declarations: [
@@ -43,11 +44,12 @@ import { FilterComponent } from './filter/filter.component';
     CategoryComponent,
     ArticleComponent,
     FilterComponent,
+    FabComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    NgxsModule.forRoot([CategoryState, FilterState, NewsState]),
+    NgxsModule.forRoot([ CategoryState, FilterState, NewsState ]),
     BrowserAnimationsModule,
     FlexLayoutModule,
     FormsModule,

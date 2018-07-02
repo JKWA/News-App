@@ -6,6 +6,8 @@ import { Observable, concat } from 'rxjs';
 import { Filter, FilterStateModel, FilterState } from '../state/state.filter';
 import { RetrievingNews, AddNews, NewsState } from '../state/state.news';
 import { Category, stringToCategory } from '../category';
+
+
 @Component({
   selector: 'app-article',
   templateUrl: './article.component.html',
@@ -36,9 +38,9 @@ export class ArticleComponent implements OnInit {
   onScrollDown (ev) {
     const percent = ev.currentScrollPosition / document.body.offsetHeight;
     // console.log(percent);
-
+    this.pageNumber++;
     if ( percent > .7 && !this.retrieving && this.pageNumber <= 5 ) {
-      this.pageNumber++;
+
       this.getNews(this.listOfFilters, this.pageNumber);
     }
 
@@ -65,8 +67,8 @@ export class ArticleComponent implements OnInit {
           this.retrieving = false;
         });
       });
-
   }
+
   removeDuplicateTitles(articles: Article[]): Article[] {
     const articleMap = new Map ();
     articles.map(article => articleMap.set(article.title, article));

@@ -60,7 +60,8 @@ export class NewsService {
 
       let userMessage: string;
       switch (error.status) {
-
+        case 200 :
+          break;
         case 400 :
           userMessage = 'There was a problem with the news request';
           break;
@@ -80,8 +81,9 @@ export class NewsService {
         default :
         userMessage = 'Something broke';
       }
-
-      this.log(userMessage);
+      if ( userMessage ) {
+       this.log(userMessage);
+      }
 
       return of(result as T);
     };

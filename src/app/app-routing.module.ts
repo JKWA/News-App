@@ -8,7 +8,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/news', pathMatch: 'full' },
   { path: 'news', component: NewsComponent },
   { path: 'category', component: CategoryComponent },
-  { path: 'filter', component: FilterComponent }
+  { path: 'filter', component: FilterComponent },
 ];
 
 @NgModule({
