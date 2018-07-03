@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Store, Select } from '@ngxs/store';
-import { Category } from './category';
+import { Category } from '../category';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { getKey } from './key';
-import { Article } from './article';
+import { getKey } from '../key';
+import { Article } from '../article';
 import { MessageService } from './message.service';
-import { NewsResponse } from './newsResponse';
-import { getSources } from './source';
-import { Filter, FilterStateModel, FilterState } from './state/state.filter';
+import { LocalDbService } from '../service/local-db.service';
+import { Moment } from 'moment';
+
+import { NewsResponse } from '../newsResponse';
+import { getSources } from '../source';
+import { Filter, FilterStateModel, FilterState } from '../state/state.filter';
 
 @Injectable({ providedIn: 'root' })
 export class NewsService {
@@ -22,7 +25,9 @@ export class NewsService {
   constructor(
     private store: Store,
     private http: HttpClient,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private localDb: LocalDbService,
+  ) { }
 
   getNews (
     category: Category,
@@ -40,7 +45,8 @@ export class NewsService {
     const news = this.http.get<NewsResponse>(url)
       .pipe(
         map(response => {
-         return response.articles;
+          this.localDb.setData(category, response.articles);
+          return response.articles;
         }),
         tap(_ => this.log(`fetched ${category} news`)),
         catchError(this.handleError('getNews', []))

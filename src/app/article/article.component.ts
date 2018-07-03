@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Article } from '../article';
-import { NewsService } from '../news.service';
+import { NewsService } from '../service/news.service';
+import { LocalDbService } from '../service/local-db.service';
+
 import { Store, Select } from '@ngxs/store';
 import { Observable, concat } from 'rxjs';
 import { Filter, FilterStateModel, FilterState } from '../state/state.filter';
@@ -28,11 +30,36 @@ export class ArticleComponent implements OnInit {
   @Select(NewsState) news: Observable<any>;
   constructor(
     private newsService: NewsService,
+    private localDbService: LocalDbService,
     private store: Store,
   ) { }
 
   ngOnInit() {
+    // console.log(this.category);
+    this.getFromClientDatabase(this.category, this.listOfFilters);
     this.getNews(this.listOfFilters, this.pageNumber);
+  }
+
+  getFromClientDatabase (category, filters) {
+    this.retrieving = true;
+    filters.subscribe(result => {
+      this.localDbService.getData(category)
+        .then(news => {
+          const regFilter = new RegExp(Array.from(result.listOfFilters).join('|'), 'i');
+
+          const filteredNews = news.filter(article => article.title && article.description
+            ? !(article.title.match(regFilter) || article.description.match(regFilter))
+            : false);
+
+          if (! this.articles ) {
+            this.articles = this.removeDuplicateTitles(filteredNews);
+          } else {
+            this.articles = this.removeDuplicateTitles(this.articles.concat( filteredNews ));
+          }
+          this.retrieving = false;
+        });
+      });
+
   }
 
   onScrollDown (ev) {
@@ -47,8 +74,8 @@ export class ArticleComponent implements OnInit {
   getNews(filters, pageNumber): void {
     this.retrieving = true;
     const categoryEnum = stringToCategory(this.category);
-    filters.subscribe(result => {
 
+    filters.subscribe(result => {
       this.newsService.getNews(categoryEnum, pageNumber, result.listOfFilters)
         .subscribe(news => {
           const regFilter = new RegExp(Array.from(result.listOfFilters).join('|'), 'i');

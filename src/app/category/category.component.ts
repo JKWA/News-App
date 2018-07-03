@@ -3,6 +3,7 @@ import { Category } from '../category';
 import { AddCategory, RemoveCategory, CategoryState } from '../state/state.category';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
+import Dexie from 'dexie';
 
 @Component({
   selector: 'app-category',
@@ -30,7 +31,7 @@ export class CategoryComponent implements OnInit {
   ngOnInit() {
     this.setCategories(this.tabCategories);
     this.watchCat(this.tabCategories);
-  }
+}
 
   watchCat(categories) {
     categories.subscribe(result => {

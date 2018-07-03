@@ -1,6 +1,6 @@
 import { State, Action, StateContext } from '@ngxs/store';
 ​import { Article } from '../article';
-import { NewsService } from '../news.service';
+import { NewsService } from '../service/news.service';
 import { Filter, FilterStateModel, FilterState } from '../state/state.filter';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
