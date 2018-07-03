@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Store, Select } from '@ngxs/store';
-import { Category } from '../category';
+import { Category, stringToCategory } from '../category';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { getKey } from '../key';
@@ -45,7 +45,7 @@ export class NewsService {
     const news = this.http.get<NewsResponse>(url)
       .pipe(
         map(response => {
-          this.localDb.setData(category, response.articles);
+          this.localDb.setData(stringToCategory(category), response.articles);
           return response.articles;
         }),
         tap(_ => this.log(`fetched ${category} news`)),

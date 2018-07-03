@@ -75,3 +75,69 @@ export function stringToCategories(cat: string): Set<Category> {
     return categorySet;
 
   }
+
+  export interface CategoryObject {
+    display: string;
+    id: string;
+  }
+
+  export function categoryToObject(category: Category): CategoryObject {
+    let catObj;
+    switch (category) {
+      case Category.Science :
+        catObj = {
+          display: 'Science',
+          id: 'science'
+        };
+        break;
+        case Category.Business :
+          catObj = {
+            display: 'Business',
+            id: 'business'
+          };
+          break;
+        case Category.Entertainment :
+        catObj = {
+          display: 'Entertainment',
+          id: 'entertainment'
+        };
+        break;
+        case Category.General :
+        catObj = {
+          display: 'General',
+          id: 'general'
+        };
+        break;
+        case Category.Health :
+        catObj = {
+          display: 'Health',
+          id: 'health'
+        };
+        break;
+      case Category.Science :
+        catObj = {
+          display: 'Science',
+          id: 'science'
+        };
+        break;
+      case Category.Sports :
+        catObj = {
+          display: 'Sports',
+          id: 'sports'
+        };
+        break;
+      case Category.Technology :
+        catObj = {
+          display: 'Technology',
+          id: 'technology'
+        };
+        break;
+      default :
+      catObj = {
+        display: 'Other',
+        id: 'general'
+      };
+    }
+    return catObj;
+  }
+

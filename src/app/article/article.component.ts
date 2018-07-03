@@ -40,10 +40,10 @@ export class ArticleComponent implements OnInit {
     this.getNews(this.listOfFilters, this.pageNumber);
   }
 
-  getFromClientDatabase (category, filters) {
+  getFromClientDatabase (category: string, filters) {
     this.retrieving = true;
     filters.subscribe(result => {
-      this.localDbService.getData(category)
+      this.localDbService.getData(stringToCategory(category))
         .then(news => {
           const regFilter = new RegExp(Array.from(result.listOfFilters).join('|'), 'i');
 

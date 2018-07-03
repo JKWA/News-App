@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Article } from '../article';
-import { Category, stringToCategory } from '../category';
+import { Category, categoryToObject, stringToCategory } from '../category';
 import { Observable, of } from 'rxjs';
 import * as moment from 'moment';
 
@@ -12,7 +12,7 @@ export class LocalDbService {
 
   constructor() { }
 
-  setData(category: string, articles: Article[]) {
+  setData(category: Category, articles: Article[]) {
     return new Promise<any>((resolve, reject) => {
       const indexedDB = window.indexedDB;
 
@@ -48,7 +48,7 @@ export class LocalDbService {
             if ( !check.result ) {
               // console.log('SAVE: ' + article.title);
               store.put({
-                category: category,
+                category: categoryToObject(category).id,
                 source: article.source,
                 author: article.author,
                 title: article.title,
@@ -70,7 +70,7 @@ export class LocalDbService {
   }
 
 
-  getData(category: string) {
+  getData(category: Category) {
     return new Promise<any>((resolve, reject) => {
 
       const indexedDB = window.indexedDB;
@@ -96,7 +96,7 @@ export class LocalDbService {
         const index = store.index('CategoryIndex');
         const result: Article[] = [];
 
-        index.openCursor(category).onsuccess = function(event) {
+        index.openCursor(categoryToObject(category).id).onsuccess = function(event) {
           const cursor = event.target.result;
 
           if (cursor) {
