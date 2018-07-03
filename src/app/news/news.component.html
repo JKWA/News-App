@@ -1,9 +1,18 @@
 
-<mat-tab-group>
+<mat-tab-group 
+    [selectedIndex]="tabSelected"
+    (selectedIndexChange)="tabChanged($event)">
+
 <div *ngFor="let tab of tabs">
+        
     <mat-tab label="{{tab.display}}">
-        <app-article category="{{tab.id}}"></app-article>
+        <ng-template matTabContent>
+            <app-article category="{{tab.id}}"></app-article>
+       </ng-template>
     </mat-tab>
+    
 </div>
 </mat-tab-group>
+
+<router-outlet></router-outlet>
 <app-messages></app-messages>

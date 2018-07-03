@@ -6,7 +6,14 @@ import { FilterComponent } from './filter/filter.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/news', pathMatch: 'full' },
-  { path: 'news', component: NewsComponent },
+  {
+    path: 'news',
+    component: NewsComponent,
+  },
+  {
+    path: 'news/:id',
+    component: NewsComponent,
+  },
   { path: 'category', component: CategoryComponent },
   { path: 'filter', component: FilterComponent },
 ];
