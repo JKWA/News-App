@@ -16,9 +16,15 @@ a{
     text-decoration: none;
 }
 
+/* -webkit-overflow-scrolling: touch;
+  is a mistake, but iphone still seems to need it
+  to default to momentum (touch) 
+  */
+
 .search-results {
     height: 100%;
     overflow: scroll;
+    -webkit-overflow-scrolling: touch;
 }
     
     
