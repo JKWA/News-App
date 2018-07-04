@@ -3,7 +3,6 @@ import { Category, categoryToObject, CategoryObject } from '../category';
 import { AddCategory, RemoveCategory, CategoryState } from '../state/state.category';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import Dexie from 'dexie';
 
 @Component({
   selector: 'app-category',
