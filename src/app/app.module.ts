@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-
+import { ScrollEventModule } from 'ngx-scroll-event';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxsModule } from '@ngxs/store';
 import { CategoryState } from './state/state.category';
@@ -51,7 +50,7 @@ import { FilterComponent } from './filter/filter.component';
     BrowserAnimationsModule,
     FlexLayoutModule,
     FormsModule,
-    InfiniteScrollModule,
+    ScrollEventModule,
     LayoutModule,
     MatToolbarModule,
     MatButtonModule,

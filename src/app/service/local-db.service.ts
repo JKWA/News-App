@@ -44,9 +44,7 @@ export class LocalDbService {
           };
 
           check.onsuccess = function(event) {
-            // console.log(check.result);
             if ( !check.result ) {
-              // console.log('SAVE: ' + article.title);
               store.put({
                 category: categoryToObject(category).id,
                 source: article.source,
@@ -89,23 +87,30 @@ export class LocalDbService {
         store.createIndex('TitleIndex', 'title', { unique: false });
       };
 
+      open.onerror = function (error) {
+        indexedDB.deleteDatabase('ArticleDatabase');
+        reject(error);
+      };
+
       open.onsuccess = function() {
         const db = open.result;
         const tx = db.transaction('ArticleObjectStore', 'readwrite');
         const store = tx.objectStore('ArticleObjectStore');
         const index = store.index('CategoryIndex');
         const result: Article[] = [];
-
         index.openCursor(categoryToObject(category).id).onsuccess = function(event) {
           const cursor = event.target.result;
-
           if (cursor) {
+            // todo clean this section up
               if (cursor.value.publishedAt) {
                 const date: moment.Moment = moment(cursor.value.publishedAt);
                 if ( date.add(120, 'm').isAfter(moment(new Date())) ) {
                   result.push(cursor.value);
                 } else {
+                  result.push(cursor.value);
+                  if ( window.navigator.onLine ) {
                   cursor.delete();
+                  }
                 }
               } else {
                 cursor.delete();
@@ -121,14 +126,7 @@ export class LocalDbService {
       };
     });
   }
-  private _upgrade(open) {
-    const db = open.result;
-    const store = db.createObjectStore('ArticleObjectStore', {autoIncrement : true });
-    store.createIndex('PublishedIndex', 'publishedAt', { unique: false });
-    store.createIndex('CategoryIndex', 'category', { unique: false });
-    store.createIndex('TitleIndex', 'title', { unique: false });
-    return store;
-  }
+
 
 
 }

@@ -33,7 +33,7 @@ export class NewsComponent implements OnInit {
   ngOnInit() {
     this.setCategories(this.categories);
 
-    console.log(this.route.snapshot.paramMap.get('id'));
+    // console.log(this.route.snapshot.paramMap.get('id'));
 
     const found = this.tabs.find(tab => {
       return tab.id === this.route.snapshot.paramMap.get('id');

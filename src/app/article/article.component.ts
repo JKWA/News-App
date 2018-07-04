@@ -8,6 +8,7 @@ import { Observable, concat } from 'rxjs';
 import { Filter, FilterStateModel, FilterState } from '../state/state.filter';
 import { RetrievingNews, AddNews, NewsState } from '../state/state.news';
 import { Category, stringToCategory } from '../category';
+import { ScrollEvent } from 'ngx-scroll-event';
 
 
 @Component({
@@ -24,8 +25,9 @@ export class ArticleComponent implements OnInit {
 
   pageNumber = 1;
   retrieving = false;
-  throttle = 300;
-  scrollDistance = 0;
+
+  bottomOffset = 1000;
+  topOffset = 0;
 
   @Select(NewsState) news: Observable<any>;
   constructor(
@@ -35,9 +37,26 @@ export class ArticleComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // console.log(this.category);
     this.getFromClientDatabase(this.category, this.listOfFilters);
-    this.getNews(this.listOfFilters, this.pageNumber);
+    this.getNews(this.listOfFilters);
+  }
+
+  public handleScroll(event: ScrollEvent) {
+
+    if (event.isReachingBottom
+        && (this.pageNumber <= 5)
+        && window.navigator.onLine
+        && !this.retrieving
+      ) {
+
+      console.log(`${this.category}: ${this.pageNumber}`);
+      this.getNews(this.listOfFilters);
+
+    }
+    // if (event.isReachingTop) {
+      // console.log(`the user is reaching the top`);
+    // }
+
   }
 
   getFromClientDatabase (category: string, filters) {
@@ -57,26 +76,28 @@ export class ArticleComponent implements OnInit {
             this.articles = this.removeDuplicateTitles(this.articles.concat( filteredNews ));
           }
           this.retrieving = false;
+        })
+        .catch(error => {
+          console.log(error);
         });
+
       });
 
   }
 
-  onScrollDown (ev) {
-    const percent = ev.currentScrollPosition / document.body.offsetHeight;
-    this.pageNumber++;
-    if ( percent > .7 && !this.retrieving && this.pageNumber <= 5 ) {
-      this.getNews(this.listOfFilters, this.pageNumber);
+  getNews(filters): void {
+
+    if ( !window.navigator.onLine  || this.pageNumber > 5 ) {
+      return;
     }
 
-  }
+    console.log('GET: ' + this.category);
 
-  getNews(filters, pageNumber): void {
     this.retrieving = true;
     const categoryEnum = stringToCategory(this.category);
 
     filters.subscribe(result => {
-      this.newsService.getNews(categoryEnum, pageNumber, result.listOfFilters)
+      this.newsService.getNews(categoryEnum, this.pageNumber, result.listOfFilters)
         .subscribe(news => {
           const regFilter = new RegExp(Array.from(result.listOfFilters).join('|'), 'i');
 
@@ -89,6 +110,7 @@ export class ArticleComponent implements OnInit {
           } else {
             this.articles = this.removeDuplicateTitles(this.articles.concat( filteredNews ));
           }
+          this.pageNumber++;
           this.retrieving = false;
         });
       });
