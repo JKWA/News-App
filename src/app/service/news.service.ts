@@ -8,7 +8,6 @@ import { getKey } from '../key';
 import { Article } from '../article';
 import { MessageService } from './message.service';
 import { LocalDbService } from '../service/local-db.service';
-import { Moment } from 'moment';
 
 import { NewsResponse } from '../newsResponse';
 import { getSources } from '../source';

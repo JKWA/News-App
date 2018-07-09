@@ -6,9 +6,10 @@ import { LocalDbService } from '../service/local-db.service';
 import { Store, Select } from '@ngxs/store';
 import { Observable, concat } from 'rxjs';
 import { Filter, FilterStateModel, FilterState } from '../state/state.filter';
-import { RetrievingNews, AddNews, NewsState } from '../state/state.news';
 import { Category, stringToCategory } from '../category';
 import { ScrollEvent } from 'ngx-scroll-event';
+import { ActivatedRoute, Router } from '@angular/router';
+
 
 
 @Component({
@@ -27,35 +28,40 @@ export class ArticleComponent implements OnInit {
   retrieving = false;
 
   bottomOffset = 1000;
-  topOffset = 0;
+  topOffset = 1;
 
-  @Select(NewsState) news: Observable<any>;
   constructor(
     private newsService: NewsService,
     private localDbService: LocalDbService,
     private store: Store,
+    private router: Router,
+
   ) { }
 
   ngOnInit() {
     this.getFromClientDatabase(this.category, this.listOfFilters);
     this.getNews(this.listOfFilters);
+
   }
 
   public handleScroll(event: ScrollEvent) {
+
+    const state = this.router.routerState;
 
     if (event.isReachingBottom
         && (this.pageNumber <= 5)
         && window.navigator.onLine
         && !this.retrieving
+        && this.category === state.snapshot.root.firstChild.params.id
       ) {
 
       console.log(`${this.category}: ${this.pageNumber}`);
       this.getNews(this.listOfFilters);
-
     }
-    // if (event.isReachingTop) {
-      // console.log(`the user is reaching the top`);
-    // }
+
+    if (event.isReachingTop) {
+      console.log(`the user is reaching the top`);
+    }
 
   }
 
@@ -91,7 +97,7 @@ export class ArticleComponent implements OnInit {
       return;
     }
 
-    console.log('GET: ' + this.category);
+    // console.log('GET: ' + this.category);
 
     this.retrieving = true;
     const categoryEnum = stringToCategory(this.category);

@@ -37,27 +37,32 @@ export class LocalDbService {
         const index = store.index('TitleIndex');
 
         articles.map(article => {
-          const check = index.get(article.title);
 
-          check.onerror = function (event) {
-            reject('database error');
-          };
+          if ( article.title ) {
+            const check = index.get(article.title);
+            check.onerror = function (event) {
+              reject('database error');
+            };
 
-          check.onsuccess = function(event) {
-            if ( !check.result ) {
-              store.put({
-                category: categoryToObject(category).id,
-                source: article.source,
-                author: article.author,
-                title: article.title,
-                description: article.description,
-                url: article.url,
-                urlToImage: article.urlToImage,
-                publishedAt: article.publishedAt,
-              });
-            }
-            resolve('articles saved');
-          };
+            check.onsuccess = function(event) {
+              if ( !check.result ) {
+                store.put({
+                  category: categoryToObject(category).id,
+                  source: article.source,
+                  author: article.author,
+                  title: article.title,
+                  description: article.description,
+                  url: article.url,
+                  urlToImage: article.urlToImage,
+                  publishedAt: article.publishedAt,
+                });
+              }
+              resolve('articles saved');
+            };
+            check.onerror = function (event) {
+              reject('database error');
+            };
+          }
         });
 
         tx.oncomplete = function() {

@@ -2,11 +2,11 @@
 
 
   <div detect-scroll 
-      class="search-results" 
+      
       (onScroll)="handleScroll($event)" 
       [bottomOffset]="bottomOffset" 
       [topOffset]="topOffset" >
-
+    
       <div *ngFor="let article of articles">
 
         <mat-card class="news-card mat-elevation-z8">

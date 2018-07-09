@@ -1,5 +1,5 @@
-<div>
-    <mat-toolbar color="primary">
+
+    <mat-toolbar class="header" color="primary">
         <span>Marty News</span>
         <span class="fill-space"></span>
         <button mat-icon-button [matMenuTriggerFor]="menu">
@@ -22,8 +22,12 @@
             </mat-menu>
         </nav>       
     </mat-toolbar>
-    <router-outlet></router-outlet>
-</div>
+    
+    <div class="app-body">
+        <router-outlet></router-outlet>
+    </div>
+    
+
 
 
  

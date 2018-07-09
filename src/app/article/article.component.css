@@ -21,10 +21,10 @@ a{
   to default to momentum (touch) 
   */
 
-.search-results {
+/* .search-results {
     height: 100%;
     overflow: scroll;
     -webkit-overflow-scrolling: touch;
-}
+} */
     
     

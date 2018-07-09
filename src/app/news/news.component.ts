@@ -3,9 +3,7 @@ import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { CategoryState } from '../state/state.category';
 import { Category, CategoryObject, categoryToObject } from '../category';
-import { ActivatedRoute} from '@angular/router';
-// import {  } from '@angular/router';
-
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 interface TabObject {
@@ -28,18 +26,25 @@ export class NewsComponent implements OnInit {
   constructor(
     private store: Store,
     private route: ActivatedRoute,
+    private router: Router,
   ) {}
 
   ngOnInit() {
     this.setCategories(this.categories);
-
-    // console.log(this.route.snapshot.paramMap.get('id'));
 
     const found = this.tabs.find(tab => {
       return tab.id === this.route.snapshot.paramMap.get('id');
     });
     if (found) {
       this.tabSelected = found.tabIndex;
+    } else {
+      this.router.navigateByUrl(`/news/${this.tabs[0].id}`)
+      .then(item => {
+        // console.log(item);
+      })
+      .catch(error => {
+        console.log(error);
+      });
     }
 
   }
@@ -48,7 +53,14 @@ export class NewsComponent implements OnInit {
     const found = this.tabs.find(tab => tab.tabIndex === event);
 
     if ( found ) {
-      window.history.pushState('', found.display, `/news/${found.id}`);
+      this.router.navigateByUrl(`/news/${found.id}`)
+      .then(item => {
+        // if successful change
+        // console.log(item);
+      })
+      .catch(error => {
+        console.log(error);
+      });
     }
   }
 
