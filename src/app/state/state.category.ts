@@ -1,5 +1,5 @@
 import { State, Action, StateContext } from '@ngxs/store';
-import {stringToCategories, Category} from '../category';
+import {stringToCategories, stringToCategory, Category, categoryToObject} from '../category';
 
 export class AddCategory {
   static readonly type = 'AddCategory';
@@ -15,8 +15,16 @@ export class RemoveCategory {
   ) {}
 }
 
+export class SetCategory {
+  static readonly type = 'SetCategory';
+  constructor(
+    public categoryToSet: Category
+  ) {}
+}
+
 export interface CategoryStateModel {
   categories: Set<Category>;
+  setCategory: Category;
 }
 
 @State<CategoryStateModel>({
@@ -28,7 +36,10 @@ export interface CategoryStateModel {
         Category.General,
         Category.Science,
         Category.Technology
-      ])
+      ]),
+    setCategory: (window.localStorage.getItem('setCategory'))
+      ? stringToCategory(window.localStorage.getItem('setCategory'))
+      : Category.General
   }
 })
 
@@ -58,6 +69,18 @@ export class CategoryState {
     ctx.setState({
       ...state,
       categories: state.categories
+    });
+  }
+
+  @Action( SetCategory )
+  setCategoryItem(ctx: StateContext<CategoryStateModel>, action: SetCategory) {
+    // console.log('SET: ' + action.categoryToSet);
+    const state = ctx.getState();
+    window.localStorage.setItem('setCategory', action.categoryToSet);
+
+    ctx.setState({
+      ...state,
+      setCategory: action.categoryToSet
     });
   }
 
