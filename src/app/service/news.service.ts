@@ -9,9 +9,16 @@ import { Article } from '../article';
 import { MessageService } from './message.service';
 import { LocalDbService } from '../service/local-db.service';
 
-import { NewsResponse } from '../newsResponse';
+// import { NewsResponse } from '../newsResponse';
 import { getSources } from '../source';
 import { Filter, FilterStateModel, FilterState } from '../state/state.filter';
+
+class NewsResponse {
+  status: string;
+  totalResults: number;
+  articles: Article[];
+}
+
 
 @Injectable({ providedIn: 'root' })
 export class NewsService {
