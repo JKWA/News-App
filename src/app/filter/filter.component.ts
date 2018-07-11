@@ -13,14 +13,11 @@ export class FilterComponent implements OnInit {
   newFilter: string;
   filterList: Set<Filter>;
 
-  // @Select(FilterState) listOfFilters: Observable<FilterState>;
   @Select(FilterState) listOfFilters: Observable<Set<Filter>>;
   constructor(private store: Store)  { }
 
   ngOnInit() {
     this.setFilters(this.listOfFilters);
-    // this.store.dispatch(new AddFilter('bozo'));
-
   }
 
   setFilters(filters) {
@@ -36,7 +33,6 @@ export class FilterComponent implements OnInit {
   }
 
   removeFilter(item) {
-    // console.log(item);
     if ( item ) {
       this.store.dispatch(new RemoveFilter(item));
     }

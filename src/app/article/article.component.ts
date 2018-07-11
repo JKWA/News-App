@@ -4,12 +4,11 @@ import { NewsService } from '../service/news.service';
 import { LocalDbService } from '../service/local-db.service';
 
 import { Store, Select } from '@ngxs/store';
-import { Observable, concat } from 'rxjs';
-import { Filter, FilterStateModel, FilterState } from '../state/state.filter';
+import { Observable } from 'rxjs';
+import { FilterStateModel, FilterState } from '../state/state.filter';
 import { Category, stringToCategory } from '../category';
 import { ScrollEvent } from 'ngx-scroll-event';
 import { ActivatedRoute, Router } from '@angular/router';
-
 
 
 @Component({
@@ -20,13 +19,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 export class ArticleComponent implements OnInit {
 
-  articles: Article[];
   @Input() category: string;
-  @Select(FilterState) listOfFilters: Observable<Set<string>>;
-
+  @Select(FilterState) filters: Observable<FilterStateModel>;
+  articles: Article[];
   pageNumber = 1;
   retrieving = false;
-
   bottomOffset = 1000;
   topOffset = 1;
 
@@ -35,13 +32,11 @@ export class ArticleComponent implements OnInit {
     private localDbService: LocalDbService,
     private store: Store,
     private router: Router,
-
   ) { }
 
   ngOnInit() {
-    this.getFromClientDatabase(this.category, this.listOfFilters);
-    this.getNews(this.listOfFilters);
-
+    this.getFromClientDatabase();
+    this.getNews();
   }
 
   public handleScroll(event: ScrollEvent) {
@@ -54,9 +49,7 @@ export class ArticleComponent implements OnInit {
         && !this.retrieving
         && this.category === state.snapshot.root.firstChild.params.id
       ) {
-
-      console.log(`${this.category}: ${this.pageNumber}`);
-      this.getNews(this.listOfFilters);
+      this.getNews();
     }
 
     if (event.isReachingTop) {
@@ -65,10 +58,10 @@ export class ArticleComponent implements OnInit {
 
   }
 
-  getFromClientDatabase (category: string, filters) {
+  private getFromClientDatabase () {
     this.retrieving = true;
-    filters.subscribe(result => {
-      this.localDbService.getData(stringToCategory(category))
+    this.filters.subscribe(result => {
+      this.localDbService.getData(stringToCategory(this.category))
         .then(news => {
           const regFilter = new RegExp(Array.from(result.listOfFilters).join('|'), 'i');
 
@@ -91,18 +84,17 @@ export class ArticleComponent implements OnInit {
 
   }
 
-  getNews(filters): void {
+  getNews(): void {
 
     if ( !window.navigator.onLine  || this.pageNumber > 5 ) {
       return;
     }
 
-    // console.log('GET: ' + this.category);
-
     this.retrieving = true;
     const categoryEnum = stringToCategory(this.category);
 
-    filters.subscribe(result => {
+    this.filters.subscribe(result => {
+
       this.newsService.getNews(categoryEnum, this.pageNumber, result.listOfFilters)
         .subscribe(news => {
           const regFilter = new RegExp(Array.from(result.listOfFilters).join('|'), 'i');
@@ -122,7 +114,8 @@ export class ArticleComponent implements OnInit {
       });
   }
 
-  removeDuplicateTitles(articles: Article[]): Article[] {
+
+  private  removeDuplicateTitles(articles: Article[]): Article[] {
     const articleMap = new Map ();
     const deDupped = [];
 
