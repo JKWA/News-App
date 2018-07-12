@@ -16,9 +16,6 @@ export class RemoveFilter {
   ) {}
 }
 
-// export interface FilterResult {
-//   listOfFilters: Set<Filter>;
-// }
 
 export interface FilterStateModel {
   listOfFilters: Set<Filter>;
@@ -61,15 +58,6 @@ export class FilterState {
       listOfFilters: state.listOfFilters
     });
   }
-
-  // add(ctx: StateContext<FilterStateModel>, action: AddFilter) {
-  //   console.log('ADDFILTER: ' + action);
-  //   const state = ctx.getState();
-  //   ctx.setState({
-  //     ...state,
-  //     listOfFilters: Array.from(new Set([action.filterToAdd].concat(state.listOfFilters))).slice(0, 3)
-  //   });
-  // }
 }
 
 function convertToFilter(filterString: string): Set<Filter> {

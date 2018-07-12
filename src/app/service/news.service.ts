@@ -55,7 +55,7 @@ export class NewsService {
           this.localDb.setData(stringToCategory(category), response.articles);
           return response.articles;
         }),
-        filter( item => true),
+        // filter( item => true),
         tap(_ => this.log(`fetched ${category} news`)),
         catchError(this.handleError('getNews', []))
       );

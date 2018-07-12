@@ -41,6 +41,8 @@ export class ArticleComponent implements OnInit {
 
   public handleScroll(event: ScrollEvent) {
 
+    //  TODO save scroll position state for iOS standalone
+    window.localStorage.setItem('scrollPosition', window.scrollY.toString());
     const state = this.router.routerState;
 
     if (event.isReachingBottom

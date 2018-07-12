@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { CategoryState, SetCategory, CategoryStateModel } from '../state/state.category';
@@ -18,7 +18,7 @@ interface TabObject {
 })
 
 export class NewsComponent implements OnInit {
-
+  standalone = false;
   tabs: TabObject[] = [];
   tabSelected = 0;
   @Select(CategoryState) categories: Observable<CategoryStateModel>;
@@ -30,59 +30,49 @@ export class NewsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.setCategories(this.categories);
+    let found;
 
-    this.categories.subscribe( category => {
+    // iOS standalone does not read route, need to save route state locally
+    this.standalone = window.matchMedia('(display-mode: standalone)').matches;
+    this.setCategories();
 
-      // TODO check if iOS standalone and get state from store rather than route
-      //      (window.matchMedia('(display-mode: standalone)').matches)
-      //      @HostListener('window:offline', ['$event'])
-
-      let found = {tabIndex: 0};  // default to 0
-
-      if (this.route.snapshot.paramMap.get('id')) {
-        found = this.tabs.find(tab => {
-            return tab.id === this.route.snapshot.paramMap.get('id');
-          });
-      } else {
+    if ( this.standalone ) {
+      // if standalone, get from category store (cached)
+      this.categories.subscribe( category => {
         found = this.tabs.find(tab => {
           return tab.id === category.setCategory;
         });
-      }
+      });
+    } else {
+      found = this.tabs.find(tab => {
+        return tab.id === this.route.snapshot.paramMap.get('id');
+      });
+    }
+    if ( !found ) { // default to first tab if problem
+      found = {tabIndex: 0};
+    }
 
-      if (found) {
-        this.tabSelected = found.tabIndex;
-      } else {
-        this.router.navigateByUrl(`/news/${this.tabs[0].id}`)
-        .then(item => {
-          // console.log(item);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      }
-    });
+    this.tabSelected = found.tabIndex;
 
   }
 
-  tabChanged(event) {
+  public tabChanged(event) {
+
     const found = this.tabs.find(tab => tab.tabIndex === event);
+
+    // perhaps better to only dispatch when standalone
     this.store.dispatch(new SetCategory(stringToCategory(found.id)));
 
     if ( found ) {
       this.router.navigateByUrl(`/news/${found.id}`)
-      .then(item => {
-        // if successful change
-        // console.log(item);
-      })
       .catch(error => {
         console.log(error);
       });
     }
   }
 
-  setCategories(categories) {
-    categories.subscribe(result => {
+ private setCategories() {
+    this.categories.subscribe(result => {
       const tabs = [];
 
       let index = -1; // is this best?
