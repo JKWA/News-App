@@ -26,6 +26,7 @@ export class ArticleComponent implements OnInit {
   retrieving = false;
   bottomOffset = 1000;
   topOffset = 1;
+  initialScroll = true;
 
   constructor(
     private newsService: NewsService,
@@ -35,14 +36,22 @@ export class ArticleComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
+    // wait 2 seconds before tracking state of new scroll events
+    setTimeout(() => {
+      this.initialScroll = false;
+    }, 2000);
+
     this.getFromClientDatabase();
     this.getNews();
   }
 
   public handleScroll(event: ScrollEvent) {
 
-    //  TODO save scroll position state for iOS standalone
-    window.localStorage.setItem('scrollPosition', window.scrollY.toString());
+    if ( !this.initialScroll) {
+      window.localStorage.setItem('scrollPosition', window.scrollY.toString());
+    }
+
     const state = this.router.routerState;
 
     if (event.isReachingBottom
@@ -77,6 +86,15 @@ export class ArticleComponent implements OnInit {
             this.articles = this.removeDuplicateTitles(this.articles.concat( filteredNews ));
           }
           this.retrieving = false;
+
+          // TODO: update so only for iOS standalone
+          window.scrollTo({
+            behavior: 'smooth',
+            left: 0,
+            top: window.localStorage.getItem('scrollPosition')
+                  ? parseInt(window.localStorage.getItem('scrollPosition'), 10)
+                  : 0
+            });
         })
         .catch(error => {
           console.log(error);
