@@ -31,10 +31,10 @@ export class NewsComponent implements OnInit {
 
   ngOnInit() {
     let found;
+    this.setCategories();
 
     // iOS standalone does not read route, need to save route state locally
     this.standalone = window.matchMedia('(display-mode: standalone)').matches;
-    this.setCategories();
 
     if ( this.standalone ) {
       // if standalone, get from category store (cached)
@@ -49,10 +49,16 @@ export class NewsComponent implements OnInit {
       });
     }
     if ( !found ) { // default to first tab if problem
-      found = {tabIndex: 0};
+      found = {tabIndex: 0, id: 'general', display: 'General'};
     }
 
-    this.tabSelected = found.tabIndex;
+    this.router.navigateByUrl(`/news/${found.id}`)
+      .then( _ => {
+        this.tabSelected = found.tabIndex;
+      })
+      .catch(error => {
+        console.log(error);
+      });
 
   }
 

@@ -6,9 +6,9 @@ import { LocalDbService } from '../service/local-db.service';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { FilterStateModel, FilterState } from '../state/state.filter';
-import { Category, stringToCategory } from '../category';
+import { stringToCategory } from '../category';
 import { ScrollEvent } from 'ngx-scroll-event';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -26,7 +26,7 @@ export class ArticleComponent implements OnInit {
   retrieving = false;
   bottomOffset = 1000;
   topOffset = 1;
-  initialScroll = true;
+  scrolledToInititalView = true;
 
   constructor(
     private newsService: NewsService,
@@ -36,21 +36,33 @@ export class ArticleComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
-    // wait 2 seconds before tracking state of new scroll events
-    setTimeout(() => {
-      this.initialScroll = false;
-    }, 2000);
-
     this.getFromClientDatabase();
     this.getNews();
   }
 
-  public handleScroll(event: ScrollEvent) {
-
-    if ( !this.initialScroll) {
-      window.localStorage.setItem('scrollPosition', window.scrollY.toString());
+  private scrollToLastViewed() {
+    const anchor = window.localStorage.getItem('lastReadArticle');
+    if (anchor) {
+      const article = document.getElementById(anchor);
+      if (this.scrolledToInititalView) {
+        if (article) {
+          if (this.category === this.router.routerState.snapshot.root.firstChild.params.id) {
+            article.scrollIntoView({behavior: 'smooth'});
+            // console.log(`SCROLLING: ${anchor}`);
+            this.scrolledToInititalView = false;
+          }
+        }
+      }
     }
+  }
+
+  public gotToArticle (article) {
+    // save state for iOS
+    window.localStorage.setItem('lastReadArticle', article.anchorText);
+    window.location.href = article.url;
+  }
+
+  public handleScroll(event: ScrollEvent) {
 
     const state = this.router.routerState;
 
@@ -78,7 +90,11 @@ export class ArticleComponent implements OnInit {
 
           const filteredNews = news.filter(article => article.title && article.description
             ? !(article.title.match(regFilter) || article.description.match(regFilter))
-            : false);
+            : false)
+            .map(article => {
+              article.anchorText = encodeURIComponent(this.category + '_' + article.title);
+              return article;
+            });
 
           if (! this.articles ) {
             this.articles = this.removeDuplicateTitles(filteredNews);
@@ -86,15 +102,9 @@ export class ArticleComponent implements OnInit {
             this.articles = this.removeDuplicateTitles(this.articles.concat( filteredNews ));
           }
           this.retrieving = false;
-
-          // TODO: update so only for iOS standalone
-          window.scrollTo({
-            behavior: 'smooth',
-            left: 0,
-            top: window.localStorage.getItem('scrollPosition')
-                  ? parseInt(window.localStorage.getItem('scrollPosition'), 10)
-                  : 0
-            });
+        })
+        .then(_ => {
+          this.scrollToLastViewed();
         })
         .catch(error => {
           console.log(error);
@@ -121,7 +131,11 @@ export class ArticleComponent implements OnInit {
 
           const filteredNews = news.filter(article => article.title && article.description
             ? !(article.title.match(regFilter) || article.description.match(regFilter))
-            : false);
+            : false)
+            .map(article => {
+              article.anchorText = encodeURIComponent(this.category + '_' + article.title);
+              return article;
+            });
 
           if (! this.articles ) {
             this.articles = this.removeDuplicateTitles(filteredNews);
@@ -130,8 +144,15 @@ export class ArticleComponent implements OnInit {
           }
           this.pageNumber++;
           this.retrieving = false;
+          this.scrollToLastViewed();
         });
       });
+  }
+
+  private addAnchorText(articles: Article[]) {
+    return articles.map(article => {
+      return article.anchorText = encodeURIComponent(article.title);
+    });
   }
 
 

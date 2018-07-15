@@ -11,5 +11,6 @@ export class Article {
   url: string;
   urlToImage: string;
   publishedAt: string;
+  anchorText: string;
 }
 

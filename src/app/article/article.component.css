@@ -14,17 +14,8 @@ mat-card-header{
 a{
     color: rgb(46, 46, 46);
     text-decoration: none;
+    cursor: pointer;
 }
 
-/* -webkit-overflow-scrolling: touch;
-  is a mistake, but iphone still seems to need it
-  to default to momentum (touch) 
-  */
-
-/* .search-results {
-    height: 100%;
-    overflow: scroll;
-    -webkit-overflow-scrolling: touch;
-} */
     
     
