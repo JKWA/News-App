@@ -14,7 +14,8 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-article',
   templateUrl: './article.component.html',
-  styleUrls: ['./article.component.css']
+  styleUrls: ['./article.component.css'],
+  providers: [NewsService, LocalDbService]
 })
 
 export class ArticleComponent implements OnInit {
@@ -38,6 +39,23 @@ export class ArticleComponent implements OnInit {
   ngOnInit() {
     this.getFromClientDatabase();
     this.getNews();
+    // remove old data if application is online
+    if ( window.navigator.onLine ) {
+      this.removeOldData();
+    }
+  }
+
+  private removeOldData() {
+
+    this.localDbService.getOldData(stringToCategory(this.category))
+        .then(keys => {
+          keys.map(primaryKey => {
+            this.localDbService.removeArticle(primaryKey);
+          });
+          })
+          .catch (error => {
+            console.log(error);
+          });
   }
 
   private scrollToLastViewed() {
@@ -105,6 +123,7 @@ export class ArticleComponent implements OnInit {
         })
         .then(_ => {
           this.scrollToLastViewed();
+          // console.log(`${this.category}: ${this.articles.length}`);
         })
         .catch(error => {
           console.log(error);
