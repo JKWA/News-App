@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxsModule } from '@ngxs/store';
 import { CategoryState } from './state/state.category';
 import { FilterState } from './state/state.filter';
+import { NewsState } from './state/state.news';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppComponent } from './app.component';
@@ -25,11 +26,11 @@ import {
   MatMenuModule,
   MatTabsModule} from '@angular/material';
 import { NewsComponent } from './news/news.component';
-import { MessagesComponent } from './messages/messages.component';
+import { LogComponent } from './log/log.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { CategoryComponent } from './category/category.component';
-import { AppRoutingModule } from './/app-routing.module';
+import { AppRoutingModule } from './app-routing.module';
 import { ArticleComponent } from './article/article.component';
 import { FilterComponent } from './filter/filter.component';
 
@@ -37,7 +38,7 @@ import { FilterComponent } from './filter/filter.component';
   declarations: [
     AppComponent,
     NewsComponent,
-    MessagesComponent,
+    LogComponent,
     CategoryComponent,
     ArticleComponent,
     FilterComponent,
@@ -45,7 +46,7 @@ import { FilterComponent } from './filter/filter.component';
   imports: [
     BrowserModule,
     HttpClientModule,
-    NgxsModule.forRoot([ CategoryState, FilterState ]),
+    NgxsModule.forRoot([ CategoryState, FilterState, NewsState ]),
     BrowserAnimationsModule,
     FlexLayoutModule,
     FormsModule,

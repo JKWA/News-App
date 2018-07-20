@@ -1,65 +1,26 @@
-
-
-
-  <div detect-scroll 
-      
-      (onScroll)="handleScroll($event)" 
-      [bottomOffset]="bottomOffset" 
-      [topOffset]="topOffset" >
-    
-      <div *ngFor="let article of articles">
-
-        <mat-card id="{{article.anchorText}}" class="news-card mat-elevation-z8">
-          <mat-card-header>
-            <mat-card-title>
-                <img src="{{article.urlToImage}}" mat-card-image>
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <a (click)="gotToArticle(article)">
-              <div class="mat-title">{{article.title}}</div> 
-            </a>
-            <div class="mat-body-2">{{article.source.name}}</div>
-            <div class="mat-body-1">{{article.description}}</div>
-          </mat-card-content>
-          <mat-card-actions>
-            <button (click)="gotToArticle(article)" mat-button>READ</button>
-          </mat-card-actions>
-        </mat-card>
-      </div>
-  </div>
-
-
-
-
-<!-- <div 
-    [infinite-scroll]
-    [infiniteScrollDistance]="scrollDistance"
-    [infiniteScrollThrottle]="throttle"
-    (scrolled)="onScrollDown($event)">
+<div detect-scroll  
+    (onScroll)="handleScroll($event)" 
+    [bottomOffset]="bottomOffset" 
+    [topOffset]="topOffset" >
 
   <div *ngFor="let article of articles">
 
-    <mat-card class="news-card mat-elevation-z8">
+    <mat-card id="{{article.anchorText}}" class="news-card mat-elevation-z8">
       <mat-card-header>
         <mat-card-title>
             <img src="{{article.urlToImage}}" mat-card-image>
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-          <a href="{{article.url}}">
-            <div class="mat-title">{{article.title}}</div> 
-          </a>
+        <a (click)="gotToArticle(article)">
+          <div class="mat-title">{{article.title}}</div> 
+        </a>
         <div class="mat-body-2">{{article.source.name}}</div>
         <div class="mat-body-1">{{article.description}}</div>
       </mat-card-content>
       <mat-card-actions>
-          <a href="{{article.url}}">
-              <button isIconButton mat-button>READ</button>
-          </a> 
+        <button (click)="gotToArticle(article)" mat-button>READ</button>
       </mat-card-actions>
     </mat-card>
-
   </div>
 </div>
-   -->

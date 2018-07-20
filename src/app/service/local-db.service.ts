@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Article } from '../article';
-import { Category, categoryToObject } from '../category';
+import { Category, categoryToObject } from '../state/state.category';
 import * as moment from 'moment';
 
 

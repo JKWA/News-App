@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Category, categoryToObject, CategoryObject } from '../category';
-import { AddCategory, RemoveCategory, CategoryState } from '../state/state.category';
+// import { Category, categoryToObject, CategoryObject } from '../category';
+import { AddCategory, RemoveCategory, CategoryState, Category, categoryToObject, CategoryObject } from '../state/state.category';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 

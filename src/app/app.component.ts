@@ -1,32 +1,28 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
 export class AppComponent {
-  bottomOffset = 1000;
-  topOffset = 0;
-  online = true;
-
+  title = 'app';
   constructor(
-    public snackBar: MatSnackBar
-  ) {}
+    public snackBar: MatSnackBar,
+  ) { }
 
   @HostListener('window:offline', ['$event'])
-  openSnackbar(event) {
+  openSnackbar(_) {
     this.snackBar.open('No network detected', '', {
       duration: 0,
     });
   }
 
   @HostListener('window:online', ['$event'])
-  closeSnackbar(event) {
+  closeSnackbar(_) {
     this.snackBar.dismiss();
   }
 }
-
 

@@ -1,6 +1,6 @@
 
 
-import {Category} from './category';
+import {Category} from './state/state.category';
 
 export function getSources (category: Category) {
     return sourceData().filter(item => item.category === category);

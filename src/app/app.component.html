@@ -1,34 +1,36 @@
+<mat-toolbar class="header" color="primary">
+    <span>Marty News</span>
+    <span class="fill-space"></span>
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>settings</mat-icon>
+    </button>
+    <nav>
+        <mat-menu #menu="matMenu">
+            <a routerLink="/category">
+                <button mat-menu-item>
+                <mat-icon>category</mat-icon>
+                <span>Category</span>
+                </button>
+            </a>
+            <a routerLink="/filter">
+                <button mat-menu-item>
+                <mat-icon>filter_list</mat-icon>
+                <span>Filter</span>
+                </button>
+            </a>
+            <a routerLink="/log">
+                <button mat-menu-item>
+                <mat-icon>subject</mat-icon>
+                <span>Log</span>
+                </button>
+            </a>
+        </mat-menu>
+    </nav>       
+</mat-toolbar>
 
-    <mat-toolbar class="header" color="primary">
-        <span>Marty News</span>
-        <span class="fill-space"></span>
-        <button mat-icon-button [matMenuTriggerFor]="menu">
-            <mat-icon>settings</mat-icon>
-        </button>
-        <nav>
-            <mat-menu #menu="matMenu">
-                <a routerLink="/category">
-                    <button mat-menu-item>
-                    <mat-icon>category</mat-icon>
-                    <span>Category</span>
-                    </button>
-                </a>
-                <a routerLink="/filter">
-                    <button mat-menu-item>
-                    <mat-icon>filter_list</mat-icon>
-                    <span>Filter</span>
-                    </button>
-                </a>
-            </mat-menu>
-        </nav>       
-    </mat-toolbar>
-    
-    <div class="app-body">
-        <router-outlet></router-outlet>
-    </div>
-    
 
+<div class="app-body">
+    <router-outlet></router-outlet>
+</div>
 
-
- 
 

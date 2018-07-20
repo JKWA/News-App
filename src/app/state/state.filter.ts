@@ -1,4 +1,5 @@
-import { State, Action, StateContext } from '@ngxs/store';
+import {Store, State, Action, StateContext } from '@ngxs/store';
+import { AddLog } from './state.log';
 
 export type Filter = string;
 
@@ -32,9 +33,13 @@ export interface FilterStateModel {
 
 
 export class FilterState {
+
+  constructor(
+    private store: Store
+  ) { }
+
   @Action(AddFilter)
   addFilter(ctx: StateContext<FilterStateModel>, action: AddFilter) {
-    // console.log('ADDFILTER: ' + action.filterToAdd);
 
     const state = ctx.getState();
     state.listOfFilters.add(action.filterToAdd);
@@ -44,6 +49,7 @@ export class FilterState {
       ...state,
       listOfFilters: state.listOfFilters
     });
+    this.store.dispatch(new AddLog('Filter: ', `added ${action.filterToAdd}`));
   }
 
   @Action(RemoveFilter)
@@ -57,12 +63,12 @@ export class FilterState {
       ...state,
       listOfFilters: state.listOfFilters
     });
+    this.store.dispatch(new AddLog('Filter: ', `removed ${action.filterToRemove}`));
   }
 }
 
 function convertToFilter(filterString: string): Set<Filter> {
   const listOfFilters = [];
-  // console.log('FILTER: ' + filterString);
   filterString.split(',').map(filter => {
       listOfFilters.push(filter.trim());
     });
