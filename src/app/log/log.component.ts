@@ -4,7 +4,6 @@ import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Log, LogState, LogStateModel } from '../state/state.log';
 
-
 @Component({
   selector: 'app-log',
   templateUrl: './log.component.html',

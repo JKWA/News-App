@@ -1,3 +1,4 @@
+import { isDevMode } from '@angular/core';
 import { State, Action, StateContext } from '@ngxs/store';
 import * as moment from 'moment';
 
@@ -51,6 +52,9 @@ export class LogState {
     ctx.patchState({
       logs: copy
     });
+    if ( isDevMode ) {
+      console.log(`${date.format('kk:mm:ss')} - ${location}: ${message}`);
+    }
   }
 
   @Action(ClearLog)

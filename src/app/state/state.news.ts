@@ -1,3 +1,4 @@
+import { isDevMode } from '@angular/core';
 import { State, Selector, Action, StateContext } from '@ngxs/store';
 ​import { Article } from '../article';
 import { FilterStateModel, FilterState } from './state.filter';
@@ -10,6 +11,7 @@ import { getSources } from '../source';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 import { getKey } from '../key';
+import * as moment from 'moment';
 
 class NewsResponse {
   status: string;
@@ -100,12 +102,21 @@ export class NewsState {
     const pageNumber = state[action.category].page;
     const sources: string = getSources(stringToCategory(action.category)).map(item => item.id).join();
 
+    if ( isDevMode() ) {
+      console.log(`%c Old state `, 'background: #08298A; color: white', ctx.getState() );
+    }
+
     ctx.patchState({
       [action.category]: {
         ...state[action.category],
         retrieving: true
       }
     });
+
+    if ( isDevMode() ) {
+      console.log(`%c New state `, 'background: #088A08; color: white', ctx.getState() );
+    }
+
     if ( pageNumber > 5 ) {
       return ;
     }
@@ -139,6 +150,12 @@ export class NewsState {
         )
         .toPromise()
         .then(result => {
+
+          if ( isDevMode() ) {
+            console.log(`%c Old state `, 'background: #08298A; color: white', ctx.getState() );
+
+          }
+
           const copy = state[action.category].articles.splice(0).concat(result);
           ctx.patchState({
             [action.category]: {
@@ -149,23 +166,38 @@ export class NewsState {
               firstLoad: false
             }
           });
+
+          if ( isDevMode() ) {
+            console.log(`%c New state `, 'background: #088A08; color: white', ctx.getState() );
+          }
+
           return result;
         })
         .then(result => {
-          if (!state[action.category].clientDataLoaded) {
+          const clientState = ctx.getState();
+          if (!clientState[action.category].clientDataLoaded) {
             this.addNewsFromClient(action.category, regFilter)
             .then(localData => {
-              const copy = state[action.category].articles.splice(0).concat(localData);
+              this.log(`fetching client news data ${action.category}`);
+
+              if ( isDevMode() ) {
+                console.log(`%c Old state `, 'background: #08298A; color: white', ctx.getState() );
+
+              }
+
+              const copy = clientState[action.category].articles.splice(0).concat(localData);
               ctx.patchState({
                 [action.category]: {
-                  ...state[action.category],
+                  ...clientState[action.category],
                   articles: this.removeDuplicateTitles(copy),
                   clientDataLoaded: true
                 }
               });
-            })
-            .then(_ => {
-              this.log(`client news added ${action.category}`);
+
+              if ( isDevMode() ) {
+                console.log(`%c New state `, 'background: #088A08; color: white', ctx.getState() );
+              }
+
             })
             .catch(error => {
               this.log(`client news error ${action.category}`);
@@ -178,18 +210,21 @@ export class NewsState {
         })
         .then(_ => {
           if (window.navigator.onLine) {
-            this.localDb.getOldData(stringToCategory(action.category))
-            .then(keys => {
-              keys.map(primaryKey => {
-                this.localDb.removeArticle(primaryKey);
+            const deleteState = ctx.getState();
+            if ( deleteState[action.category].page === 2) {
+              this.localDb.getOldData(stringToCategory(action.category))
+              .then(keys => {
+                keys.map(primaryKey => {
+                  this.localDb.removeArticle(primaryKey);
+                });
+              })
+              .then(() => {
+                this.log(`deleted old data from ${action.category}`);
+              })
+              .catch (error => {
+                this.log(`ERROR: deleted old data from ${error}`);
               });
-            })
-            .then(() => {
-              this.log(`deleted old data from ${action.category}`);
-            })
-            .catch (error => {
-              this.log(`ERROR: deleted old data from ${error}`);
-            });
+            }
           }
         })
         .catch(error => {

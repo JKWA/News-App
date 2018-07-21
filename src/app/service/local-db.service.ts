@@ -49,6 +49,7 @@ export class LocalDbService {
               if ( !check.result ) {
                 store.put({
                   category: categoryToObject(category).id,
+                  timestamp: new Date().toISOString(),
                   source: article.source,
                   author: article.author,
                   title: article.title,
@@ -116,8 +117,8 @@ export class LocalDbService {
 
                   } else {
                     // if online, push information from the past two hours
-                    const date: moment.Moment = moment(cursor.value.publishedAt);
-                    if ( date.add(120, 'm').isAfter(moment(new Date())) ) {
+                    const date: moment.Moment = moment(cursor.value.timestamp);
+                    if ( date.add(30, 'm').isAfter(moment(new Date())) ) {
                       result.push(cursor.value);
                     }
                   }
@@ -169,10 +170,17 @@ export class LocalDbService {
           .onsuccess = event => {
             const cursor = event.target.result;
             if (cursor) {
-              const date: moment.Moment = moment(cursor.value.publishedAt);
-                  if ( !date.add(120, 'm').isAfter(moment(new Date())) ) {
+              // console.log(cursor.value.timestamp);
+              if (!cursor.value.timestamp) {
+                result.push(cursor.primaryKey);
+
+              } else {
+                 const date: moment.Moment = moment(cursor.value.timestamp);
+                  if ( !date.add(30, 'm').isAfter(moment(new Date())) ) {
                     result.push(cursor.primaryKey);
                   }
+                }
+
                 cursor.continue();
               } else {
                   resolve(result);

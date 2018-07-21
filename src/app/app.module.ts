@@ -7,6 +7,8 @@ import { NgxsModule } from '@ngxs/store';
 import { CategoryState } from './state/state.category';
 import { FilterState } from './state/state.filter';
 import { NewsState } from './state/state.news';
+import { LogState } from './state/state.log';
+
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppComponent } from './app.component';
@@ -46,7 +48,7 @@ import { FilterComponent } from './filter/filter.component';
   imports: [
     BrowserModule,
     HttpClientModule,
-    NgxsModule.forRoot([ CategoryState, FilterState, NewsState ]),
+    NgxsModule.forRoot([ CategoryState, FilterState, NewsState, LogState ]),
     BrowserAnimationsModule,
     FlexLayoutModule,
     FormsModule,
