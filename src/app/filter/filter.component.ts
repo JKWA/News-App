@@ -20,6 +20,12 @@ export class FilterComponent implements OnInit {
     this.setFilters(this.listOfFilters);
   }
 
+  watchForEnter(event) {
+    if ( event.keyCode === 13 ) {
+      this.addFilter();
+    }
+  }
+
   setFilters(filters) {
     filters.subscribe(result => {
       this.filterList = result.listOfFilters;
@@ -29,6 +35,7 @@ export class FilterComponent implements OnInit {
   addFilter() {
     if ( this.newFilter ) {
       this.store.dispatch(new AddFilter(this.newFilter.toString()));
+      this.newFilter = '';
     }
   }
 

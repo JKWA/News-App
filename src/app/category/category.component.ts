@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-// import { Category, categoryToObject, CategoryObject } from '../category';
 import { AddCategory, RemoveCategory, CategoryState, Category, categoryToObject, CategoryObject } from '../state/state.category';
+import { NewsStateModel, NewsState, AddNews } from '../state/state.news';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 
@@ -13,8 +13,9 @@ import { Observable } from 'rxjs';
 export class CategoryComponent implements OnInit {
     allCategories: CategoryItem[];
     tabs: CategoryObject[] = [];
-
+    @Select(NewsState) stateNews: Observable<NewsStateModel[]>;
     @Select(CategoryState) tabCategories: Observable<Set<Category>>;
+
     constructor(private store: Store) {
       this.allCategories = [
         CategoryMaker.create(Category.Business, 'Business', 'business'),
@@ -59,6 +60,8 @@ export class CategoryComponent implements OnInit {
 
     if ( checked ) {
       this.store.dispatch(new AddCategory(category));
+      this.store.dispatch(new AddNews(category, false));
+
     } else {
       this.store.dispatch(new RemoveCategory(category));
     }

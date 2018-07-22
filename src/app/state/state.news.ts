@@ -2,16 +2,15 @@ import { isDevMode } from '@angular/core';
 import { State, Selector, Action, StateContext } from '@ngxs/store';
 ​import { Article } from '../article';
 import { FilterStateModel, FilterState } from './state.filter';
-import { AddLog } from './state.log';
+import { AddMessage, AddError, CurrentState, NewState } from './state.log';
 import { LocalDbService } from '../service/local-db.service';
 import { Store, Select } from '@ngxs/store';
 import { Observable, of } from 'rxjs';
 import { stringToCategory} from './state.category';
 import { getSources } from '../source';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, tap, filter } from 'rxjs/operators';
 import { getKey } from '../key';
-import * as moment from 'moment';
 
 class NewsResponse {
   status: string;
@@ -102,9 +101,8 @@ export class NewsState {
     const pageNumber = state[action.category].page;
     const sources: string = getSources(stringToCategory(action.category)).map(item => item.id).join();
 
-    if ( isDevMode() ) {
-      console.log(`%c Old state `, 'background: #08298A; color: white', ctx.getState() );
-    }
+    this.log(`fetching ${action.category} news`);
+    this.store.dispatch(new CurrentState(ctx.getState()));
 
     ctx.patchState({
       [action.category]: {
@@ -113,9 +111,8 @@ export class NewsState {
       }
     });
 
-    if ( isDevMode() ) {
-      console.log(`%c New state `, 'background: #088A08; color: white', ctx.getState() );
-    }
+    this.store.dispatch(new NewState('NewsService', ctx.getState()));
+
 
     if ( pageNumber > 5 ) {
       return ;
@@ -123,10 +120,14 @@ export class NewsState {
 
     if (state[action.category].firstLoad || !action.initial) {
       this.filters.subscribe(filterResult => {
+        let url = `${this.endpoint}?`;
 
-        const filterString = '-' + Array.from(filterResult.listOfFilters).join(',-');
-        let url = `${this.endpoint}?q=${filterString}`;
-        url += `&sources=${sources}&language=${this.language}&sortBy=${this.sort}`;
+        if (filterResult.listOfFilters.size) {
+          const filterString = `"-${Array.from(filterResult.listOfFilters).join('",-"')}"`;
+          url += `q=${encodeURIComponent(filterString)}&`;
+        }
+
+        url += `sources=${sources}&language=${this.language}&sortBy=${this.sort}`;
         url += `&page=${pageNumber < 5 ? pageNumber : 2}&pageSize=${pageNumber < 5 ? this.pageSize : 100}&apiKey=${getKey()}`;
         const regFilter = new RegExp(Array.from(filterResult.listOfFilters).join('|'), 'i');
 
@@ -137,24 +138,30 @@ export class NewsState {
             const filteredNews = news.filter(article => article.title && article.description
                         ? !(article.title.match(regFilter) || article.description.match(regFilter))
                         : false);
-            return filteredNews;
+            return filterResult.listOfFilters.size
+                    ? filteredNews
+                    : news;
           }),
           map(result => {
             return result.map(article => {
                 article.anchorText = encodeURIComponent(article.title);
+                const expression = /https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+                const regex = new RegExp(expression);
+                if ( article.urlToImage ) {
+                if ( ! article.urlToImage.match(regex) ) {
+                   article.urlToImage = null;
+                }
+              }
                 return article;
             });
           }),
-          tap(_ => this.log(`fetched ${action.category} news`)),
+          tap(_ => this.log(`received ${action.category} news`)),
           catchError(this.handleError('getNews', []))
         )
         .toPromise()
         .then(result => {
 
-          if ( isDevMode() ) {
-            console.log(`%c Old state `, 'background: #08298A; color: white', ctx.getState() );
-
-          }
+          this.store.dispatch(new CurrentState(ctx.getState()));
 
           const copy = state[action.category].articles.splice(0).concat(result);
           ctx.patchState({
@@ -167,9 +174,7 @@ export class NewsState {
             }
           });
 
-          if ( isDevMode() ) {
-            console.log(`%c New state `, 'background: #088A08; color: white', ctx.getState() );
-          }
+          this.store.dispatch(new NewState('NewsService', ctx.getState()));
 
           return result;
         })
@@ -178,12 +183,9 @@ export class NewsState {
           if (!clientState[action.category].clientDataLoaded) {
             this.addNewsFromClient(action.category, regFilter)
             .then(localData => {
-              this.log(`fetching client news data ${action.category}`);
+              this.log(`fetching ${action.category} from indexed DB`);
 
-              if ( isDevMode() ) {
-                console.log(`%c Old state `, 'background: #08298A; color: white', ctx.getState() );
-
-              }
+              this.store.dispatch(new CurrentState(ctx.getState()));
 
               const copy = clientState[action.category].articles.splice(0).concat(localData);
               ctx.patchState({
@@ -194,13 +196,11 @@ export class NewsState {
                 }
               });
 
-              if ( isDevMode() ) {
-                console.log(`%c New state `, 'background: #088A08; color: white', ctx.getState() );
-              }
+              this.store.dispatch(new NewState('NewsService', ctx.getState()));
 
             })
             .catch(error => {
-              this.log(`client news error ${action.category}`);
+              this.error(`client news error ${error}`);
             });
         }
           return result;
@@ -214,61 +214,26 @@ export class NewsState {
             if ( deleteState[action.category].page === 2) {
               this.localDb.getOldData(stringToCategory(action.category))
               .then(keys => {
-                keys.map(primaryKey => {
-                  this.localDb.removeArticle(primaryKey);
-                });
-              })
-              .then(() => {
-                this.log(`deleted old data from ${action.category}`);
+                if ( keys.length ) {
+                  keys.map(primaryKey => {
+                    this.localDb.removeArticle(primaryKey);
+                  });
+                  this.log(`removed old ${action.category} articles`);
+                }
               })
               .catch (error => {
-                this.log(`ERROR: deleted old data from ${error}`);
+                this.error(`ERROR: removed old ${error} articles`);
               });
             }
           }
         })
         .catch(error => {
-          this.log(error);
+          this.error(error);
         });
       }).unsubscribe();
     }
   }
 
-
-  // @Action(AddLocalNews)
-  // addLocalNews(ctx: StateContext<NewsStateModel>, action: AddLocalNews) {
-  //   const state = ctx.getState();
-  //   if (!state[action.category].clientDataLoaded) {
-  //     this.filters.subscribe(result => {
-  //       this.localDb.getData(stringToCategory(action.category))
-  //       .then(news => {
-  //         const regFilter = new RegExp(Array.from(result.listOfFilters).join('|'), 'i');
-  //         const filteredNews = news.filter(article => article.title && article.description
-  //           ? !(article.title.match(regFilter) || article.description.match(regFilter))
-  //           : false)
-  //           .map(article => {
-  //             article.anchorText = encodeURIComponent(article.title);
-  //             return article;
-  //           });
-  //           return filteredNews;
-  //         })
-  //         .then(articleResult => {
-  //           const copy = state[action.category].articles.splice(0).concat(articleResult);
-  //           ctx.patchState({
-  //             [action.category]: {
-  //               ...state[action.category],
-  //               articles: this.removeDuplicateTitles(copy),
-  //               clientDataLoaded: true
-  //             }
-  //           });
-  //         })
-  //         .then(_ => {
-  //           this.log(`${action.category} locally loaded`);
-  //         });
-  //     }).unsubscribe();
-  //   }
-
-  // }
 
     /**
    * Handle Http operation that failed.
@@ -299,11 +264,16 @@ export class NewsState {
           userMessage = 'There was a problem with the news server, please try again later';
           break;
 
+        case 0 :
+          userMessage = 'offline';
+          break;
+
         default :
-        userMessage = 'Something broke';
+        console.log(error);
+        userMessage = `Fetch error: ${error.statusText}`;
       }
       if ( userMessage ) {
-       this.log(userMessage);
+       this.error(userMessage);
       }
 
       return of(result as T);
@@ -311,14 +281,12 @@ export class NewsState {
   }
 
   private log(message: string) {
-    this.store.dispatch(new AddLog('NewsService: ', message));
-  }
-  private addAnchorText(articles: Article[]) {
-    return articles.map(article => {
-      return article.anchorText = encodeURIComponent(article.title);
-    });
+    this.store.dispatch(new AddMessage('NewsService', message));
   }
 
+  private error(message: string) {
+    this.store.dispatch(new AddError('NewsService', message));
+  }
 
   private  removeDuplicateTitles(articles: Article[]): Article[] {
     const articleMap = new Map ();
@@ -330,35 +298,17 @@ export class NewsState {
   }
 
   private addNewsFromClient(category, regFilter) {
-    // const state = ctx.getState();
-    // if (!state[action.category].clientDataLoaded) {
-      // return this.filters.subscribe(result => {
-       return this.localDb.getData(stringToCategory(category))
-        .then(news => {
-          // const regFilter = new RegExp(Array.from(result.listOfFilters).join('|'), 'i');
-          const filteredNews = news.filter(article => article.title && article.description
-            ? !(article.title.match(regFilter) || article.description.match(regFilter))
-            : false)
-            .map(article => {
-              article.anchorText = encodeURIComponent(article.title);
-              return article;
-            });
-            return filteredNews;
-          });
-          // .then(articleResult => {
-          //   const copy = state[action.category].articles.splice(0).concat(articleResult);
-          //   ctx.patchState({
-          //     [action.category]: {
-          //       ...state[action.category],
-          //       articles: this.removeDuplicateTitles(copy),
-          //       clientDataLoaded: true
-          //     }
-          //   });
-          // })
-          // .then(_ => {
-          //   this.log(`${action.category} locally loaded`);
-          // });
-      // }).unsubscribe();
-    }
+    return this.localDb.getData(stringToCategory(category))
+    .then(news => {
+      const filteredNews = news.filter(article => article.title && article.description
+        ? !(article.title.match(regFilter) || article.description.match(regFilter))
+        : false)
+        .map(article => {
+          article.anchorText = encodeURIComponent(article.title);
+          return article;
+        });
+        return filteredNews;
+      });
+  }
 }
 

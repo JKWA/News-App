@@ -1,5 +1,5 @@
 import {Store, State, Action, StateContext, Selector } from '@ngxs/store';
-import { AddLog } from './state.log';
+import { AddMessage, CurrentState, NewState } from './state.log';
 
 export enum Category {
     Business = 'business',
@@ -192,12 +192,20 @@ export class CategoryState {
     return stringToCategory(state.setCategory);
   }
 
+  @Selector() static categories(state: CategoryStateModel): Set<Category> {
+    return state.categories;
+  }
+
   constructor(
     private store: Store
   ) { }
 
   @Action( AddCategory)
   addCategory(ctx: StateContext<CategoryStateModel>, action: AddCategory) {
+
+    this.store.dispatch(new AddMessage('Category', `adding ${action.categoryToAdd}`));
+    this.store.dispatch(new CurrentState(ctx.getState()));
+
     const state = ctx.getState();
     state.categories.add(action.categoryToAdd);
     window.localStorage.setItem('categories', Array.from(state.categories).join());
@@ -206,12 +214,15 @@ export class CategoryState {
       ...state,
       categories: state.categories
     });
-    this.store.dispatch(new AddLog('Category: ', `added ${action.categoryToAdd}`));
+    this.store.dispatch(new NewState('Category', ctx.getState()));
+
   }
 
   @Action(RemoveCategory)
   removeCategory(ctx: StateContext<CategoryStateModel>, action: RemoveCategory) {
-    // console.log('DELETE: ' + action.categoryToRemove);
+
+    this.store.dispatch(new AddMessage('Category', `removing ${action.categoryToRemove}`));
+    this.store.dispatch(new CurrentState(ctx.getState()));
 
     const state = ctx.getState();
     state.categories.delete(action.categoryToRemove);
@@ -221,12 +232,16 @@ export class CategoryState {
       ...state,
       categories: state.categories
     });
-    this.store.dispatch(new AddLog('Category: ', `removed ${action.categoryToRemove}`));
+    this.store.dispatch(new NewState('Category', ctx.getState()));
+
   }
 
   @Action( SetCategory )
   setCategoryItem(ctx: StateContext<CategoryStateModel>, action: SetCategory) {
-    // console.log('SET: ' + action.categoryToSet);
+
+    this.store.dispatch(new AddMessage('Category', `changing view to ${action.categoryToSet}`));
+    this.store.dispatch(new CurrentState(ctx.getState()));
+
     const state = ctx.getState();
     window.localStorage.setItem('setCategory', action.categoryToSet);
 
@@ -234,8 +249,7 @@ export class CategoryState {
       ...state,
       setCategory: action.categoryToSet
     });
-    this.store.dispatch(new AddLog('Category: ', `viewing ${action.categoryToSet}`));
-
+    this.store.dispatch(new NewState('Category', ctx.getState()));
   }
 
 }

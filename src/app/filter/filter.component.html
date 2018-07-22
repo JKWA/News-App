@@ -13,7 +13,7 @@
   <h2>Filters</h2>
   <div fxLayout="row">
     <mat-form-field>
-      <input matInput [(ngModel)]="newFilter" placeholder="Filter">
+      <input matInput [(ngModel)]="newFilter" (keyup)="watchForEnter($event)" placeholder="Filter">
     </mat-form-field>
     <button (click) = "addFilter()" mat-stroked-button>Add</button>
   </div>
