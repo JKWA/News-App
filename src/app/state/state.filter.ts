@@ -2,8 +2,14 @@ import {Store, State, Action, StateContext } from '@ngxs/store';
 import { AddMessage, CurrentState, NewState } from './state.log';
 
 
+// TODO add filter view for just the list of filters and update filter component
+
 export type Filter = string;
 
+/**
+   * Add filter
+   * @param fliter - filter to add
+   */
 export class AddFilter {
   static readonly type = 'AddFilter';
   constructor(
@@ -11,6 +17,10 @@ export class AddFilter {
   ) {}
 }
 
+/**
+   * Remove filter
+   * @param fliter - filter to remove
+   */
 export class RemoveFilter {
   static readonly type = 'RemoveFilter';
   constructor(

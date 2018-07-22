@@ -47,6 +47,9 @@ export class NewsComponent implements OnInit {
     this.tabSelected = found.tabIndex;
   }
 
+  /**
+   * observes category and reflects in tabs
+   */
   private setCategories() {
     this.categories.subscribe(result => {
       const tabs = [];
@@ -60,6 +63,10 @@ export class NewsComponent implements OnInit {
     }).unsubscribe();
   }
 
+/**
+ * watch when tab changes and reflect to category state
+ * @param event - the event from template
+ */
   public tabChanged(event) {
     const found = this.tabs.find(tab => tab.tabIndex === event);
     this.store.dispatch(new SetCategory(stringToCategory(found.id)));

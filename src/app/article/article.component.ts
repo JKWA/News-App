@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Article } from '../article';
-import { Store, Action, Select } from '@ngxs/store';
+import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { FilterStateModel, FilterState } from '../state/state.filter';
 import { NewsStateModel, NewsState, AddNews } from '../state/state.news';
@@ -48,6 +48,10 @@ export class ArticleComponent implements OnInit {
     });
   }
 
+/**
+ * watch scroll event and trigger for more articles when reaching bottom
+ * @param event - the event from template
+ */
   public handleScroll(event: ScrollEvent) {
 
     if (event.isReachingBottom
@@ -64,11 +68,18 @@ export class ArticleComponent implements OnInit {
 
   }
 
+  /**
+ * set to last viewed article and forward to url
+ * @param event - the event from template
+ */
   public gotToArticle (article) {
     window.localStorage.setItem('lastReadArticle', article.anchorText);
     window.location.href = article.url;
   }
 
+  /**
+ * if article id matches last viewed, then sroll to this position
+ */
   private scrollToLastViewed() {
     const anchor = window.localStorage.getItem('lastReadArticle');
     if (anchor) {

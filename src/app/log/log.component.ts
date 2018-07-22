@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-// import { LogService } from '../service/log.service';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Log, LogState, LogStateModel } from '../state/state.log';

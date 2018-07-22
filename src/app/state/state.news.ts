@@ -18,6 +18,12 @@ class NewsResponse {
   articles: Article[];
 }
 
+ /**
+   * Get data by category.
+   * Let the app continue.
+   * @param category - name of the operation that failed
+   * @param initial - boolean is initial fetch of this data
+   */
 export class AddNews {
   static readonly type = 'Adding News';
   constructor(
@@ -26,12 +32,6 @@ export class AddNews {
   ) {}
 }
 
-export class AddLocalNews {
-  static readonly type = 'Adding News';
-  constructor(
-    public category: string,
-  ) {}
-}
 
   interface NewsCategoryModel {
     retrieving: boolean;
@@ -50,7 +50,6 @@ export class AddLocalNews {
     sports: NewsCategoryModel;
     technology: NewsCategoryModel;
   }
-
 
   const defaultValue: NewsCategoryModel = {
     retrieving: false,
@@ -240,6 +239,7 @@ export class NewsState {
    * Let the app continue.
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
+   * @return empty array for the article value
    */
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
@@ -280,14 +280,27 @@ export class NewsState {
     };
   }
 
+   /**
+   * Log message when in dev mode.
+   * @param message - log message
+   */
   private log(message: string) {
     this.store.dispatch(new AddMessage('NewsService', message));
   }
 
+   /**
+   * Log error when in dev mode.
+   * @param message - log message
+   */
   private error(message: string) {
     this.store.dispatch(new AddError('NewsService', message));
   }
 
+   /**
+   * Unduplicate articles by title, important to keep the article anchor text unique
+   * @param articles - array of articles
+   * @return articles - array of unduplicated articles
+   */
   private  removeDuplicateTitles(articles: Article[]): Article[] {
     const articleMap = new Map ();
     const deDupped = [];
@@ -297,6 +310,12 @@ export class NewsState {
     return deDupped;
   }
 
+   /**
+   * Get articles from indexed db.
+   * @param category - enum category
+   * @param regFilter - observable regular expression representing all filters
+   * @return observable array of articles from indexed db
+   */
   private addNewsFromClient(category, regFilter) {
     return this.localDb.getData(stringToCategory(category))
     .then(news => {

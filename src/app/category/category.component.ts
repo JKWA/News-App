@@ -12,7 +12,6 @@ import { Observable } from 'rxjs';
 
 export class CategoryComponent implements OnInit {
     allCategories: CategoryItem[];
-    tabs: CategoryObject[] = [];
     @Select(NewsState) stateNews: Observable<NewsStateModel[]>;
     @Select(CategoryState) tabCategories: Observable<Set<Category>>;
 
@@ -29,10 +28,13 @@ export class CategoryComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.setCategories(this.tabCategories);
     this.watchCat(this.tabCategories);
 }
 
+ /**
+ * observe category state and set toggles
+ * @param categories - set of categories enums
+ */
   watchCat(categories) {
     categories.subscribe(result => {
 
@@ -46,16 +48,12 @@ export class CategoryComponent implements OnInit {
     });
   }
 
-  setCategories(categories) {
-    categories.subscribe(result => {
-      const catArray: CategoryObject[] = [];
-      result.categories.forEach(category => {
-        catArray.push(categoryToObject(category));
-      });
-      this.tabs = Array.from(new Set(catArray));
-    });
-  }
 
+/**
+ * watch category toggles and update category state
+ * @param category - category string
+ * @param checked - get checked from event
+ */
   onClick(category: Category, {checked}) {
 
     if ( checked ) {

@@ -4,6 +4,11 @@ import * as moment from 'moment';
 
 export type Filter = string;
 
+ /**
+   * Add log message for dev mode
+   * @param location - service or component logging
+   * @param message - message to log
+   */
 export class AddMessage {
   static readonly type = 'AddMessage';
   constructor(
@@ -13,6 +18,11 @@ export class AddMessage {
   }
 }
 
+ /**
+   * Add log error for dev mode
+   * @param location - service or component logging
+   * @param message - message to log
+   */
 export class AddError {
   static readonly type = 'AddError';
   constructor(
@@ -22,6 +32,10 @@ export class AddError {
   }
 }
 
+ /**
+   * Add console log the current state when in dev mode
+   * @param state - the state
+   */
 export class CurrentState {
   static readonly type = 'CurrentState';
   constructor(
@@ -30,6 +44,10 @@ export class CurrentState {
   }
 }
 
+/**
+   * Add console log and log the next state when in dev mode
+   * @param state - the state
+   */
 export class NewState {
   static readonly type = 'NewState';
   constructor(
@@ -39,8 +57,9 @@ export class NewState {
   }
 }
 
-
-
+/**
+   * Removes application logs
+   */
 export class ClearLog {
   static readonly type = 'ClearLog';
   constructor() {}

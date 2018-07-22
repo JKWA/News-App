@@ -11,6 +11,11 @@ export enum Category {
     Technology = 'technology',
 }
 
+/**
+   * transforms a string to a category enum
+   * @param cat - the cateogy string
+   * @return category enum, defaults to General
+   */
 export function stringToCategory(cat: string): Category {
   let returnCat;
 
@@ -44,6 +49,11 @@ export function stringToCategory(cat: string): Category {
 
 }
 
+/**
+   * transforms a comma seperated string to a set of category enums
+   * @param cat - cateogy string seperated by commas
+   * @return set of category enums, each defaults to General
+   */
 export function stringToCategories(cat: string): Set<Category> {
     const categorySet = new Set();
     cat.split(',').map(category => {
@@ -81,6 +91,12 @@ export function stringToCategories(cat: string): Set<Category> {
     display: string;
     id: string;
   }
+
+  /**
+   * transforms a category enum to an object with helpful values
+   * @param category - the cateogy enum
+   * @return object with display and id values, defuaults to General values
+   */
 
   export function categoryToObject(category: Category): CategoryObject {
     let catObj;
@@ -143,7 +159,10 @@ export function stringToCategories(cat: string): Set<Category> {
   }
 
 
-
+/**
+ * adds category to possibly be displayed
+ * @param category - category enum
+ */
 export class AddCategory {
   static readonly type = 'AddCategory';
   constructor(
@@ -151,6 +170,10 @@ export class AddCategory {
   ) {}
 }
 
+/**
+ * removes category to possibly be displayed
+ * @param category - category enum
+ */
 export class RemoveCategory {
   static readonly type = 'RemoveCategory';
   constructor(
@@ -158,6 +181,10 @@ export class RemoveCategory {
   ) {}
 }
 
+/**
+ * sets category to be displayed
+ * @param category - category enum
+ */
 export class SetCategory {
   static readonly type = 'SetCategory';
   constructor(
