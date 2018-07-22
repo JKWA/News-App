@@ -1,12 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Article } from '../article';
-import { Store, Select } from '@ngxs/store';
+import { Store, Action, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { FilterStateModel, FilterState } from '../state/state.filter';
 import { NewsStateModel, NewsState, AddNews } from '../state/state.news';
 import { CategoryState, Category } from '../state/state.category';
 import { ScrollEvent } from 'ngx-scroll-event';
-
+import { AddMessage } from '../state/state.log';
 
 @Component({
   selector: 'app-article',
@@ -78,6 +78,7 @@ export class ArticleComponent implements OnInit {
           if (this.category === this.tabViewed) {
             article.scrollIntoView({behavior: 'smooth'});
             this.scrolledToInititalView = false;
+            this.store.dispatch(new AddMessage('Article Component', 'scrolled to last viewed'));
           }
         }
       }
