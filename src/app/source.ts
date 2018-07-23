@@ -1,6 +1,6 @@
 
 
-import {Category} from './state/state.category';
+import {Category} from './category.enum';
 
 export function getSources (category: Category) {
     return sourceData().filter(item => item.category === category);

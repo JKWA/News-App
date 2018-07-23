@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Article } from '../article';
-import { Category, categoryToObject } from '../state/state.category';
+import { categoryToObject } from '../category.function';
+import { Category } from '../category.enum';
 import * as moment from 'moment';
 
 
@@ -14,7 +15,6 @@ export class LocalDbService {
   setData(category: Category, articles: Article[]) {
     return new Promise<any>((resolve, reject) => {
       const indexedDB = window.indexedDB;
-      // console.log('setting data');
 
       if (! indexedDB ) {
         reject('No index database available');
@@ -105,7 +105,6 @@ export class LocalDbService {
         const store = tx.objectStore('ArticleObjectStore');
         const index = store.index('CategoryIndex');
         const result: Article[] = [];
-        // console.log(categoryToObject(category).id);
         index.openCursor(categoryToObject(category).id)
           .onsuccess = event => {
             const cursor = event.target.result;
@@ -170,7 +169,6 @@ export class LocalDbService {
           .onsuccess = event => {
             const cursor = event.target.result;
             if (cursor) {
-              // console.log(cursor.value.timestamp);
               if (!cursor.value.timestamp) {
                 result.push(cursor.primaryKey);
 
@@ -224,7 +222,6 @@ export class LocalDbService {
 
         store.delete(primaryKey)
           .onsuccess = (_) => {
-            // console.log(`DELETED: ${primaryKey}`);
             resolve(primaryKey);
           };
 

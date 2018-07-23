@@ -1,7 +1,6 @@
 import {Store, Selector, State, Action, StateContext } from '@ngxs/store';
 import { AddMessage, CurrentState, NewState } from './state.log';
 
-
 // TODO add filter view for just the list of filters and update filter component
 
 export type Filter = string;

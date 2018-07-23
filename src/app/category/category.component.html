@@ -11,16 +11,15 @@
 
   <h2>Categories</h2>
 
-  <div *ngFor="let category of allCategories">
+  <div *ngFor="let category of allCategories | async">
       <div class="button-wrapper">
         <mat-slide-toggle 
           id="{{category.id}}" 
-          checked="{{category.checked}}"  
-          (change)="onClick(category.category, $event)">
+          checked="{{category.selected}}"  
+          (change)="onClick(category, $event)">
           {{category.display}}
         </mat-slide-toggle> 
       </div>
   </div>
-  
 </div>
 

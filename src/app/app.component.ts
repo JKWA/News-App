@@ -1,9 +1,10 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { CategoryState, SetCategory, CategoryStateModel, categoryToObject, stringToCategory, Category } from './state/state.category';
+import { CategoryState } from './state/state.category';
+import { CategoryItem } from './category.function';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { AddNews, AddLocalNews } from './state/state.news';
+import { AddNews } from './state/state.news';
 
 
 @Component({
@@ -13,7 +14,7 @@ import { AddNews, AddLocalNews } from './state/state.news';
 })
 export class AppComponent implements OnInit {
   title = 'app';
-  @Select(CategoryState.categories) categories: Observable<Set<Category>>;
+  @Select(CategoryState.allCategories) categories: Observable<Map<string, CategoryItem>>;
 
   constructor(
     public snackBar: MatSnackBar,
@@ -23,7 +24,9 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.categories.subscribe(result => {
       result.forEach( category => {
-        this.store.dispatch(new AddNews(category, false));
+        if ( category.selected ) {
+        this.store.dispatch(new AddNews(category.id, false));
+        }
       });
     }).unsubscribe();
   }

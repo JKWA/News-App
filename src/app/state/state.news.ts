@@ -1,4 +1,3 @@
-import { isDevMode } from '@angular/core';
 import { State, Selector, Action, StateContext } from '@ngxs/store';
 ​import { Article } from '../article';
 import { FilterStateModel, FilterState } from './state.filter';
@@ -6,7 +5,7 @@ import { AddMessage, AddError, CurrentState, NewState } from './state.log';
 import { LocalDbService } from '../service/local-db.service';
 import { Store, Select } from '@ngxs/store';
 import { Observable, of } from 'rxjs';
-import { stringToCategory} from './state.category';
+import { stringToCategory} from '../category.function';
 import { getSources } from '../source';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, tap, filter } from 'rxjs/operators';
@@ -180,10 +179,12 @@ export class NewsState {
         .then(result => {
           const clientState = ctx.getState();
           if (!clientState[action.category].clientDataLoaded) {
+
+            this.log(`fetching ${action.category} from indexed DB`);
             this.addNewsFromClient(action.category, regFilter)
             .then(localData => {
-              this.log(`fetching ${action.category} from indexed DB`);
 
+              this.log(`received ${action.category} from indexed DB`);
               this.store.dispatch(new CurrentState(ctx.getState()));
 
               const copy = clientState[action.category].articles.splice(0).concat(localData);

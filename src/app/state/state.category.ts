@@ -1,174 +1,19 @@
 import {Store, State, Action, StateContext, Selector } from '@ngxs/store';
 import { AddMessage, CurrentState, NewState } from './state.log';
+import { CategoryItem, stringToCategories, stringToCategory, createAllCategories } from '../category.function';
+import { Category } from '../category.enum';
 
-export enum Category {
-    Business = 'business',
-    Entertainment = 'entertainment',
-    General = 'general',
-    Health = 'health',
-    Science = 'science',
-    Sports = 'sports',
-    Technology = 'technology',
-}
-
+// TODO: if set category missing selected should not
 /**
-   * transforms a string to a category enum
-   * @param cat - the cateogy string
-   * @return category enum, defaults to General
+   * adds category to possibly be displayed
+   * @param category - category enum
    */
-export function stringToCategory(cat: string): Category {
-  let returnCat;
-
-    switch (cat) {
-      case 'business' :
-        returnCat = Category.Business;
-        break;
-      case 'entertainment' :
-        returnCat = Category.Entertainment;
-        break;
-      case 'general' :
-        returnCat = Category.General;
-        break;
-      case 'health' :
-        returnCat = Category.Health;
-        break;
-      case 'science' :
-        returnCat = Category.Science;
-        break;
-      case 'sports' :
-        returnCat = Category.Sports;
-      break;
-        case 'technology' :
-        returnCat = Category.Technology;
-        break;
-      default :
-      returnCat = Category.General;
-    }
-
-  return returnCat;
-
-}
-
-/**
-   * transforms a comma seperated string to a set of category enums
-   * @param cat - cateogy string seperated by commas
-   * @return set of category enums, each defaults to General
-   */
-export function stringToCategories(cat: string): Set<Category> {
-    const categorySet = new Set();
-    cat.split(',').map(category => {
-      switch (category) {
-        case 'business' :
-          categorySet.add(Category.Business);
-          break;
-        case 'entertainment' :
-          categorySet.add(Category.Entertainment);
-          break;
-        case 'general' :
-          categorySet.add(Category.General);
-          break;
-        case 'health' :
-          categorySet.add(Category.Health);
-          break;
-        case 'science' :
-          categorySet.add(Category.Science);
-          break;
-        case 'sports' :
-          categorySet.add(Category.Sports);
-        break;
-          case 'technology' :
-          categorySet.add(Category.Technology);
-          break;
-        default :
-        categorySet.add(Category.General);
-      }
-    });
-    return categorySet;
-
+  export class AddCategory {
+    static readonly type = 'AddCategory';
+    constructor(
+      public categoryToAdd: CategoryItem
+    ) {}
   }
-
-  export interface CategoryObject {
-    display: string;
-    id: string;
-  }
-
-  /**
-   * transforms a category enum to an object with helpful values
-   * @param category - the cateogy enum
-   * @return object with display and id values, defuaults to General values
-   */
-
-  export function categoryToObject(category: Category): CategoryObject {
-    let catObj;
-    switch (category) {
-      case Category.Science :
-        catObj = {
-          display: 'Science',
-          id: 'science'
-        };
-        break;
-        case Category.Business :
-          catObj = {
-            display: 'Business',
-            id: 'business'
-          };
-          break;
-        case Category.Entertainment :
-        catObj = {
-          display: 'Entertainment',
-          id: 'entertainment'
-        };
-        break;
-        case Category.General :
-        catObj = {
-          display: 'General',
-          id: 'general'
-        };
-        break;
-        case Category.Health :
-        catObj = {
-          display: 'Health',
-          id: 'health'
-        };
-        break;
-      case Category.Science :
-        catObj = {
-          display: 'Science',
-          id: 'science'
-        };
-        break;
-      case Category.Sports :
-        catObj = {
-          display: 'Sports',
-          id: 'sports'
-        };
-        break;
-      case Category.Technology :
-        catObj = {
-          display: 'Technology',
-          id: 'technology'
-        };
-        break;
-      default :
-      catObj = {
-        display: 'Other',
-        id: 'general'
-      };
-    }
-    return catObj;
-  }
-
-
-/**
- * adds category to possibly be displayed
- * @param category - category enum
- */
-export class AddCategory {
-  static readonly type = 'AddCategory';
-  constructor(
-    public categoryToAdd: Category
-  ) {}
-}
 
 /**
  * removes category to possibly be displayed
@@ -177,7 +22,7 @@ export class AddCategory {
 export class RemoveCategory {
   static readonly type = 'RemoveCategory';
   constructor(
-    public categoryToRemove: Category
+    public categoryToRemove: CategoryItem
   ) {}
 }
 
@@ -195,6 +40,7 @@ export class SetCategory {
 export interface CategoryStateModel {
   categories: Set<Category>;
   setCategory: Category;
+  allCategories: Map<string, CategoryItem>;
 }
 
 @State<CategoryStateModel>({
@@ -209,18 +55,36 @@ export interface CategoryStateModel {
       ]),
     setCategory: (window.localStorage.getItem('setCategory'))
       ? stringToCategory(window.localStorage.getItem('setCategory'))
-      : Category.General
+      : Category.General,
+    allCategories: createAllCategories()
   }
 })
 
 export class CategoryState {
 
-  @Selector() static setCategory(state: CategoryStateModel): Category {
-    return stringToCategory(state.setCategory);
+  @Selector() static setCategory(state: CategoryStateModel): CategoryItem {
+
+    const categoryArray = Array.from(state.allCategories.values());
+    const find = categoryArray.find(category => category.id === state.setCategory);
+    return find ? find : categoryArray[0];
   }
 
   @Selector() static categories(state: CategoryStateModel): Set<Category> {
     return state.categories;
+  }
+
+  @Selector() static allCategories(state: CategoryStateModel): Set<CategoryItem> {
+    return new Set(Array.from(state.allCategories.values()));
+  }
+
+  @Selector() static selectedCategories(state: CategoryStateModel): Set<CategoryItem> {
+    const categoryArray = Array.from(state.allCategories.values());
+    const filtered = categoryArray.filter(category => category.selected);
+    const mapped = filtered.map((item, tabIndex) => {
+      item.tabIndex = tabIndex;
+      return item;
+    });
+    return new Set(mapped);
   }
 
   constructor(
@@ -230,16 +94,18 @@ export class CategoryState {
   @Action( AddCategory)
   addCategory(ctx: StateContext<CategoryStateModel>, action: AddCategory) {
 
-    this.store.dispatch(new AddMessage('Category', `adding ${action.categoryToAdd}`));
+    this.store.dispatch(new AddMessage('Category', `adding ${action.categoryToAdd.display}`));
     this.store.dispatch(new CurrentState(ctx.getState()));
 
     const state = ctx.getState();
-    state.categories.add(action.categoryToAdd);
-    window.localStorage.setItem('categories', Array.from(state.categories).join());
+    const copy = new Map(state.allCategories);
+    copy.set(action.categoryToAdd.id, Object.assign({}, copy.get(action.categoryToAdd.id), {selected: true}));
 
-    ctx.setState({
-      ...state,
-      categories: state.categories
+    const allSelected: string[] = Array.from(copy.values()).filter(item => item.selected).map(item => item.id);
+    window.localStorage.setItem('categories', Array.from(allSelected).join());
+
+    ctx.patchState({
+      allCategories: copy
     });
     this.store.dispatch(new NewState('Category', ctx.getState()));
 
@@ -248,16 +114,19 @@ export class CategoryState {
   @Action(RemoveCategory)
   removeCategory(ctx: StateContext<CategoryStateModel>, action: RemoveCategory) {
 
-    this.store.dispatch(new AddMessage('Category', `removing ${action.categoryToRemove}`));
+    this.store.dispatch(new AddMessage('Category', `removing ${action.categoryToRemove.display}`));
     this.store.dispatch(new CurrentState(ctx.getState()));
 
     const state = ctx.getState();
-    state.categories.delete(action.categoryToRemove);
-    window.localStorage.setItem('categories', Array.from(state.categories).join());
+    const copy = new Map(state.allCategories);
+    copy.set(action.categoryToRemove.id, Object.assign({}, copy.get(action.categoryToRemove.id), {selected: false}));
 
-    ctx.setState({
-      ...state,
-      categories: state.categories
+
+    const allSelected: string[] = Array.from(copy.values()).filter(item => item.selected).map(item => item.id);
+    window.localStorage.setItem('categories', Array.from(allSelected).join());
+
+    ctx.patchState({
+      allCategories: copy
     });
     this.store.dispatch(new NewState('Category', ctx.getState()));
 

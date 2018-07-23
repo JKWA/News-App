@@ -1,23 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { Log, LogState, LogStateModel } from '../state/state.log';
+import { Log, LogState , ClearLog} from '../state/state.log';
 
 @Component({
   selector: 'app-log',
   templateUrl: './log.component.html',
   styleUrls: ['./log.component.css']
 })
-export class LogComponent implements OnInit {
+
+export class LogComponent {
   logs: Log[] = [];
-  @Select(LogState) logState: Observable<LogStateModel>;
+  @Select(LogState.allMessageLogs) allLogs: Observable<Set<Log>>;
+  displayedColumns: string[] = [ 'location', 'message' ];
 
   constructor(private store: Store) {}
 
-  ngOnInit() {
-    this.logState.subscribe( result => {
-      this.logs = result.logs;
-    });
+  clearMessages() {
+    console.log('clear');
+    this.store.dispatch(new ClearLog());
   }
-
 }

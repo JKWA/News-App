@@ -1,13 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { CategoryState, SetCategory, CategoryStateModel, categoryToObject, stringToCategory } from '../state/state.category';
+import { CategoryState, SetCategory } from '../state/state.category';
+import { stringToCategory, CategoryItem } from '../category.function';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-
-interface TabObject {
-  display: string;
-  id: string;
-  tabIndex: number;
-}
 
 @Component({
   selector: 'app-news',
@@ -17,59 +12,48 @@ interface TabObject {
 
 export class NewsComponent implements OnInit {
 
-  @Select(CategoryState) categories: Observable<CategoryStateModel>;
-  tabs: TabObject[] = [];
-  standalone = false;
+  @Select(CategoryState.setCategory) setCategory: Observable<CategoryItem>;
+  @Select(CategoryState.selectedCategories) categories: Observable<Set<CategoryItem>>;
+
   tabSelected = 0;
 
   constructor(
     private store: Store,
-
   ) { }
 
   ngOnInit() {
-    let found;
-    this.setCategories();
-
-    // iOS standalone does not read route, need to save route state locally
-    this.standalone = window.matchMedia('(display-mode: standalone)').matches;
-
-    this.categories.subscribe( category => {
-      found = this.tabs.find(tab => {
-        return tab.id === category.setCategory;
-      });
-    }).unsubscribe();
-
-    if ( !found ) { // default to first tab if problem
-      found = {tabIndex: 0, id: 'general', display: 'General'};
-    }
-
-    this.tabSelected = found.tabIndex;
+    this.setLastStateOfCategoryViewed();
   }
 
   /**
-   * observes category and reflects in tabs
+   * observes tab categories and selected category and sets tab index
    */
-  private setCategories() {
-    this.categories.subscribe(result => {
-      const tabs = [];
-
-      let index = -1; // is this best?
-      result.categories.forEach((category) => {
-        index++;
-        tabs.push({...categoryToObject(category), tabIndex: index });
-      });
-      this.tabs = Array.from(new Set(tabs));
+  setLastStateOfCategoryViewed(): void {
+    let found;
+    this.setCategory.subscribe(category => {
+      this.categories.subscribe( categories => {
+        found = Array.from(categories).find( cat => cat.id === category.id);
+      }).unsubscribe();
     }).unsubscribe();
+    if (found) {
+      this.tabSelected = found.tabIndex;
+    }
   }
+
 
 /**
  * watch when tab changes and reflect to category state
  * @param event - the event from template
  */
   public tabChanged(event) {
-    const found = this.tabs.find(tab => tab.tabIndex === event);
-    this.store.dispatch(new SetCategory(stringToCategory(found.id)));
+    let found;
+    this.categories.subscribe( categories => {
+      found = Array.from(categories).find( category => category.tabIndex === event);
+    }).unsubscribe();
+
+    if ( found ) {
+      this.store.dispatch(new SetCategory(stringToCategory(found.id)));
+    }
   }
 
 }

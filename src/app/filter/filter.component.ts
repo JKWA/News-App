@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AddFilter, RemoveFilter, Filter, FilterState } from '../state/state.filter';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
@@ -18,7 +18,7 @@ export class FilterComponent {
 
 
 /**
- * observe input for enter key, then triggers to add filter
+ * observe input for enter key - trigger add filter
  * @param keyCode - keyCode from event object
  */
   watchForEnter({keyCode}) {
@@ -26,7 +26,6 @@ export class FilterComponent {
       this.addFilter();
     }
   }
-
 
 /**
  * add filter to filter state

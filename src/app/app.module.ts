@@ -16,6 +16,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout';
 import {
   MatToolbarModule,
+  MatTableModule,
   MatButtonModule,
   MatInputModule,
   MatSidenavModule,
@@ -55,6 +56,7 @@ import { FilterComponent } from './filter/filter.component';
     ScrollEventModule,
     LayoutModule,
     MatToolbarModule,
+    MatTableModule,
     MatButtonModule,
     MatInputModule,
     MatSidenavModule,

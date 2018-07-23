@@ -1,5 +1,5 @@
 import { isDevMode } from '@angular/core';
-import { State, Action, StateContext } from '@ngxs/store';
+import { State, Action, StateContext , Selector } from '@ngxs/store';
 import * as moment from 'moment';
 
 export type Filter = string;
@@ -87,6 +87,10 @@ export interface LogStateModel {
 
 export class LogState {
 
+  @Selector() static allMessageLogs(state: LogStateModel): Log[] {
+    return  Array.from(state.logs).filter(log => log.type !== 'state_change');
+  }
+
   @Action(AddMessage)
   addMessage(ctx: StateContext<LogStateModel>, action: AddMessage) {
     const location = action.location;
@@ -103,9 +107,10 @@ export class LogState {
     ctx.patchState({
       logs: copy
     });
-    if ( isDevMode() ) {
+
+    // if ( isDevMode() ) {
       console.log(`%c ${date.format('kk:mm:ss')} - ${location}: ${message}`, 'background: #D35400; color: white');
-    }
+    // }
   }
 
   @Action(AddError)
@@ -125,17 +130,17 @@ export class LogState {
       logs: copy
     });
 
-    if ( isDevMode() ) {
+    // if ( isDevMode() ) {
       console.log(`%c ${date.format('kk:mm:ss')} - ${location}: ${message}`, 'background: red; color: white');
-    }
+    // }
   }
 
   @Action(CurrentState)
   currentState(ctx: StateContext<LogStateModel>, action: CurrentState) {
 
-    if ( isDevMode() ) {
+    // if ( isDevMode() ) {
       console.log(`%c Current state `, 'background: #08298A; color: white', action.state );
-    }
+    // }
     // do not add to log state
 
   }
@@ -143,9 +148,9 @@ export class LogState {
   @Action(NewState)
   newState(ctx: StateContext<LogStateModel>, action: NewState) {
 
-    if ( isDevMode() ) {
+    // if ( isDevMode() ) {
       console.log(`%c New state `, 'background: #088A08; color: white', action.state);
-    }
+    // }
 
     const location = action.location;
     const message = 'state changed';
