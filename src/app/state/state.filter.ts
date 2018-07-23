@@ -1,4 +1,4 @@
-import {Store, State, Action, StateContext } from '@ngxs/store';
+import {Store, Selector, State, Action, StateContext } from '@ngxs/store';
 import { AddMessage, CurrentState, NewState } from './state.log';
 
 
@@ -48,6 +48,10 @@ export class FilterState {
   constructor(
     private store: Store
   ) { }
+
+  @Selector() static allFilters(state: FilterStateModel): Set<Filter> {
+    return state.listOfFilters;
+  }
 
   @Action(AddFilter)
   addFilter(ctx: StateContext<FilterStateModel>, action: AddFilter) {

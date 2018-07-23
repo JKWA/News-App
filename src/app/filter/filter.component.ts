@@ -9,17 +9,13 @@ import { Observable } from 'rxjs';
   styleUrls: ['./filter.component.css']
 })
 
-export class FilterComponent implements OnInit {
+export class FilterComponent {
   newFilter: string;
   filterList: Set<Filter>;
 
-  @Select(FilterState) listOfFilters: Observable<Set<Filter>>;
+  @Select(FilterState.allFilters) filters: Observable<Set<Filter>>;
   constructor(private store: Store)  { }
 
-
-  ngOnInit() {
-    this.setFilters(this.listOfFilters);
-  }
 
 /**
  * observe input for enter key, then triggers to add filter
@@ -31,16 +27,6 @@ export class FilterComponent implements OnInit {
     }
   }
 
-  // TODO update this to sync on template
-/**
- * observe filters from filter state and show on template
- * @param filters - observable filters from filter state
- */
-  setFilters(filters) {
-    filters.subscribe(result => {
-      this.filterList = result.listOfFilters;
-    });
-  }
 
 /**
  * add filter to filter state

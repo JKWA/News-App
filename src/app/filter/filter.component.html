@@ -18,7 +18,7 @@
     <button (click) = "addFilter()" mat-stroked-button>Add</button>
   </div>
 
-  <div *ngFor="let filter of filterList" class="mat-typography" fxLayout="row">
+  <div *ngFor="let filter of filters | async" class="mat-typography" fxLayout="row">
     <h3 class="filter-item">{{filter | uppercase}}</h3>
     <button (click) = "removeFilter(filter)" mat-stroked-button>Delete</button>
   </div>
