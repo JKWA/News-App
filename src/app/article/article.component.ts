@@ -57,7 +57,9 @@ export class ArticleComponent implements OnInit {
                         : false;
               })
               : allArticles;
-           this.scrollToLastViewed();
+          if ( result[this.category].firstLoad ) {
+            this.scrollToLastViewed();
+          }
       });
       this.retrieving = result[this.category].retrieving;
     });
