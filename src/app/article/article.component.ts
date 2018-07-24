@@ -53,7 +53,7 @@ export class ArticleComponent implements OnInit {
             this.articles = filters.size
               ? allArticles.filter(article => {
                   return article.title && article.description
-                        ? !(article.title.match(regFilter) || article.description.match(regFilter))
+                        ? ! (article.title.match(regFilter) || article.description.match(regFilter) || article.source.name.match(regFilter))
                         : false;
               })
               : allArticles;
