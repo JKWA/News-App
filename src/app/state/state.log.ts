@@ -19,7 +19,7 @@ export class AddMessage {
 }
 
  /**
-   * Add log error for dev mode
+   * Add log error and show when in dev mode
    * @param location - service or component logging
    * @param message - message to log
    */
@@ -33,7 +33,7 @@ export class AddError {
 }
 
  /**
-   * Add console log the current state when in dev mode
+   * Add current state and show when in dev mode
    * @param state - the state
    */
 export class CurrentState {
@@ -45,7 +45,7 @@ export class CurrentState {
 }
 
 /**
-   * Add console log and log the next state when in dev mode
+   * Add next state and show when in dev mode
    * @param state - the state
    */
 export class NewState {

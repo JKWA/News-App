@@ -26,7 +26,7 @@ export class NewsComponent implements OnInit {
   }
 
   /**
-   * observes tab categories and selected category and sets tab index
+   * sets inital view of tabs based on last known state
    */
   setLastStateOfCategoryViewed(): void {
     let found;
@@ -42,7 +42,7 @@ export class NewsComponent implements OnInit {
 
 
 /**
- * watch when tab changes and reflect to category state
+ * tab changes are reflected to category state
  * @param event - the event from template
  */
   public tabChanged(event) {

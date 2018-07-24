@@ -13,7 +13,7 @@ import { AddNews } from './state/state.news';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'app';
+  title = 'marty-news';
   @Select(CategoryState.allCategories) categories: Observable<Map<string, CategoryItem>>;
 
   constructor(

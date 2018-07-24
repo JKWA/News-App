@@ -18,9 +18,9 @@ export class CategoryComponent {
     constructor(private store: Store) { }
 
 /**
- * category toggles update category state
+ * changing values from the toggle button updates the category state
  * @param category - category string
- * @param selected - get selected from event
+ * @param {checked} - the checked parmeter from the event
  */
   onClick(category, {checked}) {
 

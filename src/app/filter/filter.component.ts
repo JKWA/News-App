@@ -18,7 +18,7 @@ export class FilterComponent {
 
 
 /**
- * observe input for enter key - trigger add filter
+ * observe key input and trigger addFilter() when "ENTER"
  * @param keyCode - keyCode from event object
  */
   watchForEnter({keyCode}) {

@@ -4,6 +4,7 @@ import { categoryToObject } from '../category.function';
 import { Category } from '../category.enum';
 import * as moment from 'moment';
 
+// TODO - look at changing promises to observables
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,11 @@ import * as moment from 'moment';
 export class LocalDbService {
 
   constructor() { }
-
+/**
+ * set articles to indexed DB
+ * @param category: the category
+ * @param articles: the articles to save
+ */
   setData(category: Category, articles: Article[]) {
     return new Promise<any>((resolve, reject) => {
       const indexedDB = window.indexedDB;
@@ -74,7 +79,12 @@ export class LocalDbService {
   });
   }
 
-
+/**
+ * promise that gets articles from indexed DB by category
+ * @param category: the category
+ * @param articles: the articles to save
+ * @returns promise for articles
+ */
   getData(category: Category) {
     return new Promise<any>((resolve, reject) => {
 
@@ -134,6 +144,12 @@ export class LocalDbService {
     });
   }
 
+  /**
+ * promise that gets old articles
+ * @param category: the category
+ * @returns promise for an array of article keys
+ */
+
   getOldData(category: Category) {
     return new Promise<any>((resolve, reject) => {
 
@@ -190,6 +206,11 @@ export class LocalDbService {
       };
     });
   }
+
+  /**
+ * promise tht removes an article
+ * @param primaryKey: indexed DB key for article
+ */
 
   removeArticle(primaryKey: number) {
     return new Promise<any>((resolve, reject) => {

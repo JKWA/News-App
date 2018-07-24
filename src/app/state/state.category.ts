@@ -3,7 +3,6 @@ import { AddMessage, CurrentState, NewState } from './state.log';
 import { CategoryItem, stringToCategories, stringToCategory, createAllCategories } from '../category.function';
 import { Category } from '../category.enum';
 
-// TODO: if set category missing selected should not
 /**
    * adds category to possibly be displayed
    * @param category - category enum
@@ -42,6 +41,8 @@ export interface CategoryStateModel {
   setCategory: Category;
   allCategories: Map<string, CategoryItem>;
 }
+
+// TODO: remove selectCategory, it has moved to a @Selector
 
 @State<CategoryStateModel>({
   name: 'category',

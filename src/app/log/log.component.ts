@@ -10,12 +10,14 @@ import { Log, LogState , ClearLog} from '../state/state.log';
 })
 
 export class LogComponent {
-  logs: Log[] = [];
   @Select(LogState.allMessageLogs) allLogs: Observable<Set<Log>>;
   displayedColumns: string[] = [ 'location', 'message' ];
 
   constructor(private store: Store) {}
 
+  /**
+ * clear all logs from log state
+ */
   clearMessages() {
     console.log('clear');
     this.store.dispatch(new ClearLog());
