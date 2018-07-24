@@ -1,6 +1,6 @@
 import {Store, State, Action, StateContext, Selector } from '@ngxs/store';
 import { AddMessage, CurrentState, NewState } from './state.log';
-import { CategoryItem, stringToCategories, stringToCategory, createAllCategories } from '../category.function';
+import { CategoryItem, stringToCategory, createAllCategories } from '../category.function';
 import { Category } from '../category.enum';
 
 /**
@@ -37,23 +37,14 @@ export class SetCategory {
 }
 
 export interface CategoryStateModel {
-  categories: Set<Category>;
+  // categories: Set<Category>;
   setCategory: Category;
   allCategories: Map<string, CategoryItem>;
 }
 
-// TODO: remove selectCategory, it has moved to a @Selector
-
 @State<CategoryStateModel>({
   name: 'category',
   defaults: {
-    categories: (window.localStorage.getItem('categories'))
-      ? stringToCategories(window.localStorage.getItem('categories'))
-      : new Set([
-        Category.General,
-        Category.Science,
-        Category.Technology
-      ]),
     setCategory: (window.localStorage.getItem('setCategory'))
       ? stringToCategory(window.localStorage.getItem('setCategory'))
       : Category.General,
@@ -70,22 +61,21 @@ export class CategoryState {
     return find ? find : categoryArray[0];
   }
 
-  @Selector() static categories(state: CategoryStateModel): Set<Category> {
-    return state.categories;
-  }
 
   @Selector() static allCategories(state: CategoryStateModel): Set<CategoryItem> {
     return new Set(Array.from(state.allCategories.values()));
   }
 
   @Selector() static selectedCategories(state: CategoryStateModel): Set<CategoryItem> {
-    const categoryArray = Array.from(state.allCategories.values());
-    const filtered = categoryArray.filter(category => category.selected);
-    const mapped = filtered.map((item, tabIndex) => {
-      item.tabIndex = tabIndex;
-      return item;
-    });
-    return new Set(mapped);
+
+    return new Set(
+      Array.from(state.allCategories.values())
+        .filter(category => category.selected)
+        .map((item, tabIndex) => {
+          item.tabIndex = tabIndex;
+          return item;
+        })
+      );
   }
 
   constructor(

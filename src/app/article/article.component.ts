@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Article } from '../article';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { FilterStateModel, FilterState } from '../state/state.filter';
+import { FilterStateModel, FilterState, Filter } from '../state/state.filter';
 import { NewsStateModel, NewsState, AddNews } from '../state/state.news';
 import { CategoryState } from '../state/state.category';
 import { CategoryItem } from '../category.function';
@@ -20,7 +20,7 @@ import { AddMessage } from '../state/state.log';
 export class ArticleComponent implements OnInit {
 
   @Input() category: string;
-  @Select(FilterState) filters: Observable<FilterStateModel>;
+  @Select(FilterState.allFilters) filters: Observable<Set<Filter>>;
   @Select(NewsState) stateNews: Observable<NewsStateModel[]>;
   @Select(CategoryState.setCategory) setCategory: Observable<CategoryItem>;
 
@@ -37,13 +37,38 @@ export class ArticleComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.setPageData();
+    this.watchCategoryBeingViewed();
+  }
 
+/**
+ * observe and filter articles
+ */
+  setPageData() {
     this.stateNews.subscribe(result => {
-      this.articles = result[this.category].articles;
-      this.retrieving = result[this.category].retrieving;
-      this.scrollToLastViewed();
-    });
+      this.filters.subscribe(filters => {
 
+        const regFilter = new RegExp(Array.from(filters).join('|'), 'i');
+            const allArticles = result[this.category].articles;
+            this.articles = filters.size
+              ? allArticles.filter(article => {
+                  return article.title && article.description
+                        ? !(article.title.match(regFilter) || article.description.match(regFilter))
+                        : false;
+              })
+              : allArticles;
+           this.scrollToLastViewed();
+      });
+      this.retrieving = result[this.category].retrieving;
+    });
+  }
+
+  /**
+ * watch the tab being viewed
+ * used for scrolling event to identify which category should be triggered
+ * to add articles
+ */
+  watchCategoryBeingViewed() {
     this.setCategory.subscribe(category => {
       this.tabViewed = category;
     });

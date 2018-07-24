@@ -8,8 +8,9 @@ import { Observable, of } from 'rxjs';
 import { stringToCategory} from '../category.function';
 import { getSources } from '../source';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, tap, filter } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { getKey } from '../key';
+
 
 class NewsResponse {
   status: string;
@@ -82,10 +83,6 @@ export class NewsState {
   private pageSize = '25';
   private sort = 'publishedAt';
 
-  @Selector() static general(state: NewsStateModel): Article[] {
-    return state.general.articles;
-  }
-
   constructor(
     private store: Store,
     private http: HttpClient,
@@ -111,7 +108,6 @@ export class NewsState {
 
     this.store.dispatch(new NewState('NewsService', ctx.getState()));
 
-
     if ( pageNumber > 5 ) {
       return ;
     }
@@ -127,18 +123,11 @@ export class NewsState {
 
         url += `sources=${sources}&language=${this.language}&sortBy=${this.sort}`;
         url += `&page=${pageNumber < 5 ? pageNumber : 2}&pageSize=${pageNumber < 5 ? this.pageSize : 100}&apiKey=${getKey()}`;
-        const regFilter = new RegExp(Array.from(filterResult.listOfFilters).join('|'), 'i');
 
       this.http.get<NewsResponse>(url)
         .pipe(
           map(response => {
-            const news = response.articles;
-            const filteredNews = news.filter(article => article.title && article.description
-                        ? !(article.title.match(regFilter) || article.description.match(regFilter))
-                        : false);
-            return filterResult.listOfFilters.size
-                    ? filteredNews
-                    : news;
+            return response.articles;
           }),
           map(result => {
             return result.map(article => {
@@ -181,7 +170,7 @@ export class NewsState {
           if (!clientState[action.category].clientDataLoaded) {
 
             this.log(`fetching ${action.category} from indexed DB`);
-            this.addNewsFromClient(action.category, regFilter)
+            this.addNewsFromClient(action.category)
             .then(localData => {
 
               this.log(`received ${action.category} from indexed DB`);
@@ -317,18 +306,8 @@ export class NewsState {
    * @param regFilter - observable regular expression representing all filters
    * @return observable array of articles from indexed db
    */
-  private addNewsFromClient(category, regFilter) {
-    return this.localDb.getData(stringToCategory(category))
-    .then(news => {
-      const filteredNews = news.filter(article => article.title && article.description
-        ? !(article.title.match(regFilter) || article.description.match(regFilter))
-        : false)
-        .map(article => {
-          article.anchorText = encodeURIComponent(article.title);
-          return article;
-        });
-        return filteredNews;
-      });
+  private addNewsFromClient(category) {
+    return this.localDb.getData(stringToCategory(category));
   }
 }
 
