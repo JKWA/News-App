@@ -137,11 +137,9 @@ export class NewsState {
 
           this.log(`received ${action.category} from indexed DB`);
           this.store.dispatch(new CurrentState(ctx.getState()));
-          console.log(`${action.category}: ${localData.length}`);
 
           const copy = clientState[action.category].articles.splice(0).concat(localData);
           const articles = this.removeDuplicateTitles(copy);
-          console.log(`${action.category}: ${articles.length}`);
           ctx.patchState({
             [action.category]: {
               ...clientState[action.category],

@@ -19,7 +19,6 @@ export class LogComponent {
  * clear all logs from log state
  */
   clearMessages() {
-    console.log('clear');
     this.store.dispatch(new ClearLog());
   }
 }
