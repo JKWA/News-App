@@ -7,7 +7,9 @@
                 </div>
         </a>
     </nav>
-    <button (click) = "clearMessages()" mat-stroked-button>{{'Clear Logs' | uppercase}}</button>
+    <button aria-label="Toggle"
+    (click) = "clearMessages()" 
+    mat-stroked-button>{{'Clear Logs' | uppercase}}</button>
 </div>
 <table mat-table [dataSource]="allLogs | async" class="mat-elevation-z2">
 

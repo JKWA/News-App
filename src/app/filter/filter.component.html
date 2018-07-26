@@ -15,12 +15,16 @@
     <mat-form-field>
       <input matInput [(ngModel)]="newFilter" (keyup)="watchForEnter($event)" placeholder="Filter">
     </mat-form-field>
-    <button (click) = "addFilter()" mat-stroked-button>Add</button>
+    <button 
+      aria-label="Add filter"
+      (click) = "addFilter()" mat-stroked-button>Add</button>
   </div>
 
   <div *ngFor="let filter of filters | async" class="mat-typography" fxLayout="row">
     <h3 class="filter-item">{{filter | uppercase}}</h3>
-    <button (click) = "removeFilter(filter)" mat-stroked-button>Delete</button>
+    <button 
+    aria-label="Remove filter"
+    (click) = "removeFilter(filter)" mat-stroked-button>Delete</button>
   </div>
 </div>
 

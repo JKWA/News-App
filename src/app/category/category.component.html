@@ -14,6 +14,7 @@
   <div *ngFor="let category of allCategories | async">
       <div class="button-wrapper">
         <mat-slide-toggle 
+        aria-label="Toggle {{category.display}}"
           id="{{category.id}}" 
           checked="{{category.selected}}"  
           (change)="onClick(category, $event)">
