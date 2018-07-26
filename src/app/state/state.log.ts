@@ -171,7 +171,10 @@ export class LogState {
 
   @Action(ClearLog)
   ClearLog(ctx: StateContext<LogStateModel>, action: ClearLog) {
-    console.log('clearaction');
+    const date: moment.Moment = moment(new Date());
+
+    console.log(`%c ${date.format('kk:mm:ss')} - Log: cleared`, 'background: #D35400; color: white');
+
     ctx.patchState({
       logs: []
     });
