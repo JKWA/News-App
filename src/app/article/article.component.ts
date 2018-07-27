@@ -100,7 +100,7 @@ export class ArticleComponent implements OnInit {
  * @param event - the event from template
  */
   public gotToArticle (article) {
-    window.localStorage.setItem('lastReadArticle', article.anchorText);
+    window.localStorage.setItem('lastReadArticle', article.id);
     window.location.href = article.url;
   }
 

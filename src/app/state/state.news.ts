@@ -120,7 +120,6 @@ export class NewsState {
               firstLoad: false
             }
           });
-          // this.localDb.setData(stringToCategory(action.category), result);
           this.store.dispatch(new NewState('NewsService', ctx.getState()));
           resolve(result);
         });

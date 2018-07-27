@@ -51,7 +51,10 @@ export class NewsDataService {
         }),
         map(result => {
           return result.map(article => {
-              article.anchorText = encodeURIComponent(article.title);
+
+              article.id = encodeURIComponent(article.title);
+
+              // remove photo urls that are not https or that are not formatted correctly
               const expression = /https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
               const regex = new RegExp(expression);
               if ( article.urlToImage ) {
