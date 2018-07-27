@@ -1,5 +1,5 @@
 import {Store, State, Action, StateContext, Selector } from '@ngxs/store';
-import { AddMessage, CurrentState, NewState } from './state.log';
+import { UpdateState } from './state.log';
 import { CategoryItem, stringToCategory, createAllCategories } from '../category.function';
 import { Category } from '../category.enum';
 
@@ -37,7 +37,6 @@ export class SetCategory {
 }
 
 export interface CategoryStateModel {
-  // categories: Set<Category>;
   setCategory: Category;
   allCategories: Map<string, CategoryItem>;
 }
@@ -84,12 +83,9 @@ export class CategoryState {
 
   @Action( AddCategory)
   addCategory(ctx: StateContext<CategoryStateModel>, action: AddCategory) {
+    const currentState = Object.assign({}, ctx.getState());
 
-    this.store.dispatch(new AddMessage('Category', `adding ${action.categoryToAdd.display}`));
-    this.store.dispatch(new CurrentState(ctx.getState()));
-
-    const state = ctx.getState();
-    const copy = new Map(state.allCategories);
+    const copy = new Map(ctx.getState().allCategories);
     copy.set(action.categoryToAdd.id, Object.assign({}, copy.get(action.categoryToAdd.id), {selected: true}));
 
     const allSelected: string[] = Array.from(copy.values()).filter(item => item.selected).map(item => item.id);
@@ -98,15 +94,15 @@ export class CategoryState {
     ctx.patchState({
       allCategories: copy
     });
-    this.store.dispatch(new NewState('Category', ctx.getState()));
+
+    // add to dev log
+    this.store.dispatch(new UpdateState('Category', `adding ${action.categoryToAdd.display}`, currentState, ctx.getState()));
 
   }
 
   @Action(RemoveCategory)
   removeCategory(ctx: StateContext<CategoryStateModel>, action: RemoveCategory) {
-
-    this.store.dispatch(new AddMessage('Category', `removing ${action.categoryToRemove.display}`));
-    this.store.dispatch(new CurrentState(ctx.getState()));
+    const currentState = Object.assign({}, ctx.getState());
 
     const state = ctx.getState();
     const copy = new Map(state.allCategories);
@@ -119,24 +115,25 @@ export class CategoryState {
     ctx.patchState({
       allCategories: copy
     });
-    this.store.dispatch(new NewState('Category', ctx.getState()));
+
+     // add to dev log
+    this.store.dispatch(new UpdateState('Category', `removing ${action.categoryToRemove.display}`, currentState, ctx.getState()));
 
   }
 
   @Action( SetCategory )
   setCategoryItem(ctx: StateContext<CategoryStateModel>, action: SetCategory) {
+    const currentState = Object.assign({}, ctx.getState());
 
-    this.store.dispatch(new AddMessage('Category', `changing view to ${action.categoryToSet}`));
-    this.store.dispatch(new CurrentState(ctx.getState()));
-
-    const state = ctx.getState();
     window.localStorage.setItem('setCategory', action.categoryToSet);
 
-    ctx.setState({
-      ...state,
+    ctx.patchState({
       setCategory: action.categoryToSet
     });
-    this.store.dispatch(new NewState('Category', ctx.getState()));
+
+     // add to dev log
+    this.store.dispatch(new UpdateState('Category', `changing view to ${action.categoryToSet}`, currentState, ctx.getState()));
+
   }
 
 }

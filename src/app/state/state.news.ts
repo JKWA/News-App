@@ -82,7 +82,7 @@ export class NewsState {
     const state = ctx.getState();
     const pageNumber = state[action.category].page;
 
-    // track start of fetch
+    // return value to indicate retrieving
     this.log(`fetching ${action.category} news`);
     this.store.dispatch(new CurrentState(ctx.getState()));
 

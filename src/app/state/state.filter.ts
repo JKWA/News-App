@@ -1,5 +1,5 @@
 import {Store, Selector, State, Action, StateContext } from '@ngxs/store';
-import { AddMessage, CurrentState, NewState } from './state.log';
+import { UpdateState } from './state.log';
 
 // TODO add filter view for just the list of filters and update filter component
 
@@ -54,9 +54,7 @@ export class FilterState {
 
   @Action(AddFilter)
   addFilter(ctx: StateContext<FilterStateModel>, action: AddFilter) {
-
-    this.store.dispatch(new AddMessage('Filter', `add ${action.filterToAdd}`));
-    this.store.dispatch(new CurrentState(ctx.getState()));
+    const currentState = Object.assign({}, ctx.getState());
 
     const state = ctx.getState();
     const copy = new Set(state.listOfFilters);
@@ -68,16 +66,14 @@ export class FilterState {
     ctx.patchState({
       listOfFilters: copy
     });
-
-    this.store.dispatch(new NewState('Filter', ctx.getState()));
+     // add to dev log
+     this.store.dispatch(new UpdateState('Filter', `add ${action.filterToAdd}`, currentState, ctx.getState()));
 
   }
 
   @Action(RemoveFilter)
   removeFilter(ctx: StateContext<FilterStateModel>, action: RemoveFilter) {
-
-    this.store.dispatch(new AddMessage('Filter', `add ${action.filterToRemove}`));
-    this.store.dispatch(new CurrentState(ctx.getState()));
+    const currentState = Object.assign({}, ctx.getState());
 
     const copy = new Set(ctx.getState().listOfFilters);
     copy.delete(action.filterToRemove);
@@ -90,7 +86,9 @@ export class FilterState {
       listOfFilters: copy
     });
 
-    this.store.dispatch(new NewState('Filter', ctx.getState()));
+    // add to dev log
+    this.store.dispatch(new UpdateState('Filter', `remove ${action.filterToRemove}`, currentState, ctx.getState()));
+
   }
 }
 

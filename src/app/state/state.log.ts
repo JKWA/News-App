@@ -36,6 +36,21 @@ export class AddError {
    * Add current state and show when in dev mode
    * @param state - the state
    */
+  export class UpdateState {
+    static readonly type = 'UpdateState';
+    constructor(
+      public location: string,
+      public message: string,
+      public currentState: any,
+      public newState: any,
+    ) {
+    }
+  }
+
+ /**
+   * Add current state and show when in dev mode
+   * @param state - the state
+   */
 export class CurrentState {
   static readonly type = 'CurrentState';
   constructor(
@@ -133,6 +148,31 @@ export class LogState {
     // if ( isDevMode() ) {
       console.log(`%c ${date.format('kk:mm:ss')} - ${location}: ${message}`, 'background: red; color: white');
     // }
+  }
+
+  @Action(UpdateState)
+  updateState(ctx: StateContext<LogStateModel>, action: UpdateState) {
+    const location = action.location;
+    const message = action.message;
+    const state = ctx.getState();
+    const date: moment.Moment = moment(new Date());
+    const type = 'message';
+
+    // flag to turn off console logs in production
+    // if ( isDevMode() ) {
+      console.log(`%c ${date.format('kk:mm:ss')} - ${location}: ${message}`, 'background: #D35400; color: white');
+      console.log(`%c Current state `, 'background: #08298A; color: white', action.currentState );
+      console.log(`%c New state `, 'background: #088A08; color: white', action.newState);
+  // }
+
+    const copy = state.logs.slice(0);
+    copy.push(
+        {location, message, time: date.format('LTS'), type}
+    );
+
+    ctx.patchState({
+      logs: copy
+    });
   }
 
   @Action(CurrentState)
