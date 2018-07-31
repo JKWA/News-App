@@ -20,12 +20,14 @@ export class LocalDbService {
  * @param articles: the articles to save
  */
   setData(category: Category, articles: Article[]) {
-    // return new Promise<any>((resolve, reject) => {
     return new Observable(observer => {
       const indexedDB = window.indexedDB;
 
       if (! indexedDB ) {
-        // reject('No index database available');
+        observer.error({
+          status: 1100,
+          statusText: 'No index database available'
+        });
       }
 
       const open = indexedDB.open('ArticleDatabase', 1);
@@ -49,8 +51,8 @@ export class LocalDbService {
           if ( article.title ) {
             const check = index.get(article.title);
             check.onerror = (error) => {
-              console.log(error);
-              // reject('database error');
+              // console.log(error);
+              observer.error(error);
             };
 
             check.onsuccess = (event) => {
@@ -81,7 +83,7 @@ export class LocalDbService {
 
             };
             check.onerror = (event) => {
-              // reject('database error');
+              observer.error('database error');
             };
           }
         });
@@ -95,18 +97,20 @@ export class LocalDbService {
   }
 
 /**
- * promise that gets articles from indexed DB by category
+ * observable that gets articles from indexed DB by category
  * @param category: the category
  * @param articles: the articles to save
- * @returns promise for articles
+ * @returns observer for articles
  */
   getData(category: Category) {
-    // return new Promise<any>((resolve, reject) => {
     return new Observable(observer => {
       const indexedDB = window.indexedDB;
 
-      if (! indexedDB ) {
-        // reject('No index database available');
+      if ( !indexedDB ) {
+        observer.error({
+          status: 1100,
+          statusText: 'No index database available'
+        });
       }
 
       const open = indexedDB.open('ArticleDatabase', 1);
@@ -121,7 +125,10 @@ export class LocalDbService {
 
       open.onerror = function (error) {
         indexedDB.deleteDatabase('ArticleDatabase');
-        // reject(error);
+        observer.error({
+          status: 1200,
+          statusText: 'Indexed DB could not be opened '
+        });
       };
 
       open.onsuccess = () => {
@@ -151,30 +158,32 @@ export class LocalDbService {
               cursor.continue();
               } else {
                 observer.next(result);
-                observer.complete();
-                  // resolve(result);
               }
           };
         tx.oncomplete = function() {
-            db.close();
+          observer.complete();
+          db.close();
         };
       };
     });
   }
 
   /**
- * promise that gets old articles
+ * observable that gets old articles
  * @param category: the category
- * @returns promise for an array of article keys
+ * @returns observable for an array of article keys
  */
 
-  getOldData(category: Category) {
-    return new Promise<any>((resolve, reject) => {
+  getOldData(category: Category): Observable<number[]> {
+      return new Observable(observer => {
 
       const indexedDB = window.indexedDB;
 
       if (! indexedDB ) {
-        reject('No index database available');
+        observer.error({
+          status: 1100,
+          statusText: 'No index database available'
+        });
       }
 
       const open = indexedDB.open('ArticleDatabase', 1);
@@ -189,7 +198,10 @@ export class LocalDbService {
 
       open.onerror = function (error) {
         indexedDB.deleteDatabase('ArticleDatabase');
-        reject(error);
+        observer.error({
+          status: 1200,
+          statusText: 'Indexed DB could not be opened '
+        });
       };
 
       open.onsuccess = () => {
@@ -212,31 +224,34 @@ export class LocalDbService {
                     result.push(cursor.primaryKey);
                   }
                 }
-
                 cursor.continue();
               } else {
-                  resolve(result);
+                  observer.next(result);
               }
           };
         tx.oncomplete = function() {
-            db.close();
+          observer.complete();
+          db.close();
         };
       };
     });
   }
 
   /**
- * promise tht removes an article
+ * Observable tht removes an article
  * @param primaryKey: indexed DB key for article
  */
 
   removeArticle(primaryKey: number) {
-    return new Promise<any>((resolve, reject) => {
+      return new Observable(observer => {
 
       const indexedDB = window.indexedDB;
 
       if (! indexedDB ) {
-        reject('No index database available');
+        observer.error({
+          status: 1100,
+          statusText: 'No index database available'
+        });
       }
 
       const open = indexedDB.open('ArticleDatabase', 1);
@@ -251,7 +266,10 @@ export class LocalDbService {
 
       open.onerror = function (error) {
         indexedDB.deleteDatabase('ArticleDatabase');
-        reject(error);
+        observer.error({
+          status: 1200,
+          statusText: 'Indexed DB could not be opened '
+        });
       };
 
       open.onsuccess = () => {
@@ -261,11 +279,12 @@ export class LocalDbService {
 
         store.delete(primaryKey)
           .onsuccess = (_) => {
-            resolve(primaryKey);
+            observer.next(primaryKey);
           };
 
         tx.oncomplete = function() {
-            db.close();
+          observer.complete();
+          db.close();
         };
       };
     });

@@ -97,6 +97,7 @@ export class NewsState {
   initialNews(ctx: StateContext<NewsStateModel>, action: AddNews) {
     const state = ctx.getState();
     const pageNumber = state[action.category].page;
+    const category = stringToCategory(action.category);
 
     this.filters.pipe(
       take(1),
@@ -109,9 +110,35 @@ export class NewsState {
           catchError(this.handleError('getNews', [])),
         );
       }),
-      tap( _ => this.addArticlesFromLocalCache(ctx, action.category)),
+      tap( _ => this.localDb.getData(stringToCategory(category))
+        .pipe(
+          map(results => this.updateState(ctx, action.category, results, 'LocalDB')),
+          catchError(this.handleError('getData', []))
+        ).subscribe()
+      ),
       tap(results => this.updateLocalCache(action.category, results)),
-      tap( _ => this.deleteOldCache(ctx, action.category))
+      tap( _ => this.localDb.getOldData(category)
+        .pipe(
+          take(1),
+          map(oldKeysArray => {
+            if ( !window.navigator.onLine ) {
+              return [];
+            }
+            oldKeysArray.map(key => {
+              this.localDb.removeArticle(key)
+              .pipe(
+                take(1)
+              ).subscribe();
+            });
+            return oldKeysArray;
+          }),
+          tap(oldKeysArray => {
+            if ( oldKeysArray.length) {
+               this.store.dispatch(new AddMessage('NewsService', `removed old ${category} news`));
+            }
+          })
+        ).subscribe()
+      )
     ).subscribe();
   }
 
@@ -171,104 +198,60 @@ export class NewsState {
     const copy = oldArticels.splice(0).concat(newArticels);
     return this.removeDuplicateTitles(copy);
 
-
-
-
   }
 
   private updateState(ctx, category, result, service) {
       const state = ctx.getState();
       const copyCurrentState = Object.assign({}, ctx.getState());
-
+      const copy = copyCurrentState[category].articles.splice(0).concat(result);
+      const clientFlag = (copyCurrentState[category].clientDataLoaded)
+        ? true
+        :  service === 'LocalDb' ? true : false;
 
       ctx.patchState({
         [category]: {
         ...state[category],
-        articles: result,
+        articles: this.removeDuplicateTitles(copy),
         page: state[category].page + 1,
         retrieving: false,
-        firstLoad: true
+        firstLoad: true,
+        clientDataLoaded: clientFlag
         }
       });
 
       // send action to dev logs
-      this.store.dispatch(new AddMessage('NewsService', `fetched ${category} news`));
+      this.store.dispatch(new AddMessage(service, `fetched ${category} news`));
       // this.store.dispatch(new UpdateState('NewsService', `fetched ${category} news`, copyCurrentState, ctx.getState()));
 
       return result;
   }
 
 
-  private addArticlesFromLocalCache(ctx, category) {
 
-    const copyCurrentState = Object.assign({}, ctx.getState());
-    this.localDb.getData(stringToCategory(category))
-    .subscribe(localData => {
-
-      const copy = copyCurrentState[category].articles.splice(0).concat(localData);
-
-      ctx.patchState({
-        [category]: {
-          ...copyCurrentState[category],
-          articles: this.removeDuplicateTitles(copy),
-          clientDataLoaded: true
-        }
-      });
-    });
-
-    this.store.dispatch(new AddMessage('Local DB', `fetched ${category} news`));
-
-  }
 
   private updateLocalCache(category, articles) {
     this.localDb.setData(stringToCategory(category), articles).subscribe();
   }
 
 
-  // private mergeWithLocalCacheData(ctx, category, results) {
-  //   const clientState = ctx.getState();
-
-  //     if (!clientState[category].clientDataLoaded) {
-  //       const copyCurrentState = Object.assign({}, ctx.getState());
-
-  //       this.localDb.getData(stringToCategory(category))
-  //       .subscribe(localData => {
-  //         const copy = results.splice(0).concat(localData);
-  //         ctx.patchState({
-  //           [category]: {
-  //             ...clientState[category],
-  //             articles: this.removeDuplicateTitles(copy),
-  //             clientDataLoaded: true
-  //           }
-  //         });
-  //         console.log(ctx.getState());
-
-  //         // send action to dev logs
-  //         this.store.dispatch(new UpdateState('Indexed DB', `fetched ${category}`, copyCurrentState, ctx.getState()));
-
-  //       });
-  //     }
-  // }
-
-
 
   private deleteOldCache(ctx, category) {
     if (window.navigator.onLine) { // if online, then delete old data
-      const deleteState = ctx.getState();
-      if ( deleteState[category].page === 2) {
-        this.localDb.getOldData(stringToCategory(category))
-        .then(keys => {
-          if ( keys.length ) {
-            keys.map(primaryKey => {
-              this.localDb.removeArticle(primaryKey);
-            });
-            this.log(`removed old ${category} articles`);
-          }
-        })
-        .catch (error => {
-          this.error(`ERROR: removed old ${error} articles`);
-        });
-      }
+      // const deleteState = ctx.getState();
+      // if ( deleteState[category].page === 2) {
+      //   this.localDb.getOldData(stringToCategory(category))
+      //   .then(keys => {
+      //     if ( keys.length ) {
+      //       keys.map(primaryKey => {
+      //         this.localDb.removeArticle(primaryKey);
+      //       });
+      //       this.log(`removed old ${category} articles`);
+      //     }
+      //   })
+      //   .catch (error => {
+      //     this.error(`ERROR: removed old ${error} articles`);
+      //   });
+      // }
     }
   }
 
@@ -316,31 +299,48 @@ export class NewsState {
     return (error: any): Observable<T> => {
 
       let userMessage: string;
+      let service: string;
+
       switch (error.status) {
         case 200 :
           break;
         case 400 :
           userMessage = 'There was a problem with the news request';
+          service = 'NewsService';
           break;
 
         case 401 :
-          userMessage = 'AThis was an unauthorized request';
+          userMessage = 'This was an unauthorized request';
+          service = 'NewsService';
           break;
 
         case 429 :
           userMessage = 'We are over the limit, please try again later';
+          service = 'NewsService';
           break;
 
         case 500 :
           userMessage = 'There was a problem with the news server, please try again later';
+          service = 'NewsService';
           break;
 
         case 0 :
           userMessage = 'offline';
+          service = 'NewsService';
+          break;
+
+        case 1100 :
+          userMessage = 'There is no local database';
+          service = 'Indexed DB';
+          break;
+
+        case 1200 :
+          userMessage = 'Indexed DB could not be opened and was reset';
+          service = 'Indexed DB';
           break;
 
         default :
-        userMessage = `Fetch error: ${error.statusText}`;
+        userMessage = `${error.statusText}`;
       }
       if ( userMessage ) {
        this.error(userMessage);
