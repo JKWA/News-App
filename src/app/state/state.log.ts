@@ -47,30 +47,6 @@ export class AddError {
     }
   }
 
- /**
-   * Add current state and show when in dev mode
-   * @param state - the state
-   */
-export class CurrentState {
-  static readonly type = 'CurrentState';
-  constructor(
-    public state: any,
-  ) {
-  }
-}
-
-/**
-   * Add next state and show when in dev mode
-   * @param state - the state
-   */
-export class NewState {
-  static readonly type = 'NewState';
-  constructor(
-    public location: string,
-    public state: any,
-  ) {
-  }
-}
 
 /**
    * Removes application logs
@@ -164,39 +140,6 @@ export class LogState {
       console.log(`%c Current state `, 'background: #08298A; color: white', action.currentState );
       console.log(`%c New state `, 'background: #088A08; color: white', action.newState);
   // }
-
-    const copy = state.logs.slice(0);
-    copy.push(
-        {location, message, time: date.format('LTS'), type}
-    );
-
-    ctx.patchState({
-      logs: copy
-    });
-  }
-
-  @Action(CurrentState)
-  currentState(ctx: StateContext<LogStateModel>, action: CurrentState) {
-
-    // if ( isDevMode() ) {
-      console.log(`%c Current state `, 'background: #08298A; color: white', action.state );
-    // }
-    // do not add to log state
-
-  }
-
-  @Action(NewState)
-  newState(ctx: StateContext<LogStateModel>, action: NewState) {
-
-    // if ( isDevMode() ) {
-      console.log(`%c New state `, 'background: #088A08; color: white', action.state);
-    // }
-
-    const location = action.location;
-    const message = 'state changed';
-    const state = ctx.getState();
-    const date: moment.Moment = moment(new Date());
-    const type = 'state_change';
 
     const copy = state.logs.slice(0);
     copy.push(

@@ -4,7 +4,7 @@ import { CategoryState } from './state/state.category';
 import { CategoryItem } from './category.function';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { AddNews } from './state/state.news';
+import { InitialNews } from './state/state.news';
 
 
 @Component({
@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
     this.categories.subscribe(result => {
       result.forEach( category => {
         if ( category.selected ) {
-        this.store.dispatch(new AddNews(category.id, false));
+        this.store.dispatch(new InitialNews(category.id));
         }
       });
     }).unsubscribe();

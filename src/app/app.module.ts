@@ -27,7 +27,8 @@ import {
   MatGridListModule,
   MatCardModule,
   MatMenuModule,
-  MatTabsModule} from '@angular/material';
+  MatTabsModule,
+  MatProgressSpinnerModule} from '@angular/material';
 import { NewsComponent } from './news/news.component';
 import { LogComponent } from './log/log.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -59,6 +60,7 @@ import { FilterComponent } from './filter/filter.component';
     MatTableModule,
     MatButtonModule,
     MatInputModule,
+    MatProgressSpinnerModule,
     MatSidenavModule,
     MatSlideToggleModule,
     MatSnackBarModule,

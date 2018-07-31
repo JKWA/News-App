@@ -11,6 +11,17 @@ mat-card-header{
     flex: 1 1 auto;
 }
 
+.spinner {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    z-index: 15;
+    top: 50%;
+    left: 50%;
+    /* margin: -100px 0 0 -150px; */
+    background: red;
+  }
+
 a{
     color: rgb(46, 46, 46);
     text-decoration: none;

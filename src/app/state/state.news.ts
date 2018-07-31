@@ -1,15 +1,33 @@
 import { State, Action, StateContext } from '@ngxs/store';
 ​import { Article } from '../article';
 import { FilterState } from './state.filter';
-import { AddMessage, AddError, CurrentState, NewState } from './state.log';
+
+import { AddMessage, AddError, UpdateState } from './state.log';
 import { LocalDbService } from '../service/local-db.service';
 import { Store, Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { stringToCategory} from '../category.function';
-import { HttpClient } from '@angular/common/http';
 import { NewsDataService } from '../service/news-data.service';
 
+import { map, take, exhaustMap, tap, catchError, skipWhile } from 'rxjs/operators';
+
 // TODO - Change from promise to observable and stay syncronous?
+
+
+
+ /**
+   * Get data by category.
+   * Let the app continue.
+   * @param category - name of the operation that failed
+   * @param initial - boolean is initial fetch of this data
+   */
+  export class InitialNews {
+    static readonly type = 'Initial News';
+    constructor(
+      public category: string,
+    ) {}
+  }
+
 
  /**
    * Get data by category.
@@ -21,7 +39,6 @@ export class AddNews {
   static readonly type = 'Adding News';
   constructor(
     public category: string,
-    public initial: boolean
   ) {}
 }
 
@@ -71,123 +88,189 @@ export class NewsState {
 
   constructor(
     private store: Store,
-    private http: HttpClient,
     private localDb: LocalDbService,
     private newsService: NewsDataService
   ) { }
 
+
+  @Action(InitialNews)
+  initialNews(ctx: StateContext<NewsStateModel>, action: AddNews) {
+    const state = ctx.getState();
+    const pageNumber = state[action.category].page;
+
+    this.filters.pipe(
+      take(1),
+      tap( _ => this.setRetrevingIndicator(ctx, action.category)),
+      exhaustMap(allFilters => {
+        return this.newsService.getNews(action.category, pageNumber, allFilters)
+        .pipe(
+          map(results => this.addNewArticles(state[action.category].articles, results)),
+          map(results => this.updateState(ctx, action.category, results, 'NewService')),
+          catchError(this.handleError('getNews', [])),
+        );
+      }),
+      tap( _ => this.addArticlesFromLocalCache(ctx, action.category)),
+      tap(results => this.updateLocalCache(action.category, results)),
+      tap( _ => this.deleteOldCache(ctx, action.category))
+    ).subscribe();
+  }
 
   @Action(AddNews)
   addNews(ctx: StateContext<NewsStateModel>, action: AddNews) {
     const state = ctx.getState();
     const pageNumber = state[action.category].page;
 
-    // return value to indicate retrieving
-    this.log(`fetching ${action.category} news`);
-    this.store.dispatch(new CurrentState(ctx.getState()));
-
-    ctx.patchState({
-      [action.category]: {
-        ...state[action.category],
-        retrieving: true
-      }
-    });
-
-    this.store.dispatch(new NewState('NewsService', ctx.getState()));
+    // TOD0 work out a better way to thottle this
 
     if ( pageNumber > 5 ) { // limit to 5 calls per category
       return ;
     }
 
-    if (state[action.category].firstLoad || !action.initial) {
-      const dataAPI = new Promise<any>((resolve, reject) => {
-
-      this.filters.subscribe(allFilters => {
-
-        this.newsService.getNews(action.category, pageNumber, allFilters)
-        .subscribe(result => {
-          this.store.dispatch(new CurrentState(ctx.getState()));
-
-          const copy = state[action.category].articles.splice(0).concat(result);
-          const articles = this.removeDuplicateTitles(copy);
-
-          ctx.patchState({
-            [action.category]: {
-              ...state[action.category],
-              articles: articles,
-              page: state[action.category].page + 1,
-              retrieving: false,
-              firstLoad: false
-            }
-          });
-          this.store.dispatch(new NewState('NewsService', ctx.getState()));
-          resolve(result);
-        });
-      }).unsubscribe(); // unsubscribe to filter changes
-    });
-
-    dataAPI.then(result => {
-      const clientState = ctx.getState();
-      if (!clientState[action.category].clientDataLoaded) {
-
-        this.log(`fetching ${action.category} from indexed DB`);
-        this.addNewsFromClient(action.category)
-        .then(localData => {
-
-          this.log(`received ${action.category} from indexed DB`);
-          this.store.dispatch(new CurrentState(ctx.getState()));
-
-          const copy = clientState[action.category].articles.splice(0).concat(localData);
-          const articles = this.removeDuplicateTitles(copy);
-          ctx.patchState({
-            [action.category]: {
-              ...clientState[action.category],
-              articles: articles,
-              clientDataLoaded: true
-            }
-          });
-
-          this.store.dispatch(new NewState('NewsService', ctx.getState()));
-
-        })
-        .catch(error => {
-          this.error(`client news error ${error}`);
-        });
-
-
+    if ( state[action.category].retrieving ) {
+      return ;
     }
-      return result;
-    })
 
-    .then(result => {
-        this.localDb.setData(stringToCategory(action.category), result);
-    })
-
-    .then(_ => {
-      if (window.navigator.onLine) { // if online, then delete old data
-        const deleteState = ctx.getState();
-        if ( deleteState[action.category].page === 2) {
-          this.localDb.getOldData(stringToCategory(action.category))
-          .then(keys => {
-            if ( keys.length ) {
-              keys.map(primaryKey => {
-                this.localDb.removeArticle(primaryKey);
-              });
-              this.log(`removed old ${action.category} articles`);
-            }
-          })
-          .catch (error => {
-            this.error(`ERROR: removed old ${error} articles`);
-          });
-        }
-      }
-    })
-    .catch(error => {
-      this.error(error);
-    });
+    if ( ! state[action.category].firstLoad ) {
+      return ;
     }
+
+    this.setRetrevingIndicator(ctx, action.category);
+
+    this.filters.pipe(
+      take(1),
+      exhaustMap(allFilters => {
+        return this.newsService.getNews(action.category, pageNumber, allFilters)
+        .pipe(
+          map(results => this.addNewArticles(state[action.category].articles, results)),
+          tap(results => this.updateState(ctx, action.category, results, 'NewService')),
+          catchError(this.handleError('getNews', [])),
+        );
+      }),
+      tap(results => this.updateLocalCache(action.category, results)),
+    ).subscribe();
+
   }
 
+
+  private setRetrevingIndicator(ctx, category) {
+    const copyCurrentState = Object.assign({}, ctx.getState());
+
+    ctx.patchState({
+      [category]: {
+        ...copyCurrentState[category],
+        retrieving: true
+      }
+    });
+
+    // send action to the dev logs
+    this.store.dispatch(new AddMessage('NewsService', `fetching ${category} news`));
+  }
+
+
+  private addNewArticles(oldArticels: Article[], newArticels: Article[]) {
+    const copy = oldArticels.splice(0).concat(newArticels);
+    return this.removeDuplicateTitles(copy);
+
+
+
+
+  }
+
+  private updateState(ctx, category, result, service) {
+      const state = ctx.getState();
+      const copyCurrentState = Object.assign({}, ctx.getState());
+
+
+      ctx.patchState({
+        [category]: {
+        ...state[category],
+        articles: result,
+        page: state[category].page + 1,
+        retrieving: false,
+        firstLoad: true
+        }
+      });
+
+      // send action to dev logs
+      this.store.dispatch(new AddMessage('NewsService', `fetched ${category} news`));
+      // this.store.dispatch(new UpdateState('NewsService', `fetched ${category} news`, copyCurrentState, ctx.getState()));
+
+      return result;
+  }
+
+
+  private addArticlesFromLocalCache(ctx, category) {
+
+    const copyCurrentState = Object.assign({}, ctx.getState());
+    this.localDb.getData(stringToCategory(category))
+    .subscribe(localData => {
+
+      const copy = copyCurrentState[category].articles.splice(0).concat(localData);
+
+      ctx.patchState({
+        [category]: {
+          ...copyCurrentState[category],
+          articles: this.removeDuplicateTitles(copy),
+          clientDataLoaded: true
+        }
+      });
+    });
+
+    this.store.dispatch(new AddMessage('Local DB', `fetched ${category} news`));
+
+  }
+
+  private updateLocalCache(category, articles) {
+    this.localDb.setData(stringToCategory(category), articles).subscribe();
+  }
+
+
+  // private mergeWithLocalCacheData(ctx, category, results) {
+  //   const clientState = ctx.getState();
+
+  //     if (!clientState[category].clientDataLoaded) {
+  //       const copyCurrentState = Object.assign({}, ctx.getState());
+
+  //       this.localDb.getData(stringToCategory(category))
+  //       .subscribe(localData => {
+  //         const copy = results.splice(0).concat(localData);
+  //         ctx.patchState({
+  //           [category]: {
+  //             ...clientState[category],
+  //             articles: this.removeDuplicateTitles(copy),
+  //             clientDataLoaded: true
+  //           }
+  //         });
+  //         console.log(ctx.getState());
+
+  //         // send action to dev logs
+  //         this.store.dispatch(new UpdateState('Indexed DB', `fetched ${category}`, copyCurrentState, ctx.getState()));
+
+  //       });
+  //     }
+  // }
+
+
+
+  private deleteOldCache(ctx, category) {
+    if (window.navigator.onLine) { // if online, then delete old data
+      const deleteState = ctx.getState();
+      if ( deleteState[category].page === 2) {
+        this.localDb.getOldData(stringToCategory(category))
+        .then(keys => {
+          if ( keys.length ) {
+            keys.map(primaryKey => {
+              this.localDb.removeArticle(primaryKey);
+            });
+            this.log(`removed old ${category} articles`);
+          }
+        })
+        .catch (error => {
+          this.error(`ERROR: removed old ${error} articles`);
+        });
+      }
+    }
+  }
 
 
    /**
@@ -221,14 +304,50 @@ export class NewsState {
     return deDupped;
   }
 
-   /**
-   * Get articles from indexed db.
-   * @param category - enum category
-   * @param regFilter - observable regular expression representing all filters
-   * @return observable array of articles from indexed db
+
+ /**
+   * Handle Http operation that failed.
+   * Let the app continue.
+   * @param operation - name of the operation that failed
+   * @param result - optional value to return as the observable result
+   * @return empty array for the article value
    */
-  private addNewsFromClient(category) {
-    return this.localDb.getData(stringToCategory(category));
+  private handleError<T> (operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+
+      let userMessage: string;
+      switch (error.status) {
+        case 200 :
+          break;
+        case 400 :
+          userMessage = 'There was a problem with the news request';
+          break;
+
+        case 401 :
+          userMessage = 'AThis was an unauthorized request';
+          break;
+
+        case 429 :
+          userMessage = 'We are over the limit, please try again later';
+          break;
+
+        case 500 :
+          userMessage = 'There was a problem with the news server, please try again later';
+          break;
+
+        case 0 :
+          userMessage = 'offline';
+          break;
+
+        default :
+        userMessage = `Fetch error: ${error.statusText}`;
+      }
+      if ( userMessage ) {
+       this.error(userMessage);
+      }
+
+      return of(result as T);
+    };
   }
 }
 

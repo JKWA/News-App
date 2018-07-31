@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AddCategory, RemoveCategory, CategoryState } from '../state/state.category';
 import { CategoryItem } from '../category.function';
-import { AddNews } from '../state/state.news';
+import { InitialNews } from '../state/state.news';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 
@@ -26,7 +26,7 @@ export class CategoryComponent {
 
     if ( checked ) {
       this.store.dispatch(new AddCategory(category));
-      this.store.dispatch(new AddNews(category.id, false));
+      this.store.dispatch(new InitialNews(category.id));
 
     } else {
       this.store.dispatch(new RemoveCategory(category));

@@ -63,10 +63,19 @@ function sourceData (): any[] {
             { id: 'bbc-news',
             name: 'BBC News',
             description: '',
-            url: '"http://www.bbc.co.uk',
+            url: 'http://www.bbc.co.uk',
             category: Category.General,
             language: 'en',
             country: 'us' },
+
+            { id: 'cbc-news',
+            name: 'CBC News',
+            description: 'CBC News is the division of the Canadian Broadcasting Corporation responsible for the news gathering and production of news programs on the corporation\'s English-language operations, namely CBC Television, CBC Radio, CBC News Network, and CBC.ca.',
+            url: 'http://www.cbc.ca',
+            category: Category.General,
+            language: 'en',
+            country: 'ca' },
+
 
             // { id: 'cbs-news',
             // name: 'CBS News',
@@ -443,5 +452,96 @@ function sourceData (): any[] {
             category: Category.Sports,
             language: 'en',
             country: 'us' },
+
+            {
+                id:'australian-financial-review',
+                name:'Australian Financial Review',
+                description:'The Australian Financial Review reports the latest news from business, finance, investment and politics, updated in real time. It has a reputation for independent, award-winning journalism and is essential reading for the business and investor community.',
+                url:'http://www.afr.com',
+                category: Category.Business,
+                language:'en',
+                country:'au'
+            },
+            {  
+                id: 'bloomberg',
+                name: 'Bloomberg',
+                description:'Bloomberg delivers business and markets news, data, analysis, and video to the world, featuring stories from Businessweek and Bloomberg News.',
+                url:'http://www.bloomberg.com',
+                category: Category.Business,
+                language:'en',
+                country:'us'
+            },
+            {  
+                id:'business-insider',
+                name:'Business Insider',
+                description:'Business Insider is a fast-growing business site with deep financial, media, tech, and other industry verticals. Launched in 2007, the site is now the largest business news site on the web.',
+                url:'http://www.businessinsider.com',
+                category: Category.Business,
+                language:'en',
+                country:'us'
+            },
+            {  
+                id:'business-insider-uk',
+                name:'Business Insider (UK)',
+                description:'Business Insider is a fast-growing business site with deep financial, media, tech, and other industry verticals. Launched in 2007, the site is now the largest business news site on the web.',
+                url:'http://uk.businessinsider.com',
+                category: Category.Business,
+                language:'en',
+                country:'gb'
+            },
+            {  
+                id:'cnbc',
+                name:'CNBC',
+                description:'Get latest business news on stock markets, financial & earnings on CNBC. View world markets streaming charts & video; check stock tickers and quotes.',
+                url:'http://www.cnbc.com',
+                category: Category.Business,
+                language:'en',
+                country:'us'
+            },
+            {  
+                id:'financial-post',
+                name:'Financial Post',
+                description:'Find the latest happenings in the Canadian Financial Sector and stay up to date with changing trends in Business Markets. Read trading and investing advice from professionals.',
+                url:'http://business.financialpost.com',
+                category: Category.Business,
+                language:'en',
+                country:'ca'
+            },
+            {  
+                id:'financial-times',
+                name:'Financial Times',
+                description:'The latest UK and international business, finance, economic and political news, comment and analysis from the Financial Times on FT.com.',
+                url:'http://www.ft.com/home/uk',
+                category: Category.Business,
+                language:'en',
+                country:'gb'
+            },
+            {  
+                id:'fortune',
+                name:'Fortune',
+                description:'Fortune 500 Daily and Breaking Business News',
+                url:'http://fortune.com',
+                category: Category.Business,
+                language:'en',
+                country:'us'
+            },
+            {  
+                id:'the-economist',
+                name:'The Economist',
+                description:'The Economist offers authoritative insight and opinion on international news, politics, business, finance, science, technology and the connections between them.',
+                url:'http://www.economist.com',
+                category: Category.Business,
+                language:'en',
+                country:'gb'
+            },
+            {  
+                id:'the-wall-street-journal',
+                name:'The Wall Street Journal',
+                description:'WSJ online coverage of breaking news and current headlines from the US and around the world. Top stories, photos, videos, detailed analysis and in-depth reporting.',
+                url:'http://www.wsj.com',
+                category: Category.Business,
+                language:'en',
+                country:'us'
+            }
         ];
     }

@@ -3,6 +3,8 @@ import { Article } from '../article';
 import { categoryToObject } from '../category.function';
 import { Category } from '../category.enum';
 import * as moment from 'moment';
+import { Observable } from 'rxjs';
+
 
 // TODO - look at changing promises to observables
 
@@ -18,11 +20,12 @@ export class LocalDbService {
  * @param articles: the articles to save
  */
   setData(category: Category, articles: Article[]) {
-    return new Promise<any>((resolve, reject) => {
+    // return new Promise<any>((resolve, reject) => {
+    return new Observable(observer => {
       const indexedDB = window.indexedDB;
 
       if (! indexedDB ) {
-        reject('No index database available');
+        // reject('No index database available');
       }
 
       const open = indexedDB.open('ArticleDatabase', 1);
@@ -47,7 +50,7 @@ export class LocalDbService {
             const check = index.get(article.title);
             check.onerror = (error) => {
               console.log(error);
-              reject('database error');
+              // reject('database error');
             };
 
             check.onsuccess = (event) => {
@@ -64,16 +67,28 @@ export class LocalDbService {
                   publishedAt: article.publishedAt,
                 });
               }
-              resolve('articles saved');
+              observer.next({
+                category: categoryToObject(category).id,
+                  timestamp: new Date().toISOString(),
+                  source: article.source,
+                  author: article.author,
+                  title: article.title,
+                  description: article.description,
+                  url: article.url,
+                  urlToImage: article.urlToImage,
+                  publishedAt: article.publishedAt,
+              });
+
             };
             check.onerror = (event) => {
-              reject('database error');
+              // reject('database error');
             };
           }
         });
 
         tx.oncomplete = () => {
-            db.close();
+          observer.complete();
+          db.close();
         };
       };
   });
@@ -86,12 +101,12 @@ export class LocalDbService {
  * @returns promise for articles
  */
   getData(category: Category) {
-    return new Promise<any>((resolve, reject) => {
-
+    // return new Promise<any>((resolve, reject) => {
+    return new Observable(observer => {
       const indexedDB = window.indexedDB;
 
       if (! indexedDB ) {
-        reject('No index database available');
+        // reject('No index database available');
       }
 
       const open = indexedDB.open('ArticleDatabase', 1);
@@ -106,7 +121,7 @@ export class LocalDbService {
 
       open.onerror = function (error) {
         indexedDB.deleteDatabase('ArticleDatabase');
-        reject(error);
+        // reject(error);
       };
 
       open.onsuccess = () => {
@@ -128,13 +143,16 @@ export class LocalDbService {
                     // if online, push information from the past two hours
                     const date: moment.Moment = moment(cursor.value.timestamp);
                     if ( date.add(30, 'm').isAfter(moment(new Date())) ) {
-                      result.push(cursor.value);
+                      const copy =  Object.assign({}, cursor.value, {id: encodeURIComponent(cursor.value.title)});
+                      result.push(copy);
                     }
                   }
 
               cursor.continue();
               } else {
-                  resolve(result);
+                observer.next(result);
+                observer.complete();
+                  // resolve(result);
               }
           };
         tx.oncomplete = function() {

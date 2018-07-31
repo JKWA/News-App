@@ -1,7 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { throttleTime, map, tap } from 'rxjs/operators';
+
 import { Article } from '../article';
 import { Store, Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { FilterStateModel, FilterState, Filter } from '../state/state.filter';
 import { NewsStateModel, NewsState, AddNews } from '../state/state.news';
 import { CategoryState } from '../state/state.category';
@@ -47,6 +49,7 @@ export class ArticleComponent implements OnInit {
   setPageData() {
     this.stateNews.subscribe(result => {
       this.filters.subscribe(filters => {
+        // console.log(result[this.category].articles.length)
 
         const regFilter = new RegExp(Array.from(filters).join('|'), 'i');
             const allArticles = result[this.category].articles;
@@ -81,12 +84,20 @@ export class ArticleComponent implements OnInit {
  * @param event - the event from template
  */
   public handleScroll(event: ScrollEvent) {
+    // console.log(event.originalEvent.returnValue);
+
+
+
     if (event.isReachingBottom
         && window.navigator.onLine
         && !this.retrieving
         && this.category === this.tabViewed.id
       ) {
-        this.store.dispatch(new AddNews(this.category, false));
+        // of('item').pipe(
+        //   throttleTime(1000),
+        //   // tap( console.log),
+        // ).subscribe(val => console.log(val));
+        this.store.dispatch(new AddNews(this.category));
     }
 
     // if (event.isReachingTop) {
