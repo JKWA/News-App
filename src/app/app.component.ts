@@ -5,6 +5,7 @@ import { CategoryItem } from './category.function';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { InitialNews } from './state/state.news';
+import { UpdateOnline } from './state/state.online';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:offline', ['$event'])
   openSnackbar(event) {
+    this.store.dispatch(new UpdateOnline(false));
     this.snackBar.open('No network detected', '', {
       duration: 0,
     });
@@ -40,6 +42,7 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:online', ['$event'])
   closeSnackbar(event) {
+    this.store.dispatch(new UpdateOnline(true));
     this.snackBar.dismiss();
   }
 }

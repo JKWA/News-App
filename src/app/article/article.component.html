@@ -29,7 +29,11 @@
         <div class="mat-body-1">{{article.description}}</div>
       </mat-card-content>
       <mat-card-actions>
-        <button (click)="gotToArticle(article)" mat-button>READ</button>
+        <button 
+          (click)="gotToArticle(article)" 
+          disabled="{{!online}}"
+          color="primary"
+          mat-button>READ</button>
       </mat-card-actions>
     </mat-card>
   </div>

@@ -1,11 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { throttleTime, map, tap } from 'rxjs/operators';
-
 import { Article } from '../article';
 import { Store, Select } from '@ngxs/store';
-import { Observable, of } from 'rxjs';
-import { FilterStateModel, FilterState, Filter } from '../state/state.filter';
+import { Observable } from 'rxjs';
+import { FilterState, Filter } from '../state/state.filter';
 import { NewsStateModel, NewsState, AddNews } from '../state/state.news';
+import { OnlineState } from '../state/state.online';
 import { CategoryState } from '../state/state.category';
 import { CategoryItem } from '../category.function';
 
@@ -25,6 +24,7 @@ export class ArticleComponent implements OnInit {
   @Select(FilterState.allFilters) filters: Observable<Set<Filter>>;
   @Select(NewsState) stateNews: Observable<NewsStateModel[]>;
   @Select(CategoryState.setCategory) setCategory: Observable<CategoryItem>;
+  @Select(OnlineState.online) onlineStatus: Observable<boolean>;
 
   articles: Article[];
   pageNumber = 1;
@@ -33,6 +33,7 @@ export class ArticleComponent implements OnInit {
   topOffset = 1;
   scrolledToInititalView = true;
   tabViewed: CategoryItem;
+  online = true;
 
   constructor(
     private store: Store,
@@ -41,6 +42,7 @@ export class ArticleComponent implements OnInit {
   ngOnInit() {
     this.setPageData();
     this.watchCategoryBeingViewed();
+    this.onlineStatus.subscribe( result => this.online = result);
   }
 
 /**
@@ -93,10 +95,6 @@ export class ArticleComponent implements OnInit {
         && !this.retrieving
         && this.category === this.tabViewed.id
       ) {
-        // of('item').pipe(
-        //   throttleTime(1000),
-        //   // tap( console.log),
-        // ).subscribe(val => console.log(val));
         this.store.dispatch(new AddNews(this.category));
     }
 
@@ -112,7 +110,9 @@ export class ArticleComponent implements OnInit {
  */
   public gotToArticle (article) {
     window.localStorage.setItem('lastReadArticle', article.id);
-    window.location.href = article.url;
+    if ( this.online ) {
+      window.location.href = article.url;
+    }
   }
 
   /**
