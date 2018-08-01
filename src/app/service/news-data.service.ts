@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { Store } from '@ngxs/store';
 import { Article } from '../article';
 import { getKey } from '../key';
 import { getSources } from '../source';
-import { stringToCategory} from '../category.function';
+import { Category } from '../category.enum';
 
 class NewsResponse {
   status: string;
@@ -26,12 +25,11 @@ export class NewsDataService {
 
   constructor (
     private http: HttpClient,
-    private store: Store
   ) { }
 
-  getNews (category: string, pageNumber: number, filters) {
+  getNews (category: Category, pageNumber: number, filters) {
 
-    const sources: string = getSources(stringToCategory(category)).map(item => item.id).join();
+    const sources: string = getSources(category).map(item => item.id).join();
 
       let url = `${this.endpoint}?`;
 
@@ -66,5 +64,4 @@ export class NewsDataService {
         }),
       );
   }
-
 }

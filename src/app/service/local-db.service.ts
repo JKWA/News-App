@@ -51,8 +51,10 @@ export class LocalDbService {
           if ( article.title ) {
             const check = index.get(article.title);
             check.onerror = (error) => {
-              // console.log(error);
-              observer.error(error);
+              observer.error({
+                status: 1300,
+                statusText: `${article.title}`
+              });
             };
 
             check.onsuccess = (event) => {
@@ -82,8 +84,11 @@ export class LocalDbService {
               });
 
             };
-            check.onerror = (event) => {
-              observer.error('database error');
+            check.onerror = (err) => {
+              observer.error({
+                status: 1400,
+                statusText: err
+              });
             };
           }
         });
@@ -174,7 +179,7 @@ export class LocalDbService {
  * @returns observable for an array of article keys
  */
 
-  getOldData(category: Category): Observable<number[]> {
+  getExpiredData(category: Category): Observable<number[]> {
       return new Observable(observer => {
 
       const indexedDB = window.indexedDB;

@@ -101,23 +101,22 @@ export class NewsState {
 
     this.filters.pipe(
       take(1),
-      tap( _ => this.setRetrevingIndicator(ctx, action.category)),
+      tap( _ => this.setFlagForRetrevingStatus(ctx, action.category)),
       exhaustMap(allFilters => {
-        return this.newsService.getNews(action.category, pageNumber, allFilters)
+        return this.newsService.getNews(category, pageNumber, allFilters)
         .pipe(
-          map(results => this.addNewArticles(state[action.category].articles, results)),
           map(results => this.updateState(ctx, action.category, results, 'NewService')),
           catchError(this.handleError('getNews', [])),
         );
       }),
-      tap( _ => this.localDb.getData(stringToCategory(category))
+      tap( _ => this.localDb.getData(category)
         .pipe(
           map(results => this.updateState(ctx, action.category, results, 'LocalDB')),
           catchError(this.handleError('getData', []))
         ).subscribe()
       ),
-      tap(results => this.updateLocalCache(action.category, results)),
-      tap( _ => this.localDb.getOldData(category)
+      tap(results => this.localDb.setData(category, results).subscribe()),
+      tap( _ => this.localDb.getExpiredData(category)
         .pipe(
           take(1),
           map(oldKeysArray => {
@@ -146,9 +145,9 @@ export class NewsState {
   addNews(ctx: StateContext<NewsStateModel>, action: AddNews) {
     const state = ctx.getState();
     const pageNumber = state[action.category].page;
+    const category = stringToCategory(action.category);
 
-    // TOD0 work out a better way to thottle this
-
+    // TOD0 work out a better way to thottle this here or on article component
     if ( pageNumber > 5 ) { // limit to 5 calls per category
       return ;
     }
@@ -161,25 +160,24 @@ export class NewsState {
       return ;
     }
 
-    this.setRetrevingIndicator(ctx, action.category);
+    this.setFlagForRetrevingStatus(ctx, action.category);
 
     this.filters.pipe(
       take(1),
       exhaustMap(allFilters => {
-        return this.newsService.getNews(action.category, pageNumber, allFilters)
+        return this.newsService.getNews(category, pageNumber, allFilters)
         .pipe(
-          map(results => this.addNewArticles(state[action.category].articles, results)),
           tap(results => this.updateState(ctx, action.category, results, 'NewService')),
           catchError(this.handleError('getNews', [])),
         );
       }),
-      tap(results => this.updateLocalCache(action.category, results)),
+      tap(results => this.localDb.setData(category, results).subscribe()),
     ).subscribe();
 
   }
 
 
-  private setRetrevingIndicator(ctx, category) {
+  private setFlagForRetrevingStatus(ctx, category) {
     const copyCurrentState = Object.assign({}, ctx.getState());
 
     ctx.patchState({
@@ -193,12 +191,6 @@ export class NewsState {
     this.store.dispatch(new AddMessage('NewsService', `fetching ${category} news`));
   }
 
-
-  private addNewArticles(oldArticels: Article[], newArticels: Article[]) {
-    const copy = oldArticels.splice(0).concat(newArticels);
-    return this.removeDuplicateTitles(copy);
-
-  }
 
   private updateState(ctx, category, result, service) {
       const state = ctx.getState();
@@ -227,51 +219,6 @@ export class NewsState {
   }
 
 
-
-
-  private updateLocalCache(category, articles) {
-    this.localDb.setData(stringToCategory(category), articles).subscribe();
-  }
-
-
-
-  private deleteOldCache(ctx, category) {
-    if (window.navigator.onLine) { // if online, then delete old data
-      // const deleteState = ctx.getState();
-      // if ( deleteState[category].page === 2) {
-      //   this.localDb.getOldData(stringToCategory(category))
-      //   .then(keys => {
-      //     if ( keys.length ) {
-      //       keys.map(primaryKey => {
-      //         this.localDb.removeArticle(primaryKey);
-      //       });
-      //       this.log(`removed old ${category} articles`);
-      //     }
-      //   })
-      //   .catch (error => {
-      //     this.error(`ERROR: removed old ${error} articles`);
-      //   });
-      // }
-    }
-  }
-
-
-   /**
-   * Log message when in dev mode.
-   * @param message - log message
-   */
-  private log(message: string) {
-    this.store.dispatch(new AddMessage('NewsService', message));
-  }
-
-   /**
-   * Log error when in dev mode.
-   * @param message - log message
-   */
-  private error(message: string) {
-    this.store.dispatch(new AddError('NewsService', message));
-  }
-
    /**
    * Unduplicate articles by title, important to keep the article anchor text unique
    * @param articles - array of articles
@@ -299,7 +246,7 @@ export class NewsState {
     return (error: any): Observable<T> => {
 
       let userMessage: string;
-      let service: string;
+      let service = 'unknown';
 
       switch (error.status) {
         case 200 :
@@ -339,11 +286,21 @@ export class NewsState {
           service = 'Indexed DB';
           break;
 
+        case 1300 :
+          userMessage = `No index named ${error.statusText}`;
+          service = 'Indexed DB';
+          break;
+
+        case 1300 :
+          userMessage = error.statusText;
+          service = 'Indexed DB';
+          break;
+
         default :
         userMessage = `${error.statusText}`;
       }
       if ( userMessage ) {
-       this.error(userMessage);
+        this.store.dispatch(new AddError(service, userMessage));
       }
 
       return of(result as T);
