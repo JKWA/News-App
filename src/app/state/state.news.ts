@@ -1,18 +1,13 @@
 import { State, Action, StateContext } from '@ngxs/store';
 ​import { Article } from '../article';
 import { FilterState } from './state.filter';
-
 import { AddMessage, AddError, UpdateState } from './state.log';
 import { LocalDbService } from '../service/local-db.service';
 import { Store, Select } from '@ngxs/store';
 import { Observable, of } from 'rxjs';
 import { stringToCategory} from '../category.function';
 import { NewsDataService } from '../service/news-data.service';
-
 import { map, take, exhaustMap, tap, catchError, skipWhile } from 'rxjs/operators';
-
-// TODO - Change from promise to observable and stay syncronous?
-
 
 
  /**
@@ -115,7 +110,10 @@ export class NewsState {
           catchError(this.handleError('getData', []))
         ).subscribe()
       ),
-      tap(results => this.localDb.setData(category, results).subscribe()),
+      tap(results => this.localDb.setData(category, results).pipe(
+        tap( _ => this.store.dispatch(new AddMessage('NewsService', `cached ${category} news`))),
+        catchError(this.handleError('setData', []))
+      ).subscribe()),
       tap( _ => this.localDb.getExpiredData(category)
         .pipe(
           take(1),
@@ -126,7 +124,8 @@ export class NewsState {
             oldKeysArray.map(key => {
               this.localDb.removeArticle(key)
               .pipe(
-                take(1)
+                take(1),
+                catchError(this.handleError('removeArticle'))
               ).subscribe();
             });
             return oldKeysArray;
@@ -135,7 +134,8 @@ export class NewsState {
             if ( oldKeysArray.length) {
                this.store.dispatch(new AddMessage('NewsService', `removed old ${category} news`));
             }
-          })
+          }),
+          catchError(this.handleError('getExpiredData', []))
         ).subscribe()
       )
     ).subscribe();
@@ -171,7 +171,10 @@ export class NewsState {
           catchError(this.handleError('getNews', [])),
         );
       }),
-      tap(results => this.localDb.setData(category, results).subscribe()),
+      tap(results => this.localDb.setData(category, results).pipe(
+        tap( _ => this.store.dispatch(new AddMessage('NewsService', `cached ${category} news`))),
+        catchError(this.handleError('setData', []))
+      ).subscribe())
     ).subscribe();
 
   }
