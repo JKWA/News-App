@@ -40,7 +40,7 @@ export class AddNews {
   interface NewsCategoryModel {
     retrieving: boolean;
     page: number;
-    firstLoad: boolean;
+    firstLoadComplete: boolean;
     clientDataLoaded: boolean;
     articles: Article[];
   }
@@ -58,7 +58,7 @@ export class AddNews {
   const defaultValue: NewsCategoryModel = {
     retrieving: false,
     page: 1,
-    firstLoad: true,
+    firstLoadComplete: false,
     clientDataLoaded: false,
     articles: []
   };
@@ -100,7 +100,7 @@ export class NewsState {
       exhaustMap(allFilters => {
         return this.newsService.getNews(category, pageNumber, allFilters)
         .pipe(
-          map(results => this.updateState(ctx, action.category, results, 'NewService')),
+          map(results => this.updateState(ctx, action.category, results, 'NewsService')),
           catchError(this.handleError('getNews', [])),
         );
       }),
@@ -147,35 +147,37 @@ export class NewsState {
     const pageNumber = state[action.category].page;
     const category = stringToCategory(action.category);
 
-    // TOD0 work out a better way to thottle this here or on article component
+    // TOD0 is there a better way to thottle?
     if ( pageNumber > 5 ) { // limit to 5 calls per category
       return ;
     }
 
-    if ( state[action.category].retrieving ) {
+    if ( state[action.category].retrieving ) { // not if currently retrieving
+      console.log(state);
       return ;
     }
 
-    if ( ! state[action.category].firstLoad ) {
+    if ( !state[action.category].firstLoadComplete ) { // not until the inital load is complete
+      console.log(state);
       return ;
     }
 
     this.setFlagForRetrevingStatus(ctx, action.category);
+    console.log('go!');
 
-    this.filters.pipe(
-      take(1),
-      exhaustMap(allFilters => {
-        return this.newsService.getNews(category, pageNumber, allFilters)
-        .pipe(
-          tap(results => this.updateState(ctx, action.category, results, 'NewService')),
-          catchError(this.handleError('getNews', [])),
-        );
-      }),
-      tap(results => this.localDb.setData(category, results).pipe(
-        // tap( _ => this.store.dispatch(new AddMessage('NewsService', `cached ${category} news`))),
-        catchError(this.handleError('setData', []))
-      ).subscribe())
-    ).subscribe();
+    // this.filters.pipe(
+    //   take(1),
+    //   exhaustMap(allFilters => {
+    //     return this.newsService.getNews(category, pageNumber, allFilters)
+    //     .pipe(
+    //       tap(results => this.updateState(ctx, action.category, results, 'NewsService')),
+    //       catchError(this.handleError('getNews', [])),
+    //     );
+    //   }),
+    //   tap(results => this.localDb.setData(category, results).pipe(
+    //     catchError(this.handleError('setData', []))
+    //   ).subscribe())
+    // ).subscribe();
 
   }
 
@@ -198,18 +200,22 @@ export class NewsState {
   private updateState(ctx, category, result, service) {
       const state = ctx.getState();
       const copyCurrentState = Object.assign({}, ctx.getState());
-      const copy = copyCurrentState[category].articles.splice(0).concat(result);
+      const copyArticles = copyCurrentState[category].articles.splice(0).concat(result);
       const clientFlag = (copyCurrentState[category].clientDataLoaded)
         ? true
         :  service === 'LocalDb' ? true : false;
 
+      const pageUpdate = service === 'NewsService'
+        ? copyCurrentState[category].page + 1
+        : copyCurrentState[category].page;
+
       ctx.patchState({
         [category]: {
         ...state[category],
-        articles: this.removeDuplicateTitles(copy),
-        page: state[category].page + 1,
+        articles: this.removeDuplicateTitles(copyArticles),
+        page: pageUpdate,
         retrieving: false,
-        firstLoad: true,
+        firstLoadComplete: true,
         clientDataLoaded: clientFlag
         }
       });
