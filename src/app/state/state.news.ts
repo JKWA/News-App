@@ -163,7 +163,6 @@ export class NewsState {
     }
 
     this.setFlagForRetrevingStatus(ctx, action.category);
-    console.log('go!');
 
     this.filters.pipe(
       take(1),

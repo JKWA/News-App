@@ -28,12 +28,14 @@ export class ArticleComponent implements OnInit {
 
   articles: Article[];
   pageNumber = 1;
-  retrieving = false;
+  retrieving = true;
   bottomOffset = 1000;
   topOffset = 1;
   scrolledToInititalView = true;
   tabViewed: CategoryItem;
   online = true;
+  addingData = false;
+  throttle;
 
   constructor(
     private store: Store,
@@ -91,7 +93,11 @@ export class ArticleComponent implements OnInit {
         && window.navigator.onLine
         && !this.retrieving
         && this.category === this.tabViewed.id
+        && !this.addingData
       ) {
+        this.addingData = true;
+        clearTimeout(this.throttle);
+        this.throttle = setTimeout(() => this.addingData = false, 2000);
         this.store.dispatch(new AddNews(this.category));
     }
 
@@ -100,6 +106,7 @@ export class ArticleComponent implements OnInit {
     // }
 
   }
+
 
   /**
  * set to last viewed article and forward to url
