@@ -165,19 +165,19 @@ export class NewsState {
     this.setFlagForRetrevingStatus(ctx, action.category);
     console.log('go!');
 
-    // this.filters.pipe(
-    //   take(1),
-    //   exhaustMap(allFilters => {
-    //     return this.newsService.getNews(category, pageNumber, allFilters)
-    //     .pipe(
-    //       tap(results => this.updateState(ctx, action.category, results, 'NewsService')),
-    //       catchError(this.handleError('getNews', [])),
-    //     );
-    //   }),
-    //   tap(results => this.localDb.setData(category, results).pipe(
-    //     catchError(this.handleError('setData', []))
-    //   ).subscribe())
-    // ).subscribe();
+    this.filters.pipe(
+      take(1),
+      exhaustMap(allFilters => {
+        return this.newsService.getNews(category, pageNumber, allFilters)
+        .pipe(
+          tap(results => this.updateState(ctx, action.category, results, 'NewsService')),
+          catchError(this.handleError('getNews', [])),
+        );
+      }),
+      tap(results => this.localDb.setData(category, results).pipe(
+        catchError(this.handleError('setData', []))
+      ).subscribe())
+    ).subscribe();
 
   }
 
