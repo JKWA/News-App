@@ -15,11 +15,9 @@ mat-card-header{
     position: absolute;
     width: 100px;
     height: 100px;
-    z-index: 15;
-    top: 50%;
+    z-index: 100;
     left: 50%;
-    /* margin: -100px 0 0 -150px; */
-    background: red;
+    margin: 150px 0 0 -50px;
   }
 
 a{

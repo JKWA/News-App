@@ -62,11 +62,11 @@ export class ArticleComponent implements OnInit {
                         : false;
               })
               : allArticles;
-          if ( result[this.category].firstLoad ) {
+          if ( result[this.category].firstLoadComplete ) {
             this.scrollToLastViewed();
           }
       });
-      this.retrieving = result[this.category].retrieving;
+      this.retrieving = !result[this.category].firstLoadComplete;
     });
   }
 
@@ -86,9 +86,6 @@ export class ArticleComponent implements OnInit {
  * @param event - the event from template
  */
   public handleScroll(event: ScrollEvent) {
-    // console.log(event.originalEvent.returnValue);
-
-
 
     if (event.isReachingBottom
         && window.navigator.onLine
