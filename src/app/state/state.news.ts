@@ -111,8 +111,8 @@ export class NewsState {
         ).subscribe()
       ),
       tap(results => this.localDb.setData(category, results).pipe(
-        tap( _ => this.store.dispatch(new AddMessage('NewsService', `cached ${category} news`))),
-        catchError(this.handleError('setData', []))
+        // tap( _ => this.store.dispatch(new AddMessage('NewsService', `cached ${category} news`))),
+        catchError(this.handleError('setData'))
       ).subscribe()),
       tap( _ => this.localDb.getExpiredData(category)
         .pipe(
@@ -172,7 +172,7 @@ export class NewsState {
         );
       }),
       tap(results => this.localDb.setData(category, results).pipe(
-        tap( _ => this.store.dispatch(new AddMessage('NewsService', `cached ${category} news`))),
+        // tap( _ => this.store.dispatch(new AddMessage('NewsService', `cached ${category} news`))),
         catchError(this.handleError('setData', []))
       ).subscribe())
     ).subscribe();
@@ -223,7 +223,7 @@ export class NewsState {
 
 
    /**
-   * Unduplicate articles by title, important to keep the article anchor text unique
+   * Unduplicate articles by title, important to keep the article ids unique
    * @param articles - array of articles
    * @return articles - array of unduplicated articles
    */
