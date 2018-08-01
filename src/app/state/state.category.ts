@@ -54,7 +54,6 @@ export interface CategoryStateModel {
 export class CategoryState {
 
   @Selector() static setCategory(state: CategoryStateModel): CategoryItem {
-
     const categoryArray = Array.from(state.allCategories.values());
     const find = categoryArray.find(category => category.id === state.setCategory);
     return find ? find : categoryArray[0];
@@ -66,7 +65,6 @@ export class CategoryState {
   }
 
   @Selector() static selectedCategories(state: CategoryStateModel): Set<CategoryItem> {
-
     return new Set(
       Array.from(state.allCategories.values())
         .filter(category => category.selected)

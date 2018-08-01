@@ -6,6 +6,7 @@ import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { InitialNews } from './state/state.news';
 import { UpdateOnline } from './state/state.online';
+import { take, tap } from 'rxjs/operators';
 
 
 @Component({
@@ -23,13 +24,16 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.categories.subscribe(result => {
-      result.forEach( category => {
-        if ( category.selected ) {
-        this.store.dispatch(new InitialNews(category.id));
-        }
-      });
-    }).unsubscribe();
+    this.categories.pipe(
+      take(1),
+      tap( result => {
+        result.forEach( category => {
+          if ( category.selected ) {
+          this.store.dispatch(new InitialNews(category.id));
+          }
+        });
+      })
+    ).subscribe();
   }
 
   @HostListener('window:offline', ['$event'])

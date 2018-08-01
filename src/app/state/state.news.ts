@@ -7,7 +7,7 @@ import { Store, Select } from '@ngxs/store';
 import { Observable, of } from 'rxjs';
 import { stringToCategory} from '../category.function';
 import { NewsDataService } from '../service/news-data.service';
-import { map, take, exhaustMap, tap, catchError, skipWhile } from 'rxjs/operators';
+import { map, take, exhaustMap, tap, catchError } from 'rxjs/operators';
 
 
  /**

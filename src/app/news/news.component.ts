@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CategoryState, SetCategory } from '../state/state.category';
 import { stringToCategory, CategoryItem } from '../category.function';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
+import { map, tap, withLatestFrom, take } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-news',
@@ -10,7 +12,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./news.component.css']
 })
 
-export class NewsComponent implements OnInit {
+export class NewsComponent {
 
   @Select(CategoryState.setCategory) setCategory: Observable<CategoryItem>;
   @Select(CategoryState.selectedCategories) categories: Observable<Set<CategoryItem>>;
@@ -21,24 +23,20 @@ export class NewsComponent implements OnInit {
     private store: Store,
   ) { }
 
-  ngOnInit() {
-    this.setLastStateOfCategoryViewed();
-  }
 
-  /**
-   * sets inital view of tabs based on last known state
-   */
-  setLastStateOfCategoryViewed(): void {
-    let found;
-    this.setCategory.subscribe(category => {
-      this.categories.subscribe( categories => {
-        found = Array.from(categories).find( cat => cat.id === category.id);
-      }).unsubscribe();
-    }).unsubscribe();
-    if (found) {
-      this.tabSelected = found.tabIndex;
-    }
-  }
+
+  get selectedIndex() {
+    return this.categories.pipe(
+        withLatestFrom(this.setCategory),
+        map(([categories, setCategory]) => {
+          const find = Array.from(categories).find(cat => cat.id === setCategory.id);
+          if (!find) {
+            this.store.dispatch(new SetCategory(stringToCategory(Array.from(categories)[0].id)));
+          }
+          return find ? find.tabIndex : 0;
+        })
+    );
+}
 
 
 /**
@@ -46,14 +44,13 @@ export class NewsComponent implements OnInit {
  * @param event - the event from template
  */
   public tabChanged(event) {
-    let found;
-    this.categories.subscribe( categories => {
-      found = Array.from(categories).find( category => category.tabIndex === event);
-    }).unsubscribe();
-
-    if ( found ) {
-      this.store.dispatch(new SetCategory(stringToCategory(found.id)));
-    }
+    this.categories.pipe(
+      take(1),
+      map(results => {
+        return Array.from(results).find( category => category.tabIndex === event).id;
+        }),
+      tap(results => this.store.dispatch(new SetCategory(stringToCategory(results))))
+    ).subscribe();
   }
 
 }
