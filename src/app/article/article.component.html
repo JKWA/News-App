@@ -1,9 +1,8 @@
 
 
-<div *ngIf="retrieving" class="spinner">
+<div *ngIf="!initialArticleLoadComplete | async" class="spinner">
   <mat-spinner></mat-spinner>
 </div>
-
 
 <div detect-scroll  
     (onScroll)="handleScroll($event)" 
@@ -11,13 +10,13 @@
     [topOffset]="topOffset" >
 
 
-  <div *ngFor="let article of articles">
+  <div *ngFor="let article of getArticles | async">
 
     <mat-card id="{{article.id}}" class="news-card mat-elevation-z8">
       <mat-card-header>
         <mat-card-title>
             <img src="{{article.urlToImage}}" 
-            alt="{{article.description}}"
+            alt="Image for {{article.source.name}} article"
             mat-card-image>
         </mat-card-title>
       </mat-card-header>

@@ -2,6 +2,9 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Article } from '../article';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
+import { interval, merge } from 'rxjs';
+import { map, tap, exhaustMap, startWith, withLatestFrom } from 'rxjs/operators';
+
 import { FilterState, Filter } from '../state/state.filter';
 import { NewsStateModel, NewsState, AddNews } from '../state/state.news';
 import { OnlineState } from '../state/state.online';
@@ -34,43 +37,53 @@ export class ArticleComponent implements OnInit {
   scrolledToInititalView = true;
   tabViewed: CategoryItem;
   online = true;
-  addingData = false;
+  currentlyAddingDataLock = false;
   throttle;
+  initialScroll = false;
 
   constructor(
     private store: Store,
   ) { }
 
   ngOnInit() {
-    this.setPageData();
     this.watchCategoryBeingViewed();
     this.onlineStatus.subscribe( result => this.online = result);
+
+    this.stateNews.pipe(
+      map( results => results[this.category].clientDataLoaded),
+      tap(complete => {
+        if ( complete && !this.initialScroll ) {
+          setTimeout(_ => this.scrollToLastViewed(), 300);
+          this.initialScroll = true;
+        }
+      })
+    ).subscribe();
+
   }
 
-/**
- * observe and filter articles
- */
-  setPageData() {
-    this.stateNews.subscribe(result => {
-      this.filters.subscribe(filters => {
-        // console.log(result[this.category].articles.length)
-
+  get getArticles() {
+    return this.stateNews.pipe(
+      withLatestFrom(this.filters),
+      map(([stateNews, filters]) => {
         const regFilter = new RegExp(Array.from(filters).join('|'), 'i');
-            const allArticles = result[this.category].articles;
-            this.articles = filters.size
-              ? allArticles.filter(article => {
-                  return article.title && article.description
-                        ? ! (article.title.match(regFilter) || article.description.match(regFilter) || article.source.name.match(regFilter))
-                        : false;
-              })
-              : allArticles;
-          if ( result[this.category].firstLoadComplete ) {
-            this.scrollToLastViewed();
-          }
-      });
-      this.retrieving = !result[this.category].firstLoadComplete;
-    });
+        const allArticles = stateNews[this.category].articles;
+        return filters.size
+          ? allArticles.filter(article => {
+              return article.title && article.description
+                    ? ! (article.title.match(regFilter) || article.description.match(regFilter) || article.source.name.match(regFilter))
+                    : false;
+          })
+          : allArticles;
+      })
+    );
   }
+
+  get initialArticleLoadComplete() {
+    return this.stateNews.pipe(
+      map( results => results[this.category].firstLoadComplete)
+    );
+  }
+
 
   /**
  * watch the tab being viewed
@@ -91,13 +104,12 @@ export class ArticleComponent implements OnInit {
 
     if (event.isReachingBottom
         && window.navigator.onLine
-        && !this.retrieving
         && this.category === this.tabViewed.id
-        && !this.addingData
+        && !this.currentlyAddingDataLock
       ) {
-        this.addingData = true;
+        this.currentlyAddingDataLock = true;
         clearTimeout(this.throttle);
-        this.throttle = setTimeout(() => this.addingData = false, 2000);
+        this.throttle = setTimeout(() => this.currentlyAddingDataLock = false, 2000);
         this.store.dispatch(new AddNews(this.category));
     }
 

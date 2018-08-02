@@ -202,7 +202,7 @@ export class NewsState {
       const copyArticles = copyCurrentState[category].articles.splice(0).concat(result);
       const clientFlag = (copyCurrentState[category].clientDataLoaded)
         ? true
-        :  service === 'LocalDb' ? true : false;
+        :  service === 'LocalDB' ? true : false;
 
       const pageUpdate = service === 'NewsService'
         ? copyCurrentState[category].page + 1
