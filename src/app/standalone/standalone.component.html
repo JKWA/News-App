@@ -1,0 +1,74 @@
+<div class="page mat-typography" fxLayout="column">
+    <nav>
+      <a routerLink="/news"> 
+        <div fxLayout="row">
+          <mat-icon>arrow_back</mat-icon> 
+          <h4>Back to News</h4>
+        </div>
+      </a>
+    </nav>
+
+    <div *ngIf="isApple">
+      <h2>Add Marty-News to the iPhone home screen</h2> 
+      <table>
+        <tr>
+          <td>
+              <img src="assets/icons/Navigation_Action.png" 
+              alt="Apple navigation action icon">
+          </td>
+          <td>Tap the <span class="highlight-text">Share</span> icon at bottom of the screen.</td>
+        </tr>
+        <tr>
+          <td>
+              <img src="assets/icons/Navigation_Add.png" 
+              alt="Apple navigation add icon">
+          </td>
+          <td>Tap <span class="highlight-text">Add to Home Screen</span> icon.
+            <br><i>(You may need to scroll right)</i></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="iphone-text">Add</div>
+          </td>
+          <td>Tap the <span class="highlight-text">Add</span> button on the upper right of screen</td>
+        </tr>
+        <tr>
+          <td>
+              <img src="assets/icons/icon-32x32.png" 
+                height="32px" 
+                width="32px"
+                alt="Marty News Icon">
+          </td>
+        <td>Find <span class="highlight-text">Marty News</span> on the home screen</td>
+      </tr>
+      </table>
+    </div>
+
+    <div *ngIf="isAndroid">
+        <h2>Add Marty-News to the Andorid home screen</h2> 
+        <table>
+          <tr>
+            <td>
+                <mat-icon>more_vert</mat-icon>
+            </td>
+            <td>Tap the <span class="highlight-text">More</span> icon at the top right of the screen.</td>
+          </tr>
+          <tr>
+              <td>
+                <div class="iphone-text">ADD</div>
+              </td>
+              <td>Tap the <span class="highlight-text">ADD</span> button</td>
+            </tr>
+            <tr>
+          <tr>
+            <td>
+                <img src="assets/icons/icon-32x32.png" 
+                  height="32px" 
+                  width="32px"
+                  alt="Marty News Icon">
+            </td>
+          <td>Find <span class="highlight-text">Marty News</span> on the home screen</td>
+        </tr>
+        </table>
+      </div>
+</div>

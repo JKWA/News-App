@@ -24,6 +24,23 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.setNewsData();
+  }
+
+  get isMobleAndEmbedded() {
+    const isMobile = /iphone|ipad|ipod|android/.test( navigator.userAgent.toLowerCase() );
+
+    // @ts-ignore
+    const isStandalone = ('standalone' in navigator) && (navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
+    return isMobile
+            ?  isStandalone
+              ? false
+              : true // if ios and not running in standalone mode
+            : false;
+  }
+
+
+  setNewsData() {
     this.categories.pipe(
       take(1),
       tap( result => {
@@ -35,6 +52,17 @@ export class AppComponent implements OnInit {
       })
     ).subscribe();
   }
+
+
+
+
+  openStandAloneMessage() {
+    // this.store.dispatch(new UpdateOnline(false));
+    this.snackBar.open('Save to your homescreen', '', {
+      duration: 0,
+    });
+  }
+
 
   @HostListener('window:offline', ['$event'])
   openSnackbar(event) {

@@ -1,0 +1,27 @@
+.iphone-text {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #0070c9;
+    font-weight: 800;
+}
+
+.highlight-text {
+    color: rgb(26, 26, 26);
+    font-weight: 600;
+}
+
+.page {
+    margin: 20px;
+}
+
+a {
+    text-decoration: none;
+}
+
+table {
+    margin: 0 0 0 20px;
+}
+
+tr>td {
+    padding-bottom: 1em;
+    padding-top: 1em;
+}
