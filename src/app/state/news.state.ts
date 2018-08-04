@@ -1,7 +1,7 @@
 import { State, Action, StateContext } from '@ngxs/store';
 ​import { Article } from '../article';
-import { FilterState } from './state.filter';
-import { AddMessage, AddError, UpdateState } from './state.log';
+import { FilterState } from './filter.state';
+import { AddMessage, AddError, UpdateState } from './log.state';
 import { LocalDbService } from '../service/local-db.service';
 import { Store, Select } from '@ngxs/store';
 import { Observable, of } from 'rxjs';

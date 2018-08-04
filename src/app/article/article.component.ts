@@ -5,14 +5,14 @@ import { Observable } from 'rxjs';
 import { interval, merge } from 'rxjs';
 import { map, tap, exhaustMap, startWith, withLatestFrom } from 'rxjs/operators';
 
-import { FilterState, Filter } from '../state/state.filter';
-import { NewsStateModel, NewsState, AddNews } from '../state/state.news';
-import { OnlineState } from '../state/state.online';
-import { CategoryState } from '../state/state.category';
+import { FilterState, Filter } from '../state/filter.state';
+import { NewsStateModel, NewsState, AddNews } from '../state/news.state';
+import { OnlineState } from '../state/online.state';
+import { CategoryState } from '../state/category.state';
 import { CategoryItem } from '../category.function';
 
 import { ScrollEvent } from 'ngx-scroll-event';
-import { AddMessage } from '../state/state.log';
+import { AddMessage } from '../state/log.state';
 
 @Component({
   selector: 'app-article',

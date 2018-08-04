@@ -1,11 +1,11 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { CategoryState } from './state/state.category';
+import { CategoryState } from './state/category.state';
 import { CategoryItem } from './category.function';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { InitialNews } from './state/state.news';
-import { UpdateOnline } from './state/state.online';
+import { InitialNews } from './state/news.state';
+import { UpdateOnline } from './state/online.state';
 import { take, tap } from 'rxjs/operators';
 
 

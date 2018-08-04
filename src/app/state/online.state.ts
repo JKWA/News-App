@@ -1,5 +1,5 @@
 import {Store, State, Action, StateContext, Selector } from '@ngxs/store';
-import { UpdateState } from './state.log';
+import { UpdateState } from './log.state';
 
 /**
    * adds category to possibly be displayed

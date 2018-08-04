@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CategoryState, SetCategory } from '../state/state.category';
+import { CategoryState, SetCategory } from '../state/category.state';
 import { stringToCategory, CategoryItem } from '../category.function';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';

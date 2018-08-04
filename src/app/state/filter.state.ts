@@ -1,5 +1,5 @@
 import {Store, Selector, State, Action, StateContext } from '@ngxs/store';
-import { UpdateState } from './state.log';
+import { UpdateState } from './log.state';
 
 // TODO add filter view for just the list of filters and update filter component
 

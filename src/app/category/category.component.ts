@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { AddCategory, RemoveCategory, CategoryState } from '../state/state.category';
+import { AddCategory, RemoveCategory, CategoryState } from '../state/category.state';
 import { CategoryItem } from '../category.function';
-import { InitialNews } from '../state/state.news';
+import { InitialNews } from '../state/news.state';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 

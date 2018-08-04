@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { Log, LogState , ClearLog} from '../state/state.log';
+import { Log, LogState , ClearLog} from '../state/log.state';
 
 @Component({
   selector: 'app-log',

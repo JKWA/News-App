@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AddFilter, RemoveFilter, Filter, FilterState } from '../state/state.filter';
+import { AddFilter, RemoveFilter, Filter, FilterState } from '../state/filter.state';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 
