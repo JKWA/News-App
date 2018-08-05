@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Article } from '../article';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
@@ -18,7 +18,7 @@ import { AddMessage } from '../state/log.state';
   providers: []
 })
 
-export class ArticleComponent implements OnInit {
+export class ArticleComponent implements OnInit, OnDestroy {
 
   @Input() category: string;
   @Select(FilterState.allFilters) filters: Observable<Set<Filter>>;
@@ -37,6 +37,8 @@ export class ArticleComponent implements OnInit {
   currentlyAddingDataLock = false;
   throttle;
   initialScroll = false;
+  onlineSubscription;
+  newsStateSubscription;
 
   constructor(
     private store: Store,
@@ -44,9 +46,9 @@ export class ArticleComponent implements OnInit {
 
   ngOnInit() {
     this.watchCategoryBeingViewed();
-    this.onlineStatus.subscribe( result => this.online = result);
+    this.onlineSubscription = this.onlineStatus.subscribe( result => this.online = result);
 
-    this.stateNews.pipe(
+    this.newsStateSubscription = this.stateNews.pipe(
       map( results => results[this.category].clientDataLoaded),
       tap(complete => {
         if ( complete && !this.initialScroll ) {
@@ -56,6 +58,11 @@ export class ArticleComponent implements OnInit {
       })
     ).subscribe();
 
+  }
+
+  ngOnDestroy() {
+    this.onlineSubscription.unsubscribe();
+    this.newsStateSubscription.unsubscribe();
   }
 
 /**
