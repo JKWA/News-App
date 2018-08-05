@@ -16,31 +16,39 @@ export class FilterComponent {
   @Select(FilterState.allFilters) filters: Observable<Set<Filter>>;
   constructor(private store: Store)  { }
 
-
 /**
  * observe key input and trigger addFilter() when "ENTER"
- * @param keyCode - keyCode from event object
+ *
+ * @param {*} {keyCode}
+ * @memberof FilterComponent
  */
-  watchForEnter({keyCode}) {
+watchForEnter({keyCode}): void {
     if ( keyCode === 13 ) {
       this.addFilter();
     }
   }
 
+
 /**
  * add filter to filter state
+ *
+ * @memberof FilterComponent
  */
-  addFilter() {
+addFilter(): void {
     if ( this.newFilter ) {
       this.store.dispatch(new AddFilter(this.newFilter.toString()));
       this.newFilter = '';
     }
   }
 
+
 /**
  * remove filter from filter state
+ *
+ * @param {*} item
+ * @memberof FilterComponent
  */
-  removeFilter(item) {
+removeFilter(item): void {
     if ( item ) {
       this.store.dispatch(new RemoveFilter(item));
     }

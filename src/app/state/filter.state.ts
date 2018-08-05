@@ -52,7 +52,14 @@ export class FilterState {
     return state.listOfFilters;
   }
 
-  @Action(AddFilter)
+/**
+ * add a new filter
+ *
+ * @param {StateContext<FilterStateModel>} ctx
+ * @param {AddFilter} action
+ * @memberof FilterState
+ */
+@Action(AddFilter)
   addFilter(ctx: StateContext<FilterStateModel>, action: AddFilter) {
     const currentState = Object.assign({}, ctx.getState());
 
@@ -71,7 +78,14 @@ export class FilterState {
 
   }
 
-  @Action(RemoveFilter)
+/**
+ * remove an existing filter
+ *
+ * @param {StateContext<FilterStateModel>} ctx
+ * @param {RemoveFilter} action
+ * @memberof FilterState
+ */
+@Action(RemoveFilter)
   removeFilter(ctx: StateContext<FilterStateModel>, action: RemoveFilter) {
     const currentState = Object.assign({}, ctx.getState());
 

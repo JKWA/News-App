@@ -17,12 +17,15 @@ export class CategoryComponent {
 
     constructor(private store: Store) { }
 
+
 /**
  * changing values from the toggle button updates the category state
- * @param category - category string
- * @param {checked} - the checked parmeter from the event
+ *
+ * @param {*} category
+ * @param {*} {checked}
+ * @memberof CategoryComponent
  */
-  onClick(category, {checked}) {
+onClick(category, {checked}): void {
 
     if ( checked ) {
       this.store.dispatch(new AddCategory(category));

@@ -27,7 +27,13 @@ export class AppComponent implements OnInit {
     this.setNewsData();
   }
 
-  get isMobleAndEmbedded() {
+/**
+ * is mobile device and not standalone
+ *
+ * @readonly
+ * @memberof AppComponent
+ */
+get isMobleAndEmbedded() {
     const isMobile = /iphone|ipad|ipod|android/.test( navigator.userAgent.toLowerCase() );
 
     // @ts-ignore
@@ -39,8 +45,12 @@ export class AppComponent implements OnInit {
             : false;
   }
 
-
-  setNewsData() {
+/**
+ *get data for all selected categories
+ *
+ * @memberof AppComponent
+ */
+setNewsData() {
     this.categories.pipe(
       take(1),
       tap( result => {
@@ -53,17 +63,12 @@ export class AppComponent implements OnInit {
     ).subscribe();
   }
 
-
-
-
-  openStandAloneMessage() {
-    // this.store.dispatch(new UpdateOnline(false));
-    this.snackBar.open('Save to your homescreen', '', {
-      duration: 0,
-    });
-  }
-
-
+  /**
+   * open offline message and dispatch status
+   *
+   * @param {*} event
+   * @memberof AppComponent
+   */
   @HostListener('window:offline', ['$event'])
   openSnackbar(event) {
     this.store.dispatch(new UpdateOnline(false));
@@ -72,10 +77,17 @@ export class AppComponent implements OnInit {
     });
   }
 
+/**
+ * closes offline message and dispatch
+ *
+ * @param {*} event
+ * @memberof AppComponent
+ */
   @HostListener('window:online', ['$event'])
   closeSnackbar(event) {
     this.store.dispatch(new UpdateOnline(true));
     this.snackBar.dismiss();
   }
+
 }
 

@@ -8,11 +8,13 @@ export interface CategoryItem {
     viewing: boolean;
   }
 
-  /**
-   * transforms a string to a category enum
-   * @param cat - the cateogy string
-   * @return category enum, defaults to General
-   */
+/**
+ * transforms a string to a category enum
+ *
+ * @export
+ * @param {string} cat
+ * @returns {Category}
+ */
 export function stringToCategory(cat: string): Category {
     let returnCat;
 
@@ -47,10 +49,12 @@ export function stringToCategory(cat: string): Category {
   }
 
   /**
-     * transforms a comma seperated string to a set of category enums
-     * @param cat - cateogy string seperated by commas
-     * @return set of category enums, each defaults to General
-     */
+   * transforms a comma seperated string to a set of category enums
+   *
+   * @export
+   * @param {string} cat
+   * @returns {Set<Category>}
+   */
   export function stringToCategories(cat: string): Set<Category> {
       const categorySet = new Set();
       cat.split(',').map(category => {
@@ -60,11 +64,12 @@ export function stringToCategory(cat: string): Category {
 
     }
 
-
     /**
-     * transforms a category enum to an object with helpful values
-     * @param category - the cateogy enum
-     * @return object with display and id values, defuaults to General values
+     * transforms category enum to an CategoryItem
+     *
+     * @export
+     * @param {Category} category
+     * @returns {CategoryItem}
      */
     export function categoryToObject(category: Category): CategoryItem {
       let catObj;
@@ -126,11 +131,12 @@ export function stringToCategory(cat: string): Category {
       return catObj;
     }
 
-    /**
-     * creates all the initial values
-     * @param category - the cateogy enum
-     * @return object with display and id values, defuaults to General values
-     */
+  /**
+   * creates all the initial values
+   *
+   * @export
+   * @returns {Map<string, CategoryItem>}
+   */
   export function createAllCategories(): Map<string, CategoryItem> {
     const set = new Set ([
         categoryToObject(Category.Business),

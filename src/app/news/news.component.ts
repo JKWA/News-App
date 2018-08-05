@@ -25,7 +25,14 @@ export class NewsComponent {
 
 
 
-  get selectedIndex() {
+/**
+ * Changes tab index in response to category selected
+ *
+ * @readonly
+ * @type {Observable<number>}
+ * @memberof NewsComponent
+ */
+get selectedIndex(): Observable<number> {
     return this.categories.pipe(
         withLatestFrom(this.setCategory),
         map(([categories, setCategory]) => {
@@ -41,9 +48,12 @@ export class NewsComponent {
 
 /**
  * tab changes are reflected to category state
- * @param event - the event from template
+ *
+ * @param {*} event
+ * @memberof NewsComponent
  */
-  public tabChanged(event) {
+
+public tabChanged(event): void {
     this.categories.pipe(
       take(1),
       map(results => {

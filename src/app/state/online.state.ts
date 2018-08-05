@@ -26,8 +26,15 @@ export interface OnlineStateModel {
 
 export class OnlineState {
 
-
-  @Selector() static online(state: OnlineStateModel): boolean {
+/**
+ * whether the client is online
+ *
+ * @static
+ * @param {OnlineStateModel} state
+ * @returns {boolean}
+ * @memberof OnlineState
+ */
+@Selector() static online(state: OnlineStateModel): boolean {
     return state.online;
   }
 
@@ -35,8 +42,14 @@ export class OnlineState {
   constructor(
     private store: Store
   ) { }
-
-  @Action( UpdateOnline)
+/**
+ * changes online status
+ *
+ * @param {StateContext<OnlineStateModel>} ctx
+ * @param {UpdateOnline} action
+ * @memberof OnlineState
+ */
+@Action( UpdateOnline)
   updateOnline(ctx: StateContext<OnlineStateModel>, action: UpdateOnline) {
     const currentState = Object.assign({}, ctx.getState());
 

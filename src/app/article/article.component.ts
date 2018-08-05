@@ -2,15 +2,12 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Article } from '../article';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { interval, merge } from 'rxjs';
-import { map, tap, exhaustMap, startWith, withLatestFrom } from 'rxjs/operators';
-
+import { map, tap, withLatestFrom } from 'rxjs/operators';
 import { FilterState, Filter } from '../state/filter.state';
 import { NewsStateModel, NewsState, AddNews } from '../state/news.state';
 import { OnlineState } from '../state/online.state';
 import { CategoryState } from '../state/category.state';
 import { CategoryItem } from '../category.function';
-
 import { ScrollEvent } from 'ngx-scroll-event';
 import { AddMessage } from '../state/log.state';
 
@@ -61,7 +58,14 @@ export class ArticleComponent implements OnInit {
 
   }
 
-  get getArticles() {
+/**
+ * get articles by category and apply filters
+ *
+ * @readonly
+ * @type {Observable<Article[]>}
+ * @memberof ArticleComponent
+ */
+get getArticles(): Observable<Article[]> {
     return this.stateNews.pipe(
       withLatestFrom(this.filters),
       map(([stateNews, filters]) => {
@@ -78,19 +82,27 @@ export class ArticleComponent implements OnInit {
     );
   }
 
-  get initialArticleLoadComplete() {
+/**
+ * observe when first load of articles is completed
+ *
+ * @readonly
+ * @memberof ArticleComponent
+ */
+get initialArticleLoadComplete(): Observable<boolean> {
     return this.stateNews.pipe(
       map( results => results[this.category].firstLoadComplete)
     );
   }
 
 
-  /**
- * watch the tab being viewed
- * used for scrolling event to identify which category should be triggered
- * to add articles
+
+/**
+ * identifies which category is currently being viewed
+ *
+ * @private
+ * @memberof ArticleComponent
  */
-  watchCategoryBeingViewed() {
+private watchCategoryBeingViewed() {
     this.setCategory.subscribe(category => {
       this.tabViewed = category;
     });
@@ -100,7 +112,7 @@ export class ArticleComponent implements OnInit {
  * watch scroll event and trigger for more articles when reaching bottom
  * @param event - the event from template
  */
-  public handleScroll(event: ScrollEvent) {
+  public handleScroll(event: ScrollEvent): void {
 
     if (event.isReachingBottom
         && window.navigator.onLine
@@ -113,28 +125,29 @@ export class ArticleComponent implements OnInit {
         this.store.dispatch(new AddNews(this.category));
     }
 
-    // if (event.isReachingTop) {
-    //   console.log(`the user is reaching the top`);
-    // }
-
   }
 
 
-  /**
+/**
  * set to last viewed article and forward to url
- * @param event - the event from template
+ *
+ * @param {*} article
+ * @memberof ArticleComponent
  */
-  public gotToArticle (article) {
+public gotToArticle (article): void {
     window.localStorage.setItem('lastReadArticle', article.id);
     if ( this.online ) {
       window.location.href = article.url;
     }
   }
 
-  /**
+ /**
  * if article id matches last viewed, then sroll to this position
- */
-  private scrollToLastViewed() {
+  *
+  * @private
+  * @memberof ArticleComponent
+  */
+ private scrollToLastViewed(): void {
     const anchor = window.localStorage.getItem('lastReadArticle');
     if (anchor) {
       const article = document.getElementById(anchor);

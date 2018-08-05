@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Article } from '../article';
 import { getKey } from '../key';
@@ -27,7 +28,17 @@ export class NewsDataService {
     private http: HttpClient,
   ) { }
 
-  getNews (category: Category, pageNumber: number, filters) {
+
+/**
+ * gets news from the api
+ *
+ * @param {Category} category
+ * @param {number} pageNumber
+ * @param {*} filters
+ * @returns {Observable<Article[]>}
+ * @memberof NewsDataService
+ */
+getNews (category: Category, pageNumber: number, filters): Observable<Article[]> {
 
     const sources: string = getSources(category).map(item => item.id).join();
 

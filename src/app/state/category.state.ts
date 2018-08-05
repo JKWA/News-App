@@ -3,9 +3,12 @@ import { UpdateState } from './log.state';
 import { CategoryItem, stringToCategory, createAllCategories } from '../category.function';
 import { Category } from '../category.enum';
 
-/**
-   * adds category to possibly be displayed
-   * @param category - category enum
+
+  /**
+   * adds category to be displayed
+   *
+   * @export
+   * @class AddCategory
    */
   export class AddCategory {
     static readonly type = 'AddCategory';
@@ -14,9 +17,12 @@ import { Category } from '../category.enum';
     ) {}
   }
 
+
 /**
- * removes category to possibly be displayed
- * @param category - category enum
+ * removes category to be displayed
+ *
+ * @export
+ * @class RemoveCategory
  */
 export class RemoveCategory {
   static readonly type = 'RemoveCategory';
@@ -25,9 +31,12 @@ export class RemoveCategory {
   ) {}
 }
 
+
 /**
  * sets category to be displayed
- * @param category - category enum
+ *
+ * @export
+ * @class SetCategory
  */
 export class SetCategory {
   static readonly type = 'SetCategory';
@@ -59,8 +68,15 @@ export class CategoryState {
     return find ? find : categoryArray[0];
   }
 
-
-  @Selector() static allCategories(state: CategoryStateModel): Set<CategoryItem> {
+/**
+ * returns all categoryies
+ *
+ * @static
+ * @param {CategoryStateModel} state
+ * @returns {Set<CategoryItem>}
+ * @memberof CategoryState
+ */
+@Selector() static allCategories(state: CategoryStateModel): Set<CategoryItem> {
     return new Set(Array.from(state.allCategories.values()));
   }
 
@@ -79,7 +95,14 @@ export class CategoryState {
     private store: Store
   ) { }
 
-  @Action( AddCategory)
+/**
+ * add category to be displayed in ui
+ *
+ * @param {StateContext<CategoryStateModel>} ctx
+ * @param {AddCategory} action
+ * @memberof CategoryState
+ */
+@Action( AddCategory)
   addCategory(ctx: StateContext<CategoryStateModel>, action: AddCategory) {
     const currentState = Object.assign({}, ctx.getState());
 
@@ -98,7 +121,14 @@ export class CategoryState {
 
   }
 
-  @Action(RemoveCategory)
+/**
+ * remove category to be displayed in ui
+ *
+ * @param {StateContext<CategoryStateModel>} ctx
+ * @param {RemoveCategory} action
+ * @memberof CategoryState
+ */
+@Action(RemoveCategory)
   removeCategory(ctx: StateContext<CategoryStateModel>, action: RemoveCategory) {
     const currentState = Object.assign({}, ctx.getState());
 
@@ -118,8 +148,14 @@ export class CategoryState {
     this.store.dispatch(new UpdateState('Category', `removing ${action.categoryToRemove.display}`, currentState, ctx.getState()));
 
   }
-
-  @Action( SetCategory )
+/**
+ * view currently being shown in ui
+ *
+ * @param {StateContext<CategoryStateModel>} ctx
+ * @param {SetCategory} action
+ * @memberof CategoryState
+ */
+@Action( SetCategory )
   setCategoryItem(ctx: StateContext<CategoryStateModel>, action: SetCategory) {
     const currentState = Object.assign({}, ctx.getState());
 

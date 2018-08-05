@@ -77,12 +77,27 @@ export interface LogStateModel {
 
 
 export class LogState {
-
-  @Selector() static allMessageLogs(state: LogStateModel): Log[] {
+/**
+ * gets messages and errors
+ *
+ * @static
+ * @param {LogStateModel} state
+ * @returns {Log[]}
+ * @memberof LogState
+ */
+@Selector() static allMessageLogs(state: LogStateModel): Log[] {
     return  Array.from(state.logs).filter(log => log.type !== 'state_change');
   }
 
-  @Action(AddMessage)
+/**
+ * adds a new message to the log
+ * console logs in dev mode
+ *
+ * @param {StateContext<LogStateModel>} ctx
+ * @param {AddMessage} action
+ * @memberof LogState
+ */
+@Action(AddMessage)
   addMessage(ctx: StateContext<LogStateModel>, action: AddMessage) {
     const location = action.location;
     const message = action.message;
@@ -104,7 +119,15 @@ export class LogState {
     // }
   }
 
-  @Action(AddError)
+/**
+ * adds a new error to the log
+ * console logs in dev mode
+ *
+ * @param {StateContext<LogStateModel>} ctx
+ * @param {AddError} action
+ * @memberof LogState
+ */
+@Action(AddError)
   addError(ctx: StateContext<LogStateModel>, action: AddError) {
     const location = action.location;
     const message = action.message;
@@ -125,8 +148,14 @@ export class LogState {
       console.log(`%c ${date.format('kk:mm:ss')} - ${location}: ${message}`, 'background: red; color: white');
     // }
   }
-
-  @Action(UpdateState)
+/**
+ * console logs the updated state in dev mode
+ *
+ * @param {StateContext<LogStateModel>} ctx
+ * @param {UpdateState} action
+ * @memberof LogState
+ */
+@Action(UpdateState)
   updateState(ctx: StateContext<LogStateModel>, action: UpdateState) {
     const location = action.location;
     const message = action.message;
@@ -151,8 +180,14 @@ export class LogState {
     });
   }
 
-
-  @Action(ClearLog)
+/**
+ * clear the dev log
+ *
+ * @param {StateContext<LogStateModel>} ctx
+ * @param {ClearLog} action
+ * @memberof LogState
+ */
+@Action(ClearLog)
   ClearLog(ctx: StateContext<LogStateModel>, action: ClearLog) {
     const date: moment.Moment = moment(new Date());
 

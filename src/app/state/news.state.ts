@@ -87,8 +87,16 @@ export class NewsState {
     private newsService: NewsDataService
   ) { }
 
-
-  @Action(InitialNews)
+/**
+ * gets data from api and client
+ * caches api data to client
+ * finds and removes expired client cache
+ *
+ * @param {StateContext<NewsStateModel>} ctx
+ * @param {AddNews} action
+ * @memberof NewsState
+ */
+@Action(InitialNews)
   initialNews(ctx: StateContext<NewsStateModel>, action: AddNews) {
     const state = ctx.getState();
     const pageNumber = state[action.category].page;
@@ -140,8 +148,16 @@ export class NewsState {
       )
     ).subscribe();
   }
+/**
+ * gets data from api and adds to list of articles
+ * caches api data to client
 
-  @Action(AddNews)
+ * @param {StateContext<NewsStateModel>} ctx
+ * @param {AddNews} action
+ * @returns
+ * @memberof NewsState
+ */
+@Action(AddNews)
   addNews(ctx: StateContext<NewsStateModel>, action: AddNews) {
     const state = ctx.getState();
     const pageNumber = state[action.category].page;
@@ -180,8 +196,15 @@ export class NewsState {
 
   }
 
-
-  private setFlagForRetrevingStatus(ctx, category) {
+/**
+ * sets flag that data is currently being received for this category
+ *
+ * @private
+ * @param {*} ctx
+ * @param {*} category
+ * @memberof NewsState
+ */
+private setFlagForRetrevingStatus(ctx, category) {
     const copyCurrentState = Object.assign({}, ctx.getState());
 
     ctx.patchState({
@@ -195,8 +218,18 @@ export class NewsState {
     this.store.dispatch(new AddMessage('NewsService', `fetching ${category} news`));
   }
 
-
-  private updateState(ctx, category, result, service) {
+/**
+ * updates state
+ *
+ * @private
+ * @param {*} ctx
+ * @param {*} category
+ * @param {*} result
+ * @param {*} service
+ * @returns
+ * @memberof NewsState
+ */
+private updateState(ctx, category, result, service) {
       const state = ctx.getState();
       const copyCurrentState = Object.assign({}, ctx.getState());
       const copyArticles = copyCurrentState[category].articles.splice(0).concat(result);
@@ -243,12 +276,16 @@ export class NewsState {
   }
 
 
- /**
+  /**
    * Handle Http operation that failed.
+   * Dispatch error
    * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   * @return empty array for the article value
+   * @private
+   * @template T
+   * @param {string} [operation='operation'] - name of the operation that failed
+   * @param {T} [result] - optional value to return as the observable result
+   * @returns empty array for the articles value
+   * @memberof NewsState
    */
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {

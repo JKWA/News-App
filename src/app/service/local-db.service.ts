@@ -14,12 +14,16 @@ import { Observable } from 'rxjs';
 export class LocalDbService {
 
   constructor() { }
+
 /**
- * set articles to indexed DB
- * @param category: the category
- * @param articles: the articles to save
+ * save articles to indexed DB
+ *
+ * @param {Category} category
+ * @param {Article[]} articles
+ * @returns
+ * @memberof LocalDbService
  */
-  setData(category: Category, articles: Article[]) {
+setData(category: Category, articles: Article[]): Observable<any> {
     return new Observable(observer => {
       const indexedDB = window.indexedDB;
 
@@ -101,13 +105,15 @@ export class LocalDbService {
   });
   }
 
+
 /**
- * observable that gets articles from indexed DB by category
- * @param category: the category
- * @param articles: the articles to save
- * @returns observer for articles
+ * gets articles from indexed DB by category
+ *
+ * @param {Category} category
+ * @returns
+ * @memberof LocalDbService
  */
-  getData(category: Category) {
+getData(category: Category): Observable<Article[]> {
     return new Observable(observer => {
       const indexedDB = window.indexedDB;
 
@@ -173,13 +179,15 @@ export class LocalDbService {
     });
   }
 
-  /**
- * observable that gets old articles
- * @param category: the category
- * @returns observable for an array of article keys
- */
 
-  getExpiredData(category: Category): Observable<number[]> {
+/**
+ * gets articles older than 30 minutes
+ *
+ * @param {Category} category
+ * @returns {Observable<number[]>}
+ * @memberof LocalDbService
+ */
+getExpiredData(category: Category): Observable<number[]> {
       return new Observable(observer => {
 
       const indexedDB = window.indexedDB;
@@ -242,12 +250,15 @@ export class LocalDbService {
     });
   }
 
-  /**
- * Observable tht removes an article
- * @param primaryKey: indexed DB key for article
- */
 
-  removeArticle(primaryKey: number) {
+/**
+ *  Removes an article
+ *
+ * @param {number} primaryKey
+ * @returns
+ * @memberof LocalDbService
+ */
+removeArticle(primaryKey: number): Observable<any> {
       return new Observable(observer => {
 
       const indexedDB = window.indexedDB;

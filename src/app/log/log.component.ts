@@ -15,10 +15,13 @@ export class LogComponent {
 
   constructor(private store: Store) {}
 
-  /**
+
+/**
  * clear all logs from log state
+ *
+ * @memberof LogComponent
  */
-  clearMessages() {
+clearMessages(): void {
     this.store.dispatch(new ClearLog());
   }
 }

@@ -9,11 +9,25 @@ export class StandaloneComponent {
 
   constructor() { }
 
-  get isApple() {
+/**
+ * test if Apple moble device
+ *
+ * @readonly
+ * @type {boolean}
+ * @memberof StandaloneComponent
+ */
+get isApple(): boolean {
     return /iphone|ipad|ipod/.test( navigator.userAgent.toLowerCase() );
   }
 
-  get isAndroid() {
+/**
+ * tests if Android device
+ *
+ * @readonly
+ * @type {boolean}
+ * @memberof StandaloneComponent
+ */
+get isAndroid(): boolean {
     return /android/.test( navigator.userAgent.toLowerCase() );
   }
 
