@@ -63,6 +63,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.onlineSubscription.unsubscribe();
     this.newsStateSubscription.unsubscribe();
+    clearTimeout(this.throttle);
   }
 
 /**
