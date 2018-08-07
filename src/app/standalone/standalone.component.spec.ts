@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { StandaloneComponent } from './standalone.component';
+import {
+  MatIconModule
+  } from '@angular/material';
 
 describe('StandaloneComponent', () => {
   let component: StandaloneComponent;
@@ -8,7 +10,10 @@ describe('StandaloneComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StandaloneComponent ]
+      declarations: [ StandaloneComponent ],
+      imports: [
+        MatIconModule
+      ],
     })
     .compileComponents();
   }));

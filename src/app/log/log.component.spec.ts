@@ -1,6 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { LogComponent } from './log.component';
+import { LogState } from '../state/log.state';
+import * as NgStore from '@ngxs/store';
+import { NgxsModule } from '@ngxs/store';
+import {
+  MatIconModule,
+  MatTableModule,
+  } from '@angular/material';
 
 describe('LogComponent', () => {
   let component: LogComponent;
@@ -8,7 +14,16 @@ describe('LogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LogComponent ]
+      declarations: [ LogComponent ],
+      imports: [
+        MatIconModule,
+        MatTableModule,
+        NgxsModule.forRoot([ LogState ]),
+      ],
+      providers: [
+        NgStore.Store, NgStore.StateStream, NgStore.ɵo,
+        NgStore.ɵm, NgStore.ɵg, NgStore.ɵl, NgStore.ɵp, NgStore.ɵj
+      ]
     })
     .compileComponents();
   }));
