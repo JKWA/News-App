@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
 import { CategoryState } from './state/category.state';
-import { CategoryItem } from './category.function';
+import { CategoryItem } from './utility/category.utility';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { InitialNews } from './state/news.state';

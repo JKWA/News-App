@@ -5,7 +5,7 @@ import { AddMessage, AddError, UpdateState } from './log.state';
 import { LocalDbService } from '../service/local-db.service';
 import { Store, Select } from '@ngxs/store';
 import { Observable, of } from 'rxjs';
-import { stringToCategory} from '../category.function';
+import { stringToCategory} from '../utility/category.utility';
 import { NewsDataService } from '../service/news-data.service';
 import { map, take, exhaustMap, tap, catchError } from 'rxjs/operators';
 

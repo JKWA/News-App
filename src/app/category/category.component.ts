@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AddCategory, RemoveCategory, CategoryState } from '../state/category.state';
-import { CategoryItem } from '../category.function';
+import { CategoryItem } from '../utility/category.utility';
 import { InitialNews } from '../state/news.state';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';

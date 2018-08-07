@@ -1,5 +1,5 @@
 
-
+/* tslint:disable */
 import {Category} from './category.enum';
 
 export function getSources (category: Category) {

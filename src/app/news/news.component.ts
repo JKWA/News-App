@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CategoryState, SetCategory } from '../state/category.state';
-import { stringToCategory, CategoryItem } from '../category.function';
+import { stringToCategory, CategoryItem } from '../utility/category.utility';
 import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { map, tap, withLatestFrom, take } from 'rxjs/operators';

@@ -7,7 +7,7 @@ import { FilterState, Filter } from '../state/filter.state';
 import { NewsStateModel, NewsState, AddNews } from '../state/news.state';
 import { OnlineState } from '../state/online.state';
 import { CategoryState } from '../state/category.state';
-import { CategoryItem } from '../category.function';
+import { CategoryItem } from '../utility/category.utility';
 import { ScrollEvent } from 'ngx-scroll-event';
 import { AddMessage } from '../state/log.state';
 

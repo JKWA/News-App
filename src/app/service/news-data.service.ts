@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Article } from '../article';
-import { getKey } from '../key';
-import { getSources } from '../source';
-import { Category } from '../category.enum';
+import { getKey } from '../utility/key';
+import { getSources } from '../utility/source.utility';
+import { Category } from '../utility/category.enum';
 
 class NewsResponse {
   status: string;

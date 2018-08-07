@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Article } from '../article';
-import { categoryToObject } from '../category.function';
-import { Category } from '../category.enum';
+import { categoryToObject } from '../utility/category.utility';
+import { Category } from '../utility/category.enum';
 import * as moment from 'moment';
 import { Observable } from 'rxjs';
 
