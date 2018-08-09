@@ -1,9 +1,16 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import * as NgStore from '@ngxs/store';
 import { NgxsModule } from '@ngxs/store';
+import { environment } from '../../environments/environment';
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { OnlineState } from '../state/online.state';
 import { CategoryState } from '../state/category.state';
 import { FilterState } from '../state/filter.state';
+import { NewsState } from '../state/news.state';
+import { InMemoryDataService } from '../../testing/in-memory-data.service';
+
+
 import {
   MatCardModule,
   MatIconModule,
@@ -22,11 +29,15 @@ describe('ArticleComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ArticleComponent ],
       imports: [
+        HttpClientModule,
+        ! environment.production
+        ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 })
+        : [],
         MatCardModule,
         MatIconModule,
         MatProgressSpinnerModule,
         ScrollEventModule,
-        NgxsModule.forRoot([ CategoryState, FilterState, OnlineState ]),
+        NgxsModule.forRoot([ CategoryState, FilterState, OnlineState, NewsState ]),
 
       ],
       providers: [

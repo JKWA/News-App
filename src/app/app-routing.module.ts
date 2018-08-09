@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { NewsComponent } from './news/news.component';
 import { CategoryComponent } from './category/category.component';
@@ -7,7 +6,7 @@ import { FilterComponent } from './filter/filter.component';
 import { LogComponent } from './log/log.component';
 import { StandaloneComponent } from './standalone/standalone.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: '/news', pathMatch: 'full' },
 
   {

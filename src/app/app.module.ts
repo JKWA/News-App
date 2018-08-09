@@ -3,7 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { ScrollEventModule } from 'ngx-scroll-event';
 import { HttpClientModule } from '@angular/common/http';
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { NgxsModule } from '@ngxs/store';
+import { InMemoryDataService } from '../testing/in-memory-data.service';
 import { CategoryState } from './state/category.state';
 import { FilterState } from './state/filter.state';
 import { NewsState } from './state/news.state';
@@ -51,6 +53,9 @@ import { StandaloneComponent } from './standalone/standalone.component';
   imports: [
     BrowserModule,
     HttpClientModule,
+    ! environment.production
+      ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 })
+      : [],
     NgxsModule.forRoot([ CategoryState, FilterState, NewsState, LogState, OnlineState ]),
     BrowserAnimationsModule,
     FlexLayoutModule,
