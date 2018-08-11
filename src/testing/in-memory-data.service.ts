@@ -20,7 +20,7 @@ export class InMemoryDataService implements InMemoryDbService {
   }
 
   createDb(reqInfo?: RequestInfo) {
-    return of({everything: getResponse}).pipe(delay(10));
+    return of({everything: getResponse()}).pipe(delay(0));
   }
 }
 

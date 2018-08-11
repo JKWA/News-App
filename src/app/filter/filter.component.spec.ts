@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Observable } from 'rxjs';
-import { map, tap, withLatestFrom } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { FilterComponent } from './filter.component';
 import { FilterState } from '../state/filter.state';
 import { FormsModule } from '@angular/forms';
@@ -44,10 +43,8 @@ describe('FilterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('expect default trump and sanders filters', () => {
-    console.log();
+  it('expect trump and sanders filters by default state', () => {
     component.filters.pipe(
-      // tap (filter => console.log(filter)),
       tap (filter => {
         expect(filter).toEqual(new Set(['trump', 'sanders']));
       })
@@ -60,8 +57,26 @@ describe('FilterComponent', () => {
     expect(filters.length).toEqual(2);
   });
 
-  // });
+  it('remove button should call removeFilter method',  async(() => {
+    spyOn(component, 'removeFilter');
+    const button = fixture.debugElement.nativeElement.querySelector('button[aria-label="Remove filter"]');
+    button.click();
+      fixture.whenStable().then(() => {
+        expect(component.removeFilter).toHaveBeenCalled();
+      });
 
+    })
+  );
+  it('add button should call addFilter method',  async(() => {
+    spyOn(component, 'addFilter');
+    const button = fixture.debugElement.nativeElement.querySelector('button[aria-label="Add filter"]');
+    button.click();
+      fixture.whenStable().then(() => {
+        expect(component.addFilter).toHaveBeenCalled();
+      });
+
+    })
+  );
 
 });
 

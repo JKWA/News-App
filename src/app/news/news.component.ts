@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CategoryState, SetCategory } from '../state/category.state';
 import { stringToCategory, CategoryItem } from '../utility/category.utility';
 import { Store, Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, tap, withLatestFrom, take } from 'rxjs/operators';
 
 
@@ -33,6 +33,7 @@ export class NewsComponent {
  * @memberof NewsComponent
  */
 get selectedIndex(): Observable<number> {
+  // return of(0);
     return this.categories.pipe(
         withLatestFrom(this.setCategory),
         map(([categories, setCategory]) => {

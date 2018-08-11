@@ -292,7 +292,7 @@ private updateState(ctx, category, result, service) {
 
       let userMessage: string;
       let service = 'unknown';
-
+      console.log(error);
       switch (error.status) {
         case 200 :
           break;

@@ -9,12 +9,17 @@ import {
 
 declare const require: any;
 
-// First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting()
 );
-// Then we find all the tests.
-const context = require.context('./', true, /\.spec\.ts$/);
+
+let context;
+
+// all tests
+context = require.context('./', true, /\.spec\.ts$/);
+
+// single test
+// context = require.context('./', true, /article.component\.spec\.ts$/);
 // And load the modules.
 context.keys().map(context);

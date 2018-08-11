@@ -26,7 +26,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   @Select(CategoryState.setCategory) setCategory: Observable<CategoryItem>;
   @Select(OnlineState.online) onlineStatus: Observable<boolean>;
 
-  articles: Article[];
+  // articles: Article[];
   pageNumber = 1;
   retrieving = true;
   bottomOffset = 1000;
@@ -49,7 +49,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.onlineSubscription = this.onlineStatus.subscribe( result => this.online = result);
 
     this.newsStateSubscription = this.stateNews.pipe(
-      map( results => results[this.category].clientDataLoaded),
+      map( results => {
+        return results && results[this.category]
+                ? results[this.category].clientDataLoaded
+                : false;
+      }),
       tap(complete => {
         if ( complete && !this.initialScroll ) {
           setTimeout(_ => this.scrollToLastViewed(), 300);
@@ -78,7 +82,9 @@ get getArticles(): Observable<Article[]> {
       withLatestFrom(this.filters),
       map(([stateNews, filters]) => {
         const regFilter = new RegExp(Array.from(filters).join('|'), 'i');
-        const allArticles = stateNews[this.category].articles;
+        const allArticles = stateNews && stateNews.hasOwnProperty(this.category)
+                              ? stateNews[this.category].articles
+                              : [];
         return filters.size
           ? allArticles.filter(article => {
               return article.title && article.description
@@ -96,7 +102,7 @@ get getArticles(): Observable<Article[]> {
  * @readonly
  * @memberof ArticleComponent
  */
-get initialArticleLoadComplete(): Observable<boolean> {
+  get initialArticleLoadComplete(): Observable<boolean> {
     return this.stateNews.pipe(
       map( results => results[this.category].firstLoadComplete)
     );
@@ -110,7 +116,7 @@ get initialArticleLoadComplete(): Observable<boolean> {
  * @private
  * @memberof ArticleComponent
  */
-private watchCategoryBeingViewed() {
+  private watchCategoryBeingViewed() {
     this.setCategory.subscribe(category => {
       this.tabViewed = category;
     });
@@ -142,7 +148,7 @@ private watchCategoryBeingViewed() {
  * @param {*} article
  * @memberof ArticleComponent
  */
-public gotToArticle (article): void {
+  public gotToArticle (article): void {
     window.localStorage.setItem('lastReadArticle', article.id);
     if ( this.online ) {
       window.location.href = article.url;

@@ -23,8 +23,8 @@
   <div *ngFor="let filter of filters | async" class="mat-typography" fxLayout="row">
     <h3 class="filter-item">{{filter | uppercase}}</h3>
     <button 
-    aria-label="Remove filter"
-    (click) = "removeFilter(filter)" mat-stroked-button>Delete</button>
+      aria-label="Remove filter"
+      (click) = "removeFilter(filter)" mat-stroked-button>Delete</button>
   </div>
 </div>
 

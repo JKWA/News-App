@@ -78,7 +78,7 @@ describe('AppComponent', () => {
         RouterTestingModule.withRoutes(routes)
       ],
       providers: [
-        CategoryState,
+        // CategoryState,
         NgStore.Store, NgStore.StateStream, NgStore.ɵo,
         NgStore.ɵm, NgStore.ɵg, NgStore.ɵl, NgStore.ɵp, NgStore.ɵj
        ]

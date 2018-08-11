@@ -54,7 +54,7 @@ import { StandaloneComponent } from './standalone/standalone.component';
     BrowserModule,
     HttpClientModule,
     ! environment.production
-      ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 })
+      ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService)
       : [],
     NgxsModule.forRoot([ CategoryState, FilterState, NewsState, LogState, OnlineState ]),
     BrowserAnimationsModule,
