@@ -52,7 +52,7 @@ export class AddError {
    * Removes application logs
    */
 export class ClearLog {
-  static readonly type = 'ClearLog';
+  static readonly type = '[Log Component] ClearLog';
   constructor() {}
 }
 

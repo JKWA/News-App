@@ -10,7 +10,7 @@ export type Filter = string;
    * @param fliter - filter to add
    */
 export class AddFilter {
-  static readonly type = 'AddFilter';
+  static readonly type = '[Filter Component] AddFilter';
   constructor(
     public filterToAdd: Filter
   ) {}
@@ -21,7 +21,7 @@ export class AddFilter {
    * @param fliter - filter to remove
    */
 export class RemoveFilter {
-  static readonly type = 'RemoveFilter';
+  static readonly type = '[Filter Component] RemoveFilter';
   constructor(
     public filterToRemove: Filter
   ) {}

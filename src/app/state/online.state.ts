@@ -6,7 +6,7 @@ import { UpdateState } from './log.state';
    * @param category - category enum
    */
   export class UpdateOnline {
-    static readonly type = 'UpdateOnline';
+    static readonly type = '[App Component] UpdateOnline';
     constructor(
       public online: boolean
     ) {}
@@ -49,7 +49,7 @@ export class OnlineState {
  * @param {UpdateOnline} action
  * @memberof OnlineState
  */
-@Action( UpdateOnline)
+@Action(UpdateOnline)
   updateOnline(ctx: StateContext<OnlineStateModel>, action: UpdateOnline) {
     const currentState = Object.assign({}, ctx.getState());
 

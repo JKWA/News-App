@@ -11,7 +11,7 @@ import { Category } from '../utility/category.enum';
    * @class AddCategory
    */
   export class AddCategory {
-    static readonly type = 'AddCategory';
+    static readonly type = '[Category Component] AddCategory';
     constructor(
       public categoryToAdd: CategoryItem
     ) {}
@@ -25,7 +25,7 @@ import { Category } from '../utility/category.enum';
  * @class RemoveCategory
  */
 export class RemoveCategory {
-  static readonly type = 'RemoveCategory';
+  static readonly type = '[Category Component] RemoveCategory';
   constructor(
     public categoryToRemove: CategoryItem
   ) {}

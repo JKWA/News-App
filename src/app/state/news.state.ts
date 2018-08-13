@@ -17,7 +17,7 @@ import { map, take, exhaustMap, tap, catchError } from 'rxjs/operators';
    * @param initial - boolean is initial fetch of this data
    */
   export class InitialNews {
-    static readonly type = 'Initial News';
+    static readonly type = '[App Component] Initial News';
     constructor(
       public category: string,
     ) {}
@@ -31,7 +31,7 @@ import { map, take, exhaustMap, tap, catchError } from 'rxjs/operators';
    * @param initial - boolean is initial fetch of this data
    */
 export class AddNews {
-  static readonly type = 'Adding News';
+  static readonly type = '[Article Component] Adding News';
   constructor(
     public category: string,
   ) {}
