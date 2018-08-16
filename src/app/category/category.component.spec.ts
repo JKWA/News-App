@@ -3,12 +3,17 @@ import { By } from '@angular/platform-browser';
 import { tap } from 'rxjs/operators';
 import { CategoryComponent } from './category.component';
 import { CategoryState } from '../state/category.state';
-  import * as NgStore from '@ngxs/store';
-  import { NgxsModule } from '@ngxs/store';
+  // import * as NgStore from '@ngxs/store';
+  // import { NgxsModule } from '@ngxs/store';
 import {
   MatIconModule,
   MatSlideToggle, MatSlideToggleModule,
   } from '@angular/material';
+
+  import { StoreModule } from '@ngrx/store';
+  import * as fromCategory from './../reducers';
+
+
 
 
 describe('CategoryComponent', () => {
@@ -21,12 +26,11 @@ describe('CategoryComponent', () => {
       imports: [
         MatIconModule,
         MatSlideToggleModule,
-        NgxsModule.forRoot([ CategoryState ]),
+        StoreModule.forRoot({
+          ...fromCategory.reducers
+        }),
       ],
-      providers: [
-        NgStore.Store, NgStore.StateStream, NgStore.ɵo,
-        NgStore.ɵm, NgStore.ɵg, NgStore.ɵl, NgStore.ɵp, NgStore.ɵj
-      ]
+      providers: []
     })
     .compileComponents();
   }));
@@ -42,7 +46,7 @@ describe('CategoryComponent', () => {
   });
 
   it('expect 7 categories with 3 selected by default state', () => {
-    component.allCategories.pipe(
+    component.getAllCategories.pipe(
       tap (categories => {
         expect(categories.size).toEqual(7);
         const selectedCategories = Array.from(categories).filter(category => category.selected);
@@ -68,7 +72,5 @@ describe('CategoryComponent', () => {
       expect(component.onClick).toHaveBeenCalled();
     });
   });
-
-
 
 });

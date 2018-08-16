@@ -132,5 +132,8 @@
       }
     }
   },
-  "defaultProject": "news-project"
+  "defaultProject": "news-project",
+  "cli": {
+    "defaultCollection": "@ngrx/schematics"
+  }
 }

@@ -43,13 +43,13 @@ describe('FilterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('expect trump and sanders filters by default state', () => {
-    component.filters.pipe(
-      tap (filter => {
-        expect(filter).toEqual(new Set(['trump', 'sanders']));
-      })
-    ).subscribe();
-  });
+  // it('expect trump and sanders filters by default state', () => {
+  //   component.filters.pipe(
+  //     tap (filter => {
+  //       expect(filter).toEqual(new Set(['trump', 'sanders']));
+  //     })
+  //   ).subscribe();
+  // });
 
   it('expect display two filters', () => {
     const filterNodes = fixture.nativeElement.querySelectorAll('h3');

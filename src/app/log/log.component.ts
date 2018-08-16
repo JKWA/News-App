@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
-import { Store, Select } from '@ngxs/store';
+import { Store, select } from '@ngrx/store';
+import * as LogActions from './../actions/log.actions';
+
+
 import { Observable } from 'rxjs';
-import { Log, LogState , ClearLog} from '../state/log.state';
+import * as fromLog from './../reducers';
+import { Log } from '../models/log';
+
 
 @Component({
   selector: 'app-log',
@@ -10,11 +15,15 @@ import { Log, LogState , ClearLog} from '../state/log.state';
 })
 
 export class LogComponent {
-  @Select(LogState.allMessageLogs) allLogs: Observable<Set<Log>>;
   displayedColumns: string[] = [ 'location', 'message' ];
 
-  constructor(private store: Store) {}
+  constructor(private store: Store<fromLog.State>) {}
 
+  get getAllLogs(): Observable<Log[]> {
+    return this.store.pipe(
+      select(fromLog.getAllLogs),
+    );
+  }
 
 /**
  * clear all logs from log state
@@ -22,6 +31,6 @@ export class LogComponent {
  * @memberof LogComponent
  */
 clearMessages(): void {
-    this.store.dispatch(new ClearLog());
+  this.store.dispatch(new LogActions.DeleteAllLogs());
   }
 }

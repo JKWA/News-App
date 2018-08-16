@@ -1,12 +1,19 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Article } from '../article';
-import { Store, Select } from '@ngxs/store';
+// import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { map, tap, withLatestFrom } from 'rxjs/operators';
-import { FilterState, Filter } from '../state/filter.state';
-import { NewsStateModel, NewsState, AddNews } from '../state/news.state';
-import { OnlineState } from '../state/online.state';
-import { CategoryState } from '../state/category.state';
+import { Category } from '../utility/category.enum';
+// import { FilterState, Filter } from '../state/filter.state';
+// import { NewsStateModel, NewsState, AddNews } from '../state/news.state';
+// import { OnlineState } from '../state/online.state';
+// import { CategoryState } from '../state/category.state';
+import { Store, select } from '@ngrx/store';
+import * as fromNews from './../reducers';
+import * as fromFilters from './../reducers';
+import * as fromCategory from './../reducers';
+
+
 import { CategoryItem } from '../utility/category.utility';
 import { ScrollEvent } from 'ngx-scroll-event';
 import { AddMessage } from '../state/log.state';
@@ -21,10 +28,10 @@ import { AddMessage } from '../state/log.state';
 export class ArticleComponent implements OnInit, OnDestroy {
 
   @Input() category: string;
-  @Select(FilterState.allFilters) filters: Observable<Set<Filter>>;
-  @Select(NewsState) stateNews: Observable<NewsStateModel[]>;
-  @Select(CategoryState.setCategory) setCategory: Observable<CategoryItem>;
-  @Select(OnlineState.online) onlineStatus: Observable<boolean>;
+  // @Select(FilterState.allFilters) filters: Observable<Set<Filter>>;
+  // @Select(NewsState) stateNews: Observable<NewsStateModel[]>;
+  // @Select(CategoryState.setCategory) setCategory: Observable<CategoryItem>;
+  // @Select(OnlineState.online) onlineStatus: Observable<boolean>;
 
   // articles: Article[];
   pageNumber = 1;
@@ -32,41 +39,55 @@ export class ArticleComponent implements OnInit, OnDestroy {
   bottomOffset = 1000;
   topOffset = 1;
   scrolledToInititalView = true;
-  tabViewed: CategoryItem;
+  tabViewed: Category;
   online = true;
   currentlyAddingDataLock = false;
   throttle;
   initialScroll = false;
   onlineSubscription;
   newsStateSubscription;
+  viewedCategorySubscription;
 
   constructor(
-    private store: Store,
+    private store: Store<fromNews.State>
+
   ) { }
 
   ngOnInit() {
-    this.watchCategoryBeingViewed();
-    this.onlineSubscription = this.onlineStatus.subscribe( result => this.online = result);
+    this.viewedCategorySubscription = this.watchCategoryBeingViewed();
+    // this.onlineSubscription = this.onlineStatus.subscribe( result => this.online = result);
+    // console.log(this.store);
+    // this.store.pipe(
+    //   select(fromNews.getAllArticles),
+    //   tap(console.log),
+    //   map(results => {
+    //     return results && results[this.category]
+    //             ? results[this.category].clientDataLoaded
+    //             : false;
+    //   }),
+    // ).subscribe();
+      // map(results => new Set(Array.from(results.values())))
 
-    this.newsStateSubscription = this.stateNews.pipe(
-      map( results => {
-        return results && results[this.category]
-                ? results[this.category].clientDataLoaded
-                : false;
-      }),
-      tap(complete => {
-        if ( complete && !this.initialScroll ) {
-          setTimeout(_ => this.scrollToLastViewed(), 300);
-          this.initialScroll = true;
-        }
-      })
-    ).subscribe();
+    // this.newsStateSubscription = this.stateNews.pipe(
+    //   map( results => {
+    //     return results && results[this.category]
+    //             ? results[this.category].clientDataLoaded
+    //             : false;
+    //   }),
+    //   tap(complete => {
+    //     if ( complete && !this.initialScroll ) {
+    //       setTimeout(_ => this.scrollToLastViewed(), 300);
+    //       this.initialScroll = true;
+    //     }
+    //   })
+    // ).subscribe();
 
   }
 
   ngOnDestroy() {
-    this.onlineSubscription.unsubscribe();
-    this.newsStateSubscription.unsubscribe();
+    // this.onlineSubscription.unsubscribe();
+    // this.newsStateSubscription.unsubscribe();
+    this.viewedCategorySubscription.unsubscribe();
     clearTimeout(this.throttle);
   }
 
@@ -78,10 +99,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
  * @memberof ArticleComponent
  */
 get getArticles(): Observable<Article[]> {
-    return this.stateNews.pipe(
-      withLatestFrom(this.filters),
+    return this.store.pipe(
+      select(fromNews.getAllArticles),
+      withLatestFrom(this.store.pipe(select(fromFilters.getAllFilters))),
       map(([stateNews, filters]) => {
         const regFilter = new RegExp(Array.from(filters).join('|'), 'i');
+
         const allArticles = stateNews && stateNews.hasOwnProperty(this.category)
                               ? stateNews[this.category].articles
                               : [];
@@ -102,11 +125,11 @@ get getArticles(): Observable<Article[]> {
  * @readonly
  * @memberof ArticleComponent
  */
-  get initialArticleLoadComplete(): Observable<boolean> {
-    return this.stateNews.pipe(
-      map( results => results[this.category].firstLoadComplete)
-    );
-  }
+  // get initialArticleLoadComplete(): Observable<boolean> {
+  //   return this.stateNews.pipe(
+  //     map( results => results[this.category].firstLoadComplete)
+  //   );
+  // }
 
 
 
@@ -117,9 +140,10 @@ get getArticles(): Observable<Article[]> {
  * @memberof ArticleComponent
  */
   private watchCategoryBeingViewed() {
-    this.setCategory.subscribe(category => {
-      this.tabViewed = category;
-    });
+    this.store.pipe(
+      select(fromCategory.getViewingCategory),
+      tap(result => this.tabViewed = result)
+    ).subscribe();
   }
 
 /**
@@ -128,16 +152,16 @@ get getArticles(): Observable<Article[]> {
  */
   public handleScroll(event: ScrollEvent): void {
 
-    if (event.isReachingBottom
-        && window.navigator.onLine
-        && this.category === this.tabViewed.id
-        && !this.currentlyAddingDataLock
-      ) {
-        this.currentlyAddingDataLock = true;
-        clearTimeout(this.throttle);
-        this.throttle = setTimeout(() => this.currentlyAddingDataLock = false, 2000);
-        this.store.dispatch(new AddNews(this.category));
-    }
+    // if (event.isReachingBottom
+    //     && window.navigator.onLine
+    //     && this.category === this.tabViewed.id
+    //     && !this.currentlyAddingDataLock
+    //   ) {
+    //     this.currentlyAddingDataLock = true;
+    //     clearTimeout(this.throttle);
+    //     this.throttle = setTimeout(() => this.currentlyAddingDataLock = false, 2000);
+    //     // this.store.dispatch(new AddNews(this.category));
+    // }
 
   }
 
@@ -161,16 +185,16 @@ get getArticles(): Observable<Article[]> {
   * @private
   * @memberof ArticleComponent
   */
- private scrollToLastViewed(): void {
+  private scrollToLastViewed(): void {
     const anchor = window.localStorage.getItem('lastReadArticle');
     if (anchor) {
       const article = document.getElementById(anchor);
       if (this.scrolledToInititalView) {
         if (article) {
-          if (this.category === this.tabViewed.id) {
+          if (this.category === this.tabViewed) {
             article.scrollIntoView({behavior: 'smooth'});
             this.scrolledToInititalView = false;
-            this.store.dispatch(new AddMessage('Article Component', 'scrolled to last viewed'));
+            // this.store.dispatch(new AddMessage('Article Component', 'scrolled to last viewed'));
           }
         }
       }

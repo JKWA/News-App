@@ -14,7 +14,7 @@
 <mat-tab-group  
     [selectedIndex]="selectedIndex | async"
     (selectedIndexChange)="tabChanged($event)">
-    <div *ngFor="let tab of categories | async">
+    <div *ngFor="let tab of getSelectedCategories | async">
         <mat-tab label="{{tab.display}}">
             <div class="articles">
                 <app-article category="{{tab.id}}"></app-article>

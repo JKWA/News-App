@@ -11,7 +11,7 @@
 
   <h2>Categories</h2>
 
-  <div *ngFor="let category of allCategories | async">
+  <div *ngFor="let category of getAllCategories | async">
       <div class="button-wrapper">
         <mat-slide-toggle 
         aria-label="Toggle {{category.display}}"

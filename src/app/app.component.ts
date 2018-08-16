@@ -2,11 +2,14 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
 import { CategoryState } from './state/category.state';
 import { CategoryItem } from './utility/category.utility';
-import { Store, Select } from '@ngxs/store';
+import { stringToCategory } from './utility/category.utility';
 import { Observable } from 'rxjs';
-import { InitialNews } from './state/news.state';
-import { UpdateOnline } from './state/online.state';
-import { take, tap } from 'rxjs/operators';
+// import { UpdateOnline } from './state/online.state';
+import { take, tap, map } from 'rxjs/operators';
+import { Store, select } from '@ngrx/store';
+import * as fromNews from './reducers';
+import * as fromCategory from './reducers';
+import * as NewsActions from './actions/news.actions';
 
 
 @Component({
@@ -16,12 +19,18 @@ import { take, tap } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   title = 'marty-news';
-  @Select(CategoryState.allCategories) categories: Observable<Map<string, CategoryItem>>;
 
   constructor(
     public snackBar: MatSnackBar,
-    private store: Store,
+    private store: Store<fromNews.State>
   ) { }
+
+  get getSelectedCategories(): Observable<CategoryItem[]> {
+    return this.store.pipe(
+      select(fromCategory.getAllCategories),
+      map(results => Array.from(results.values()).filter(result => result.selected))
+    );
+  }
 
   ngOnInit() {
     this.setNewsData();
@@ -51,13 +60,15 @@ get isMobleAndEmbedded() {
  * @memberof AppComponent
  */
 setNewsData() {
-    this.categories.pipe(
+    this.getSelectedCategories.pipe(
       take(1),
       tap( result => {
         result.forEach( category => {
-          if ( category.selected ) {
-          this.store.dispatch(new InitialNews(category.id));
-          }
+          // if ( category.selected ) {
+          // this.store.dispatch(new InitialNews(category.id));
+          // }
+          this.store.dispatch(new NewsActions.InitiateNews(stringToCategory(category.id)));
+
         });
       })
     ).subscribe();
@@ -71,7 +82,7 @@ setNewsData() {
    */
   @HostListener('window:offline', ['$event'])
   openSnackbar(event) {
-    this.store.dispatch(new UpdateOnline(false));
+    // this.store.dispatch(new UpdateOnline(false));
     this.snackBar.open('No network detected', '', {
       duration: 0,
     });
@@ -85,7 +96,7 @@ setNewsData() {
  */
   @HostListener('window:online', ['$event'])
   closeSnackbar(event) {
-    this.store.dispatch(new UpdateOnline(true));
+    // this.store.dispatch(new UpdateOnline(true));
     this.snackBar.dismiss();
   }
 

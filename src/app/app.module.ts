@@ -39,6 +39,17 @@ import { AppRoutingModule } from './app-routing.module';
 import { ArticleComponent } from './article/article.component';
 import { FilterComponent } from './filter/filter.component';
 import { StandaloneComponent } from './standalone/standalone.component';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { CategoryEffects } from './effects/category.effects';
+import { FilterEffects } from './effects/filter.effects';
+import { LogEffects } from './effects/log.effects';
+import { NewsEffects } from './effects/news.effects';
+
+
+
+import { reducers, metaReducers } from './reducers';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -78,6 +89,10 @@ import { StandaloneComponent } from './standalone/standalone.component';
     MatTabsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
     AppRoutingModule,
+    StoreModule.forRoot(reducers, { metaReducers }),
+    !environment.production ? StoreDevtoolsModule.instrument() : [],
+    EffectsModule.forRoot([CategoryEffects, FilterEffects, LogEffects, NewsEffects]),
+
   ],
   providers: [],
   bootstrap: [AppComponent]

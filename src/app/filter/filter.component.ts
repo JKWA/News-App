@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
-import { AddFilter, RemoveFilter, Filter, FilterState } from '../state/filter.state';
-import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
+import * as FilterActions from './../actions/filter.actions';
+import { Store, select } from '@ngrx/store';
+import * as fromFilter from './../reducers';
+import { Filter } from '../models/filter';
+
 
 @Component({
   selector: 'app-filter',
@@ -11,12 +14,16 @@ import { Observable } from 'rxjs';
 
 export class FilterComponent {
   newFilter: string;
-  filterList: Set<Filter>;
 
-  @Select(FilterState.allFilters) filters: Observable<Set<Filter>>;
-  constructor(private store: Store)  { }
+  constructor(private store: Store<fromFilter.State>)  { }
 
-/**
+  get getAllFilters(): Observable<Set<Filter>> {
+    return this.store.pipe(
+      select(fromFilter.getAllFilters),
+    );
+  }
+
+  /**
  * observe key input and trigger addFilter() when "ENTER"
  *
  * @param {*} {keyCode}
@@ -36,7 +43,7 @@ watchForEnter({keyCode}): void {
  */
 addFilter(): void {
     if ( this.newFilter ) {
-      this.store.dispatch(new AddFilter(this.newFilter.toString()));
+      this.store.dispatch(new FilterActions.AddFilter(this.newFilter.toString()));
       this.newFilter = '';
     }
   }
@@ -50,7 +57,9 @@ addFilter(): void {
  */
 removeFilter(item): void {
     if ( item ) {
-      this.store.dispatch(new RemoveFilter(item));
+      // this.store.dispatch(new RemoveFilter(item));
+      this.store.dispatch(new FilterActions.RemoveFilter(item));
+
     }
   }
 

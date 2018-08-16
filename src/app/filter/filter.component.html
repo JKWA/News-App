@@ -20,7 +20,7 @@
       (click) = "addFilter()" mat-stroked-button>Add</button>
   </div>
 
-  <div *ngFor="let filter of filters | async" class="mat-typography" fxLayout="row">
+  <div *ngFor="let filter of getAllFilters | async" class="mat-typography" fxLayout="row">
     <h3 class="filter-item">{{filter | uppercase}}</h3>
     <button 
       aria-label="Remove filter"

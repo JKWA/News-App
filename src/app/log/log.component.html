@@ -11,7 +11,7 @@
     (click) = "clearMessages()" 
     mat-stroked-button>{{'Clear Logs' | uppercase}}</button>
 </div>
-<table mat-table [dataSource]="allLogs | async" class="mat-elevation-z2">
+<table mat-table [dataSource]="getAllLogs | async" class="mat-elevation-z2">
 
     <ng-container matColumnDef="location">
         <th mat-header-cell *matHeaderCellDef> Service </th>

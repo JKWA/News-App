@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
-import { AddCategory, RemoveCategory, CategoryState } from '../state/category.state';
 import { CategoryItem } from '../utility/category.utility';
-import { InitialNews } from '../state/news.state';
-import { Store, Select } from '@ngxs/store';
+import * as CategoryActions from './../actions/category.actions';
+import { stringToCategory } from '../utility/category.utility';
 import { Observable } from 'rxjs';
+import { Store, select } from '@ngrx/store';
+import * as fromCategory from './../reducers';
+import { tap, map } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-category',
@@ -13,9 +16,14 @@ import { Observable } from 'rxjs';
 
 export class CategoryComponent {
 
-    @Select(CategoryState.allCategories) allCategories: Observable<Set<CategoryItem>>;
+    constructor(private store: Store<fromCategory.State>) {}
 
-    constructor(private store: Store) { }
+    get getAllCategories(): Observable<Set<CategoryItem>> {
+      return this.store.pipe(
+        select(fromCategory.getAllCategories),
+        map(results => new Set(Array.from(results.values())))
+      );
+    }
 
 
 /**
@@ -28,11 +36,12 @@ export class CategoryComponent {
 onClick(category, {checked}): void {
 
     if ( checked ) {
-      this.store.dispatch(new AddCategory(category));
-      this.store.dispatch(new InitialNews(category.id));
+      this.store.dispatch(new CategoryActions.AddCategory(stringToCategory(category.id)));
+      // this.store.dispatch(new InitialNews(category.id));
 
     } else {
-      this.store.dispatch(new RemoveCategory(category));
+      this.store.dispatch(new CategoryActions.RemoveCategory(stringToCategory(category.id)));
+
     }
   }
 
