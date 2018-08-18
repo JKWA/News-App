@@ -1,4 +1,4 @@
-export interface Error {
+export class Error {
     status: number;
     statusText: string;
 }

@@ -2,18 +2,13 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { tap } from 'rxjs/operators';
 import { CategoryComponent } from './category.component';
-import { CategoryState } from '../state/category.state';
-  // import * as NgStore from '@ngxs/store';
-  // import { NgxsModule } from '@ngxs/store';
+import { StoreModule } from '@ngrx/store';
+import * as fromCategory from './../reducers';
+
 import {
   MatIconModule,
   MatSlideToggle, MatSlideToggleModule,
   } from '@angular/material';
-
-  import { StoreModule } from '@ngrx/store';
-  import * as fromCategory from './../reducers';
-
-
 
 
 describe('CategoryComponent', () => {
@@ -26,9 +21,7 @@ describe('CategoryComponent', () => {
       imports: [
         MatIconModule,
         MatSlideToggleModule,
-        StoreModule.forRoot({
-          ...fromCategory.reducers
-        }),
+        StoreModule.forRoot({...fromCategory.reducers}),
       ],
       providers: []
     })
@@ -45,7 +38,7 @@ describe('CategoryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('expect 7 categories with 3 selected by default state', () => {
+  it('default - expect 7 categories with 3 selected', () => {
     component.getAllCategories.pipe(
       tap (categories => {
         expect(categories.size).toEqual(7);
@@ -55,7 +48,7 @@ describe('CategoryComponent', () => {
     ).subscribe();
   });
 
-  it('expect three toggles are checked by default state', () => {
+  it('default - expect three toggles are checked', () => {
     const componentDebug = fixture.debugElement;
     const allToggles = componentDebug.queryAll(By.directive(MatSlideToggle));
     const checkedToggles = allToggles.filter(toggle => toggle.attributes['ng-reflect-checked'] === 'true');
@@ -63,7 +56,7 @@ describe('CategoryComponent', () => {
   });
 
 
-  it('each toggle should call onClick method', () => {
+  it('expect each toggle should call onClick method', () => {
     const componentDebug = fixture.debugElement;
     spyOn(component, 'onClick');
     const allToggles = componentDebug.queryAll(By.directive(MatSlideToggle));

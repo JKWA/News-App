@@ -1,6 +1,6 @@
 import { reducer, initialState } from './user.reducer';
 
-describe('User Reducer', () => {
+describe('Online Reducer', () => {
   describe('unknown action', () => {
     it('should return the initial state', () => {
       const action = {} as any;

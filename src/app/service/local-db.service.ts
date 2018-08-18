@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Article } from '../article';
 import { categoryToObject } from '../utility/category.utility';
-import { Category } from '../utility/category.enum';
+import { Category } from '../enums/category.enum';
 import * as moment from 'moment';
 import { Observable } from 'rxjs';
 
@@ -156,9 +156,10 @@ getData(category: Category): Observable<Article[]> {
               // if offline, push everything
                   if ( ! window.navigator.onLine) {
                     result.push(cursor.value);
-
+                    // console.log('offline', cursor.value);
                   } else {
                     // if online, push information from the past two hours
+                    // console.log(cursor.value);
                     const date: moment.Moment = moment(cursor.value.timestamp);
                     if ( date.add(30, 'm').isAfter(moment(new Date())) ) {
                       const copy =  Object.assign({}, cursor.value, {id: encodeURIComponent(cursor.value.title)});

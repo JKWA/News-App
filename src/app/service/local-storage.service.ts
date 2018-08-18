@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Filter } from '../models/filter';
-import { Category } from '../utility/category.enum';
+import { Category } from '../enums/category.enum';
 
 @Injectable({
   providedIn: 'root'

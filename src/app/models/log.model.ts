@@ -1,4 +1,4 @@
-export interface Log {
+export class Log {
     location: string;
     message: string;
     time: string;

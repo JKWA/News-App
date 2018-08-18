@@ -4,8 +4,8 @@ import { FilterComponent } from './filter.component';
 import { FilterState } from '../state/filter.state';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import * as NgStore from '@ngxs/store';
-import { NgxsModule } from '@ngxs/store';
+import { StoreModule } from '@ngrx/store';
+import * as fromFilters from './../reducers';
 import {
   MatIconModule,
   MatInputModule,
@@ -23,12 +23,9 @@ describe('FilterComponent', () => {
         FormsModule,
         MatIconModule,
         MatInputModule,
-        NgxsModule.forRoot([ FilterState ]),
+        StoreModule.forRoot({...fromFilters.reducers}),
       ],
-      providers: [
-        NgStore.Store, NgStore.StateStream, NgStore.ɵo,
-        NgStore.ɵm, NgStore.ɵg, NgStore.ɵl, NgStore.ɵp, NgStore.ɵj
-      ]
+      providers: []
     })
     .compileComponents();
   }));
@@ -43,21 +40,21 @@ describe('FilterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // it('expect trump and sanders filters by default state', () => {
-  //   component.filters.pipe(
-  //     tap (filter => {
-  //       expect(filter).toEqual(new Set(['trump', 'sanders']));
-  //     })
-  //   ).subscribe();
-  // });
+  it('default - expect trump and sanders filters', () => {
+    component.getAllFilters.pipe(
+      tap (filter => {
+        expect(filter).toEqual(new Set(['trump', 'sanders']));
+      })
+    ).subscribe();
+  });
 
-  it('expect display two filters', () => {
+  it('default - expect display two filters', () => {
     const filterNodes = fixture.nativeElement.querySelectorAll('h3');
     const filters = Array.from(filterNodes);
     expect(filters.length).toEqual(2);
   });
 
-  it('remove button should call removeFilter method',  async(() => {
+  it('expect remove button should call "removeFilter" method',  async(() => {
     spyOn(component, 'removeFilter');
     const button = fixture.debugElement.nativeElement.querySelector('button[aria-label="Remove filter"]');
     button.click();
@@ -67,7 +64,7 @@ describe('FilterComponent', () => {
 
     })
   );
-  it('add button should call addFilter method',  async(() => {
+  it('expect add button should call "addFilter" method',  async(() => {
     spyOn(component, 'addFilter');
     const button = fixture.debugElement.nativeElement.querySelector('button[aria-label="Add filter"]');
     button.click();

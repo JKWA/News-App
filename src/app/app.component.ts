@@ -1,6 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { CategoryState } from './state/category.state';
 import { CategoryItem } from './utility/category.utility';
 import { stringToCategory } from './utility/category.utility';
 import { Observable } from 'rxjs';
@@ -10,6 +9,8 @@ import { Store, select } from '@ngrx/store';
 import * as fromNews from './reducers';
 import * as fromCategory from './reducers';
 import * as NewsActions from './actions/news.actions';
+import * as OnlineActions from './actions/online.actions';
+
 
 
 @Component({
@@ -81,8 +82,8 @@ setNewsData() {
    * @memberof AppComponent
    */
   @HostListener('window:offline', ['$event'])
-  openSnackbar(event) {
-    // this.store.dispatch(new UpdateOnline(false));
+  openSnackbar( _ ) {
+    this.store.dispatch(new OnlineActions.Offline());
     this.snackBar.open('No network detected', '', {
       duration: 0,
     });
@@ -96,7 +97,8 @@ setNewsData() {
  */
   @HostListener('window:online', ['$event'])
   closeSnackbar(event) {
-    // this.store.dispatch(new UpdateOnline(true));
+    this.store.dispatch(new OnlineActions.Online());
+
     this.snackBar.dismiss();
   }
 

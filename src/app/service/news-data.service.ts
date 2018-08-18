@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { Article } from '../article';
 import { getKey } from '../utility/key';
 import { getSources } from '../utility/source.utility';
-import { Category } from '../utility/category.enum';
+import { Category } from '../enums/category.enum';
 
 class NewsResponse {
   status: string;

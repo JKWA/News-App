@@ -1,8 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { LogComponent } from './log.component';
-import { LogState } from '../state/log.state';
-import * as NgStore from '@ngxs/store';
-import { NgxsModule } from '@ngxs/store';
+import { StoreModule } from '@ngrx/store';
+import * as fromLog from './../reducers';
 import {
   MatIconModule,
   MatTableModule,
@@ -18,12 +17,9 @@ describe('LogComponent', () => {
       imports: [
         MatIconModule,
         MatTableModule,
-        NgxsModule.forRoot([ LogState ]),
+        StoreModule.forRoot({...fromLog.reducers}),
       ],
-      providers: [
-        NgStore.Store, NgStore.StateStream, NgStore.ɵo,
-        NgStore.ɵm, NgStore.ɵg, NgStore.ɵl, NgStore.ɵp, NgStore.ɵj
-      ]
+      providers: []
     })
     .compileComponents();
   }));

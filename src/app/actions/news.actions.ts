@@ -1,8 +1,8 @@
 import { Action } from '@ngrx/store';
-import { Category } from '../utility/category.enum';
-import { Article } from '../models/article';
-import { Error } from '../models/error';
-import { Service } from '../models/service.enum';
+import { Category } from '../enums/category.enum';
+import { Article } from '../models/article.model';
+import { Error } from '../models/error.model';
+import { Service } from '../enums/service.enum';
 
 export enum NewsActionTypes {
   LoadNews = '[News] Load Users',
@@ -15,8 +15,6 @@ export enum NewsActionTypes {
   IndexedDbError = '[News Effects] Indexed db error',
   IndexedDbSaved = '[News Effects] Saved articles to indexed db',
   NewsApiError = '[News Effects] News API error'
-
-
 }
 
 export class LoadNews implements Action {
@@ -38,9 +36,9 @@ export class RetrievingNews implements Action {
   constructor(public payload: any) { }
 }
 
-interface ArticlePayload {
+export interface ArticlePayload {
   category: Category;
-  articles: Article[];
+  articles: any;
   service: Service;
 }
 

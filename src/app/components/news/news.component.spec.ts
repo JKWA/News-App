@@ -4,15 +4,14 @@ import { tap, take } from 'rxjs/operators';
 import { NewsComponent } from './news.component';
 import { ArticleComponent } from '../article/article.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import { CategoryState } from '../state/category.state';
-import { FilterState } from '../state/filter.state';
-import * as NgStore from '@ngxs/store';
-import { NgxsModule } from '@ngxs/store';
+// import { CategoryState } from '../state/category.state';
+// import { FilterState } from '../state/filter.state';
+import { StoreModule } from '@ngrx/store';
+import * as fromNews from './../reducers';
 import {
   MatIconModule,
   MatCardModule,
-  MatTabGroup, MatTab, MatTabsModule,
+  MatTabGroup, MatTabsModule,
   MatProgressSpinnerModule,
   } from '@angular/material';
 import { ScrollEventModule } from 'ngx-scroll-event';
@@ -31,13 +30,10 @@ describe('NewsComponent', () => {
         MatCardModule,
         MatProgressSpinnerModule,
         MatTabsModule,
-        NgxsModule.forRoot([ CategoryState, FilterState ]),
+        StoreModule.forRoot({...fromNews.reducers}),
         ScrollEventModule
       ],
-      providers: [
-        NgStore.Store, NgStore.StateStream, NgStore.ɵo,
-        NgStore.ɵm, NgStore.ɵg, NgStore.ɵl, NgStore.ɵp, NgStore.ɵj
-      ]
+      providers: []
     })
     .compileComponents();
   }));
@@ -53,16 +49,6 @@ describe('NewsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should create tab group component', () => {
-    const componentDebug = fixture.debugElement;
-    const tabGroup = componentDebug.query(By.directive(MatTabGroup));
-    fixture.whenStable()
-    .then(() => {
-      console.log(tabGroup);
-      // expect( tabGroup ).toBeTruthy();
-    });
-  });
-
   it('expect tab index to be 0 by defualt state', () => {
     component.selectedIndex.pipe(
       take(1),
@@ -76,36 +62,35 @@ describe('NewsComponent', () => {
     const componentDebug = fixture.debugElement;
     const tabGroup = componentDebug.query(By.directive(MatTabGroup));
     fixture.whenStable().then(() => {
-      console.log(tabGroup.attributes['ng-reflect-selected-index']);
-      // expect( tabGroup.attributes['ng-reflect-selected-index'] ).toEqual('0');
+      expect( tabGroup.attributes['ng-reflect-selected-index'] ).toEqual('0');
     });
   });
 
   it('expect 3 categories to be displayed by default state', () => {
-    component.categories.pipe(
+    component.getSelectedCategories.pipe(
       take(1),
       tap(categories => {
-        expect(categories.size).toEqual(3);
+        expect(categories.length).toEqual(3);
       })
     ).subscribe();
   });
 
   it('expect general category to be selected by default state', () => {
-    component.setCategory.pipe(
+    component.getViewingCategory.pipe(
       take(1),
       tap(category => {
-        expect(category.id).toBe('general');
+        expect(category).toBe('general');
       })
     ).subscribe();
   });
 
-  // it('expect general articles to be displayed by defualt state', () => {
-  //   const componentDebug = fixture.debugElement;
-  //   const article = componentDebug.query(By.directive(ArticleComponent));
-  //   expect( article.attributes['ng-reflect-category'] ).toEqual('general');
-  // });
+  it('expect general articles to be displayed by defualt state', () => {
+    const componentDebug = fixture.debugElement;
+    const article = componentDebug.query(By.directive(ArticleComponent));
+    expect( article.attributes['ng-reflect-category'] ).toEqual('general');
+  });
 
-  it('tab index change should call tabChanged method', () => {
+  it('expect tab index change should call tabChanged method', () => {
     const componentDebug = fixture.debugElement;
     spyOn(component, 'tabChanged');
     const tabGroup = componentDebug.query(By.directive(MatTabGroup));

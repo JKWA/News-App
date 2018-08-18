@@ -1,6 +1,6 @@
 
 /* tslint:disable */
-import {Category} from './category.enum';
+import {Category} from '../enums/category.enum';
 
 export function getSources (category: Category) {
     return sourceData().filter(item => item.category === category);

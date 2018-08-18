@@ -1,22 +1,13 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Article } from '../article';
-// import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { map, tap, withLatestFrom } from 'rxjs/operators';
-import { Category } from '../utility/category.enum';
-// import { FilterState, Filter } from '../state/filter.state';
-// import { NewsStateModel, NewsState, AddNews } from '../state/news.state';
-// import { OnlineState } from '../state/online.state';
-// import { CategoryState } from '../state/category.state';
+import { Category } from '../enums/category.enum';
 import { Store, select } from '@ngrx/store';
 import * as fromNews from './../reducers';
 import * as fromFilters from './../reducers';
 import * as fromCategory from './../reducers';
-
-
-import { CategoryItem } from '../utility/category.utility';
 import { ScrollEvent } from 'ngx-scroll-event';
-import { AddMessage } from '../state/log.state';
 
 @Component({
   selector: 'app-article',
@@ -28,24 +19,15 @@ import { AddMessage } from '../state/log.state';
 export class ArticleComponent implements OnInit, OnDestroy {
 
   @Input() category: string;
-  // @Select(FilterState.allFilters) filters: Observable<Set<Filter>>;
-  // @Select(NewsState) stateNews: Observable<NewsStateModel[]>;
-  // @Select(CategoryState.setCategory) setCategory: Observable<CategoryItem>;
-  // @Select(OnlineState.online) onlineStatus: Observable<boolean>;
-
-  // articles: Article[];
   pageNumber = 1;
   retrieving = true;
   bottomOffset = 1000;
   topOffset = 1;
   scrolledToInititalView = true;
   tabViewed: Category;
-  online = true;
   currentlyAddingDataLock = false;
   throttle;
   initialScroll = false;
-  onlineSubscription;
-  newsStateSubscription;
   viewedCategorySubscription;
 
   constructor(
@@ -54,19 +36,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.viewedCategorySubscription = this.watchCategoryBeingViewed();
-    // this.onlineSubscription = this.onlineStatus.subscribe( result => this.online = result);
-    // console.log(this.store);
-    // this.store.pipe(
-    //   select(fromNews.getAllArticles),
-    //   tap(console.log),
-    //   map(results => {
-    //     return results && results[this.category]
-    //             ? results[this.category].clientDataLoaded
-    //             : false;
-    //   }),
-    // ).subscribe();
-      // map(results => new Set(Array.from(results.values())))
+    this.watchCategoryBeingViewed();
 
     // this.newsStateSubscription = this.stateNews.pipe(
     //   map( results => {
@@ -85,23 +55,22 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // this.onlineSubscription.unsubscribe();
-    // this.newsStateSubscription.unsubscribe();
     this.viewedCategorySubscription.unsubscribe();
     clearTimeout(this.throttle);
   }
 
-/**
- * get articles by category and apply filters
- *
- * @readonly
- * @type {Observable<Article[]>}
- * @memberof ArticleComponent
- */
+  get isOnline() {
+    return this.store.pipe(select(fromFilters.getOnlineState));
+  }
+
+get getFilters() {
+    return this.store.pipe(select(fromFilters.getAllFilters));
+  }
+
 get getArticles(): Observable<Article[]> {
     return this.store.pipe(
       select(fromNews.getAllArticles),
-      withLatestFrom(this.store.pipe(select(fromFilters.getAllFilters))),
+      withLatestFrom(this.getFilters),
       map(([stateNews, filters]) => {
         const regFilter = new RegExp(Array.from(filters).join('|'), 'i');
 
@@ -140,7 +109,7 @@ get getArticles(): Observable<Article[]> {
  * @memberof ArticleComponent
  */
   private watchCategoryBeingViewed() {
-    this.store.pipe(
+    this.viewedCategorySubscription = this.store.pipe(
       select(fromCategory.getViewingCategory),
       tap(result => this.tabViewed = result)
     ).subscribe();
@@ -174,7 +143,7 @@ get getArticles(): Observable<Article[]> {
  */
   public gotToArticle (article): void {
     window.localStorage.setItem('lastReadArticle', article.id);
-    if ( this.online ) {
+    if ( this.isOnline ) {
       window.location.href = article.url;
     }
   }

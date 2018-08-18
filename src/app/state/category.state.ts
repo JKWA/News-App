@@ -1,7 +1,7 @@
 import {Store, State, Action, StateContext, Selector } from '@ngxs/store';
 import { UpdateState } from './log.state';
 import { CategoryItem, stringToCategory, createAllCategories } from '../utility/category.utility';
-import { Category } from '../utility/category.enum';
+import { Category } from '../enums/category.enum';
 
 
   /**

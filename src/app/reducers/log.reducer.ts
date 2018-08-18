@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { LogActions, LogActionTypes } from '../actions/log.actions';
-import { Log } from '../models/log';
+import { Log } from '../models/log.model';
 import * as moment from 'moment';
 
 export interface State {

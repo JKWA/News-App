@@ -1,6 +1,6 @@
-import { Article } from '../models/article';
+import { Article } from './article.model';
 
-export interface NewsCategory {
+export class NewsCategory {
     retrieving: boolean;
     page: number;
     firstLoadComplete: boolean;

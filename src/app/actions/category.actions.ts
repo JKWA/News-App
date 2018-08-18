@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Category } from '../utility/category.enum';
+import { Category } from '../enums/category.enum';
 
 export enum CategoryActionTypes {
   LoadCategorys = '[Category] Load Categorys',
@@ -8,7 +8,9 @@ export enum CategoryActionTypes {
   RemoveCategory = '[Category Component] Remove Selected Category',
   SetCategory = '[News Component] Set Viewed Category',
   SavedSelectedCategories = '[Category Effect] Saved Selected Category Locally',
-  SavedSelectedCategoriesFailed = '[Category Effect] Failed to Save Selected Category Locally'
+  SavedSelectedCategoriesFailed = '[Category Effect] Failed to Save Selected Category Locally',
+  SavedViewedCategory = '[Category Effect] saved viewed category',
+  SavedViewedCategoryFail = '[Category Effect] Failed to save viewed category',
 }
 
 export class LoadCategorys implements Action {
@@ -43,6 +45,14 @@ export class SavedSelectedCategoriesFailed implements Action {
   readonly type = CategoryActionTypes.SavedSelectedCategoriesFailed;
 }
 
+export class SavedViewedCategory implements Action {
+  readonly type = CategoryActionTypes.SavedViewedCategory;
+}
+
+export class SavedViewedCategoryFail implements Action {
+  readonly type = CategoryActionTypes.SavedViewedCategoryFail;
+}
+
 export type CategoryActions =
   LoadCategorys
   | AddCategory
@@ -50,4 +60,6 @@ export type CategoryActions =
   | RemoveCategory
   | SetCategory
   | SavedSelectedCategories
-  | SavedSelectedCategoriesFailed;
+  | SavedSelectedCategoriesFailed
+  | SavedViewedCategory
+  | SavedViewedCategoryFail;

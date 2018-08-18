@@ -7,8 +7,7 @@ import { AppComponent } from './app.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { routes } from './app-routing.module';
-import * as NgStore from '@ngxs/store';
-import { NgxsModule } from '@ngxs/store';
+
 import { FormsModule } from '@angular/forms';
 import { ScrollEventModule } from 'ngx-scroll-event';
 import { HttpClientModule } from '@angular/common/http';
@@ -19,6 +18,8 @@ import { FilterState } from './state/filter.state';
 import { NewsState } from './state/news.state';
 import { LogState } from './state/log.state';
 import { OnlineState } from './state/online.state';
+import { StoreModule } from '@ngrx/store';
+import * as fromReducers from './reducers';
 import {
   MatButtonModule,
   MatCardModule,
@@ -71,17 +72,12 @@ describe('AppComponent', () => {
         MatTabsModule,
         MatTableModule,
         MatToolbarModule,
-        NgxsModule,
         FormsModule,
         ScrollEventModule,
-        NgxsModule.forRoot([ CategoryState, FilterState, NewsState, LogState, OnlineState ]),
+        StoreModule.forRoot({...fromReducers.reducers}),
         RouterTestingModule.withRoutes(routes)
       ],
-      providers: [
-        // CategoryState,
-        NgStore.Store, NgStore.StateStream, NgStore.ɵo,
-        NgStore.ɵm, NgStore.ɵg, NgStore.ɵl, NgStore.ɵp, NgStore.ɵj
-       ]
+      providers: []
 
     }).compileComponents();
     router = TestBed.get(Router);
@@ -95,7 +91,7 @@ describe('AppComponent', () => {
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
   }));
-  it(`should have as title 'marty-news'`, async(() => {
+  it(`should have title 'marty-news'`, async(() => {
     // const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app.title).toEqual('marty-news');
@@ -108,31 +104,31 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('#title').textContent).toContain('Marty News');
   }));
 
-  it('navigate to "" redirects to /news', fakeAsync(() => {
+  it('expect navigate to "" redirects to /news', fakeAsync(() => {
     router.navigate(['']);
     tick();
     expect(location.path()).toBe('/news');
   }));
 
-  it('navigate to "news" takes to /news', fakeAsync(() => {
+  it('expect navigate to "news" takes to /news', fakeAsync(() => {
     router.navigate(['news']);
     tick();
     expect(location.path()).toBe('/news');
   }));
 
-  it('navigate to "category" takes to /category', fakeAsync(() => {
+  it('expect navigate to "category" takes to /category', fakeAsync(() => {
     router.navigate(['category']);
     tick();
     expect(location.path()).toBe('/category');
   }));
 
-  it('navigate to "log" takes to /log', fakeAsync(() => {
+  it('expect navigate to "log" takes to /log', fakeAsync(() => {
     router.navigate(['log']);
     tick();
     expect(location.path()).toBe('/log');
   }));
 
-  it('navigate to "standalone" takes to /standalone', fakeAsync(() => {
+  it('expect navigate to "standalone" takes to /standalone', fakeAsync(() => {
     router.navigate(['standalone']);
     tick();
     expect(location.path()).toBe('/standalone');

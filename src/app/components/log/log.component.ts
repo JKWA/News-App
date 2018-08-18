@@ -5,7 +5,7 @@ import * as LogActions from './../actions/log.actions';
 
 import { Observable } from 'rxjs';
 import * as fromLog from './../reducers';
-import { Log } from '../models/log';
+import { Log } from '../models/log.model';
 
 
 @Component({

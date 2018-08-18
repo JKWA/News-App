@@ -1,16 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import * as NgStore from '@ngxs/store';
-import { NgxsModule } from '@ngxs/store';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { OnlineState } from '../state/online.state';
-import { CategoryState } from '../state/category.state';
-import { FilterState } from '../state/filter.state';
-import { NewsState } from '../state/news.state';
 import { InMemoryDataService } from '../../testing/in-memory-data.service';
-
+import { StoreModule } from '@ngrx/store';
+import * as fromReducers from './../reducers';
 
 import {
   MatCardModule,
@@ -38,12 +33,9 @@ describe('ArticleComponent', () => {
         MatIconModule,
         MatProgressSpinnerModule,
         ScrollEventModule,
-        NgxsModule.forRoot([ CategoryState, FilterState, OnlineState, NewsState ]),
+        StoreModule.forRoot({...fromReducers.reducers}),
       ],
-      providers: [
-        NgStore.Store, NgStore.StateStream, NgStore.ɵo,
-        NgStore.ɵm, NgStore.ɵg, NgStore.ɵl, NgStore.ɵp, NgStore.ɵj
-       ]
+      providers: []
     })
     .compileComponents();
   }));
@@ -58,21 +50,17 @@ describe('ArticleComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('article default data correct', () => {
-    component.stateNews.pipe(
-      tap(result => {
-        const category = result[component.tabViewed.id];
-        expect( category.articles.length ).toEqual(0);
-        expect( category.clientDataLoaded ).toBeFalsy();
-        expect( category.firstLoadComplete ).toBeFalsy();
-        expect( category.page ).toEqual(1);
-        expect( category.retrieving ).toBeFalsy();
+  it('default - expect articles is empty array', () => {
+    component.getArticles.pipe(
+      tap(articles => {
+        expect( articles ).toEqual([]);
       })
     )
     .subscribe();
   });
-  it('article default filters correct', () => {
-    component.filters.pipe(
+
+  it('default - expect filters are trump and sanders', () => {
+    component.getFilters.pipe(
       tap(result =>  expect( result ).toEqual(new Set ([ 'trump', 'sanders' ])))
     ).subscribe();
   });
