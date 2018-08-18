@@ -1,23 +1,27 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Observable } from 'rxjs';
+import { LogEffects } from './log.effects';
+import { StoreModule } from '@ngrx/store';
+import * as fromReducers from './../reducers';
 
-import { UserEffects } from './user.effects';
-
-describe('UserEffects', () => {
+describe('LogEffects', () => {
   // tslint:disable-next-line
   let actions$: Observable<any>;
-  let effects: UserEffects;
+  let effects: LogEffects;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [
+        StoreModule.forRoot({...fromReducers.reducers}),
+      ],
       providers: [
-        UserEffects,
+        LogEffects,
         provideMockActions(() => actions$)
       ]
     });
 
-    effects = TestBed.get(UserEffects);
+    effects = TestBed.get(LogEffects);
   });
 
   it('should be created', () => {

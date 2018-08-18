@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService } from '../../testing/in-memory-data.service';
+import { InMemoryDataService } from '../../../testing/in-memory-data.service';
 import { StoreModule } from '@ngrx/store';
-import * as fromReducers from './../reducers';
+import * as fromReducers from './../../reducers';
 
 import {
   MatCardModule,
@@ -38,30 +38,33 @@ describe('ArticleComponent', () => {
       providers: []
     })
     .compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(ArticleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
 
-  it('should create', () => {
+  }));
+
+
+  it('should create article component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('default - expect articles is empty array', () => {
-    component.getArticles.pipe(
-      tap(articles => {
-        expect( articles ).toEqual([]);
-      })
-    )
-    .subscribe();
-  });
+  describe('Defaults', () => {
 
-  it('default - expect filters are trump and sanders', () => {
-    component.getFilters.pipe(
-      tap(result =>  expect( result ).toEqual(new Set ([ 'trump', 'sanders' ])))
-    ).subscribe();
+    it('expect articles is empty array', () => {
+      component.getArticles.pipe(
+        tap(articles => {
+          expect( articles ).toEqual([]);
+        })
+      )
+      .subscribe();
+    });
+
+    it('expect filters are set to trump and sanders', () => {
+      component.getFilters.pipe(
+        tap(result =>  expect( result ).toEqual(new Set ([ 'trump', 'sanders' ])))
+      ).subscribe();
+    });
   });
 });

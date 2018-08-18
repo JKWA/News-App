@@ -24,7 +24,7 @@ describe('StandaloneComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create standalone component', () => {
     expect(component).toBeTruthy();
   });
 });

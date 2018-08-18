@@ -10,6 +10,7 @@ export interface State {
   allCategories: Map<string, CategoryItem>;
 }
 
+// TODO move local storage to service
 export const initialState: State = {
   setCategory: (window.localStorage.getItem('setCategory'))
     ? stringToCategory(window.localStorage.getItem('setCategory'))
@@ -43,7 +44,6 @@ export function reducer(state = initialState, action: CategoryActions): State {
       };
     }
 
-
     case CategoryActionTypes.RemoveCategory: {
       const categoryItem = categoryToObject(action.payload);
       const copy = new Map(state.allCategories);
@@ -59,12 +59,6 @@ export function reducer(state = initialState, action: CategoryActions): State {
       return {
         ...state,
         setCategory: action.payload
-      };
-    }
-
-    case CategoryActionTypes.SavedSelectedCategories: {
-      return {
-        ...state
       };
     }
 

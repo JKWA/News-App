@@ -5,7 +5,7 @@ import { FilterEffects } from './filter.effects';
 import { StoreModule } from '@ngrx/store';
 import * as fromFilter from './../reducers';
 
-describe('UserEffects', () => {
+describe('FilterEffects', () => {
   // tslint:disable-next-line
   let actions$: Observable<any>;
   let effects: FilterEffects;

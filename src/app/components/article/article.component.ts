@@ -1,12 +1,12 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { Article } from '../article';
+import { Article } from '../../article';
 import { Observable } from 'rxjs';
 import { map, tap, withLatestFrom } from 'rxjs/operators';
-import { Category } from '../enums/category.enum';
+import { Category } from '../../enums/category.enum';
 import { Store, select } from '@ngrx/store';
-import * as fromNews from './../reducers';
-import * as fromFilters from './../reducers';
-import * as fromCategory from './../reducers';
+import * as fromNews from './../../reducers';
+import * as fromFilters from './../../reducers';
+import * as fromCategory from './../../reducers';
 import { ScrollEvent } from 'ngx-scroll-event';
 
 @Component({

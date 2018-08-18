@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { stringToCategory, CategoryItem } from '../utility/category.utility';
-import * as CategoryActions from './../actions/category.actions';
+import { stringToCategory, CategoryItem } from '../../utility/category.utility';
+import * as CategoryActions from './../../actions/category.actions';
 import { Observable, of } from 'rxjs';
 import { map, tap, withLatestFrom, catchError } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
-import * as fromCategory from './../reducers';
+import * as fromCategory from './../../reducers';
 
 
 

@@ -4,8 +4,6 @@ export interface CategoryItem {
     display: string;
     id: string;
     selected: boolean;
-    tabIndex: number;
-    viewing: boolean;
   }
 
 /**

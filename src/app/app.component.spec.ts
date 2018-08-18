@@ -13,11 +13,6 @@ import { ScrollEventModule } from 'ngx-scroll-event';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from '../testing/in-memory-data.service';
-import { CategoryState } from './state/category.state';
-import { FilterState } from './state/filter.state';
-import { NewsState } from './state/news.state';
-import { LogState } from './state/log.state';
-import { OnlineState } from './state/online.state';
 import { StoreModule } from '@ngrx/store';
 import * as fromReducers from './reducers';
 import {
@@ -33,12 +28,12 @@ import {
   MatTabsModule,
   MatToolbarModule
   } from '@angular/material';
-import { NewsComponent } from './news/news.component';
-import { LogComponent } from './log/log.component';
-import { CategoryComponent } from './category/category.component';
-import { ArticleComponent } from './article/article.component';
-import { FilterComponent } from './filter/filter.component';
-import { StandaloneComponent } from './standalone/standalone.component';
+import { NewsComponent } from './components/news/news.component';
+import { LogComponent } from './components/log/log.component';
+import { CategoryComponent } from './components/category/category.component';
+import { ArticleComponent } from './components/article/article.component';
+import { FilterComponent } from './components/filter/filter.component';
+import { StandaloneComponent } from './components/standalone/standalone.component';
 
 describe('AppComponent', () => {
   let location: Location;
@@ -84,54 +79,54 @@ describe('AppComponent', () => {
     location = TestBed.get(Location);
     fixture = TestBed.createComponent(AppComponent);
     router.initialNavigation();
-
   }));
+
   it('should create the app', async(() => {
-    // const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
   }));
   it(`should have title 'marty-news'`, async(() => {
-    // const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app.title).toEqual('marty-news');
   }));
 
-  it('should render title in header', async(() => {
-    // const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('#title').textContent).toContain('Marty News');
-  }));
+  describe('HTML', () => {
+    it('should render title in header', async(() => {
+      fixture.detectChanges();
+      const compiled = fixture.debugElement.nativeElement;
+      expect(compiled.querySelector('#title').textContent).toContain('Marty News');
+    }));
+  });
 
-  it('expect navigate to "" redirects to /news', fakeAsync(() => {
-    router.navigate(['']);
-    tick();
-    expect(location.path()).toBe('/news');
-  }));
+  describe('Navigator', () => {
+    it('expect navigate to "" redirects to /news', fakeAsync(() => {
+      router.navigate(['']);
+      tick();
+      expect(location.path()).toBe('/news');
+    }));
 
-  it('expect navigate to "news" takes to /news', fakeAsync(() => {
-    router.navigate(['news']);
-    tick();
-    expect(location.path()).toBe('/news');
-  }));
+    it('expect navigate to "news" takes to /news', fakeAsync(() => {
+      router.navigate(['news']);
+      tick();
+      expect(location.path()).toBe('/news');
+    }));
 
-  it('expect navigate to "category" takes to /category', fakeAsync(() => {
-    router.navigate(['category']);
-    tick();
-    expect(location.path()).toBe('/category');
-  }));
+    it('expect navigate to "category" takes to /category', fakeAsync(() => {
+      router.navigate(['category']);
+      tick();
+      expect(location.path()).toBe('/category');
+    }));
 
-  it('expect navigate to "log" takes to /log', fakeAsync(() => {
-    router.navigate(['log']);
-    tick();
-    expect(location.path()).toBe('/log');
-  }));
+    it('expect navigate to "log" takes to /log', fakeAsync(() => {
+      router.navigate(['log']);
+      tick();
+      expect(location.path()).toBe('/log');
+    }));
 
-  it('expect navigate to "standalone" takes to /standalone', fakeAsync(() => {
-    router.navigate(['standalone']);
-    tick();
-    expect(location.path()).toBe('/standalone');
-  }));
-
+    it('expect navigate to "standalone" takes to /standalone', fakeAsync(() => {
+      router.navigate(['standalone']);
+      tick();
+      expect(location.path()).toBe('/standalone');
+    }));
+  });
 });

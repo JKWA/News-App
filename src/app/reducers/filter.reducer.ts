@@ -4,7 +4,6 @@ import { Filter } from '../models/filter';
 
 export interface State {
   listOfFilters: Set<Filter>;
-
 }
 
 export const initialState: State = {
@@ -44,6 +43,8 @@ export function reducer(state = initialState, action: FilterActions): State {
   }
 }
 
+
+// TODO move this over to local storage service
 export const getAllFilters = (state: State) => state.listOfFilters;
 
 function convertToFilter(filterString: string): Set<Filter> {

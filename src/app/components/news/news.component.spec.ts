@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // import { CategoryState } from '../state/category.state';
 // import { FilterState } from '../state/filter.state';
 import { StoreModule } from '@ngrx/store';
-import * as fromNews from './../reducers';
+import * as fromNews from './../../reducers';
 import {
   MatIconModule,
   MatCardModule,
@@ -36,69 +36,74 @@ describe('NewsComponent', () => {
       providers: []
     })
     .compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(NewsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     localStorage.clear();
-  });
+  }));
+
 
   it('should create news component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('expect tab index to be 0 by defualt state', () => {
-    component.selectedIndex.pipe(
-      take(1),
-      tap (index => {
-        expect(index).toEqual(0);
-      })
-    ).subscribe();
-  });
+  describe('HTML', () => {
+    it('expect tab index change should call tabChanged method', () => {
+      const componentDebug = fixture.debugElement;
+      spyOn(component, 'tabChanged');
+      const tabGroup = componentDebug.query(By.directive(MatTabGroup));
+        tabGroup.triggerEventHandler('selectedIndexChange', 1);
+        expect(component.tabChanged).toHaveBeenCalled();
+    });
 
-  it('expect tab group index selected to be 0 by default state',  () => {
-    const componentDebug = fixture.debugElement;
-    const tabGroup = componentDebug.query(By.directive(MatTabGroup));
-    fixture.whenStable().then(() => {
-      expect( tabGroup.attributes['ng-reflect-selected-index'] ).toEqual('0');
+    it('expect tab group index selected to be 0',  () => {
+      const componentDebug = fixture.debugElement;
+      const tabGroup = componentDebug.query(By.directive(MatTabGroup));
+      fixture.whenStable().then(() => {
+        expect( tabGroup.attributes['ng-reflect-selected-index'] ).toEqual('0');
+      });
+    });
+
+    it('expect general articles to be displayed', () => {
+      const componentDebug = fixture.debugElement;
+      const article = componentDebug.query(By.directive(ArticleComponent));
+      expect( article.attributes['ng-reflect-category'] ).toEqual('general');
     });
   });
 
-  it('expect 3 categories to be displayed by default state', () => {
-    component.getSelectedCategories.pipe(
-      take(1),
-      tap(categories => {
-        expect(categories.length).toEqual(3);
-      })
-    ).subscribe();
+  describe('Defaults', () => {
+
+    it('expect tab index to be 0', () => {
+      component.selectedIndex.pipe(
+        take(1),
+        tap (index => {
+          expect(index).toEqual(0);
+        })
+      ).subscribe();
+    });
+
+    it('expect 3 categories to be displayed', () => {
+      component.getSelectedCategories.pipe(
+        take(1),
+        tap(categories => {
+          expect(categories.length).toEqual(3);
+        })
+      ).subscribe();
+    });
+
+    it('expect general category to be selected', () => {
+      component.getViewingCategory.pipe(
+        take(1),
+        tap(category => {
+          expect(category).toBe('general');
+        })
+      ).subscribe();
+    });
   });
+});
 
-  it('expect general category to be selected by default state', () => {
-    component.getViewingCategory.pipe(
-      take(1),
-      tap(category => {
-        expect(category).toBe('general');
-      })
-    ).subscribe();
-  });
-
-  it('expect general articles to be displayed by defualt state', () => {
-    const componentDebug = fixture.debugElement;
-    const article = componentDebug.query(By.directive(ArticleComponent));
-    expect( article.attributes['ng-reflect-category'] ).toEqual('general');
-  });
-
-  it('expect tab index change should call tabChanged method', () => {
-    const componentDebug = fixture.debugElement;
-    spyOn(component, 'tabChanged');
-    const tabGroup = componentDebug.query(By.directive(MatTabGroup));
-      tabGroup.triggerEventHandler('selectedIndexChange', 1);
-      expect(component.tabChanged).toHaveBeenCalled();
-  });
-
-
+  // save for possible e2e
   // it('change group updates local cache', () => {
   //   const componentDebug = fixture.debugElement;
   //   const tabGroup = componentDebug.query(By.directive(MatTabGroup));
@@ -117,4 +122,4 @@ describe('NewsComponent', () => {
   // });
 
   // localStorage.clear();
-});
+

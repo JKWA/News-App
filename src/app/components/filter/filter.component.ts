@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import * as FilterActions from './../actions/filter.actions';
+import * as FilterActions from './../../actions/filter.actions';
 import { Store, select } from '@ngrx/store';
-import * as fromFilter from './../reducers';
-import { Filter } from '../models/filter';
+import * as fromFilter from './../../reducers';
+import { Filter } from '../../models/filter';
 
 
 @Component({

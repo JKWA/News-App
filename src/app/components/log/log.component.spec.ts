@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { LogComponent } from './log.component';
 import { StoreModule } from '@ngrx/store';
-import * as fromLog from './../reducers';
+import * as fromLog from './../../reducers';
 import {
   MatIconModule,
   MatTableModule,
@@ -30,7 +30,7 @@ describe('LogComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create log component', () => {
     expect(component).toBeTruthy();
   });
 });

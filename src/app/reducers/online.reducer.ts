@@ -3,7 +3,6 @@ import { OnlineActions, OnlineActionTypes } from '../actions/online.actions';
 
 export interface State {
   online: boolean;
-
 }
 
 export const initialState: State = {

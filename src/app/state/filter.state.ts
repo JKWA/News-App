@@ -1,121 +1,121 @@
-import {Store, Selector, State, Action, StateContext } from '@ngxs/store';
-import { UpdateState } from './log.state';
+// import {Store, Selector, State, Action, StateContext } from '@ngxs/store';
+// import { UpdateState } from './log.state';
 
-// TODO add filter view for just the list of filters and update filter component
+// // TODO add filter view for just the list of filters and update filter component
 
-export type Filter = string;
+// export type Filter = string;
 
-/**
-   * Add filter
-   * @param fliter - filter to add
-   */
-export class AddFilter {
-  static readonly type = '[Filter Component] AddFilter';
-  constructor(
-    public filterToAdd: Filter
-  ) {}
-}
+// /**
+//    * Add filter
+//    * @param fliter - filter to add
+//    */
+// export class AddFilter {
+//   static readonly type = '[Filter Component] AddFilter';
+//   constructor(
+//     public filterToAdd: Filter
+//   ) {}
+// }
 
-/**
-   * Remove filter
-   * @param fliter - filter to remove
-   */
-export class RemoveFilter {
-  static readonly type = '[Filter Component] RemoveFilter';
-  constructor(
-    public filterToRemove: Filter
-  ) {}
-}
-
-
-export interface FilterStateModel {
-  listOfFilters: Set<Filter>;
-}
-
-@State<FilterStateModel>({
-  name: 'listOfFilters',
-  defaults: {
-    listOfFilters: (window.localStorage.getItem('filters'))
-      ? convertToFilter(window.localStorage.getItem('filters'))
-      : new Set ([ 'trump', 'sanders' ])
-  }
-})
+// /**
+//    * Remove filter
+//    * @param fliter - filter to remove
+//    */
+// export class RemoveFilter {
+//   static readonly type = '[Filter Component] RemoveFilter';
+//   constructor(
+//     public filterToRemove: Filter
+//   ) {}
+// }
 
 
-export class FilterState {
+// export interface FilterStateModel {
+//   listOfFilters: Set<Filter>;
+// }
 
-  constructor(
-    private store: Store
-  ) { }
+// @State<FilterStateModel>({
+//   name: 'listOfFilters',
+//   defaults: {
+//     listOfFilters: (window.localStorage.getItem('filters'))
+//       ? convertToFilter(window.localStorage.getItem('filters'))
+//       : new Set ([ 'trump', 'sanders' ])
+//   }
+// })
 
-  @Selector() static allFilters(state: FilterStateModel): Set<Filter> {
-    return state.listOfFilters;
-  }
 
-/**
- * add a new filter
- *
- * @param {StateContext<FilterStateModel>} ctx
- * @param {AddFilter} action
- * @memberof FilterState
- */
-@Action(AddFilter)
-  addFilter(ctx: StateContext<FilterStateModel>, action: AddFilter) {
-    const currentState = Object.assign({}, ctx.getState());
+// export class FilterState {
 
-    const state = ctx.getState();
-    const copy = new Set(state.listOfFilters);
-    copy.add(action.filterToAdd);
-    copy.delete('$NONE$');
+//   constructor(
+//     private store: Store
+//   ) { }
 
-    window.localStorage.setItem('filters', Array.from(copy).join());
+//   @Selector() static allFilters(state: FilterStateModel): Set<Filter> {
+//     return state.listOfFilters;
+//   }
 
-    ctx.patchState({
-      listOfFilters: copy
-    });
-     // add to dev log
-     this.store.dispatch(new UpdateState('Filter', `add ${action.filterToAdd}`, currentState, ctx.getState()));
+// /**
+//  * add a new filter
+//  *
+//  * @param {StateContext<FilterStateModel>} ctx
+//  * @param {AddFilter} action
+//  * @memberof FilterState
+//  */
+// @Action(AddFilter)
+//   addFilter(ctx: StateContext<FilterStateModel>, action: AddFilter) {
+//     const currentState = Object.assign({}, ctx.getState());
 
-  }
+//     const state = ctx.getState();
+//     const copy = new Set(state.listOfFilters);
+//     copy.add(action.filterToAdd);
+//     copy.delete('$NONE$');
 
-/**
- * remove an existing filter
- *
- * @param {StateContext<FilterStateModel>} ctx
- * @param {RemoveFilter} action
- * @memberof FilterState
- */
-@Action(RemoveFilter)
-  removeFilter(ctx: StateContext<FilterStateModel>, action: RemoveFilter) {
-    const currentState = Object.assign({}, ctx.getState());
+//     window.localStorage.setItem('filters', Array.from(copy).join());
 
-    const copy = new Set(ctx.getState().listOfFilters);
-    copy.delete(action.filterToRemove);
+//     ctx.patchState({
+//       listOfFilters: copy
+//     });
+//      // add to dev log
+//      this.store.dispatch(new UpdateState('Filter', `add ${action.filterToAdd}`, currentState, ctx.getState()));
 
-    ( copy.size )
-      ? window.localStorage.setItem('filters', Array.from(copy).join())
-      : window.localStorage.setItem('filters', '$NONE$');
+//   }
 
-    ctx.patchState({
-      listOfFilters: copy
-    });
+// /**
+//  * remove an existing filter
+//  *
+//  * @param {StateContext<FilterStateModel>} ctx
+//  * @param {RemoveFilter} action
+//  * @memberof FilterState
+//  */
+// @Action(RemoveFilter)
+//   removeFilter(ctx: StateContext<FilterStateModel>, action: RemoveFilter) {
+//     const currentState = Object.assign({}, ctx.getState());
 
-    // add to dev log
-    this.store.dispatch(new UpdateState('Filter', `remove ${action.filterToRemove}`, currentState, ctx.getState()));
+//     const copy = new Set(ctx.getState().listOfFilters);
+//     copy.delete(action.filterToRemove);
 
-  }
-}
+//     ( copy.size )
+//       ? window.localStorage.setItem('filters', Array.from(copy).join())
+//       : window.localStorage.setItem('filters', '$NONE$');
 
-function convertToFilter(filterString: string): Set<Filter> {
-  const listOfFilters = [];
+//     ctx.patchState({
+//       listOfFilters: copy
+//     });
 
-  if (filterString !== '$NONE$') {
-    filterString.split(',').map(filter => {
-      listOfFilters.push(filter.trim());
-    });
-  }
+//     // add to dev log
+//     this.store.dispatch(new UpdateState('Filter', `remove ${action.filterToRemove}`, currentState, ctx.getState()));
 
-  return new Set(listOfFilters);
-}
+//   }
+// }
+
+// function convertToFilter(filterString: string): Set<Filter> {
+//   const listOfFilters = [];
+
+//   if (filterString !== '$NONE$') {
+//     filterString.split(',').map(filter => {
+//       listOfFilters.push(filter.trim());
+//     });
+//   }
+
+//   return new Set(listOfFilters);
+// }
 
 
