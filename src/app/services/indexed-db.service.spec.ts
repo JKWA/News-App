@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { LocalDbService } from './local-db.service';
+import { LocalDbService } from './indexed-db.service';
 
 describe('LocalDbService', () => {
   beforeEach(() => {

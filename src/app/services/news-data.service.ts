@@ -59,9 +59,7 @@ getNews (category: Category, pageNumber: number, filters): Observable<Article[]>
         }),
         map(result => {
           return result.map(article => {
-
               article.id = encodeURIComponent(article.title);
-
               // remove photo urls that are not https or that are not formatted correctly
               const expression = /https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
               const regex = new RegExp(expression);
@@ -71,9 +69,11 @@ getNews (category: Category, pageNumber: number, filters): Observable<Article[]>
               }
             }
             if ( isDevMode ) {
-              delete article.urlToImage;
+              delete article.urlToImage; // avoid image errors on console
+              // make id unique by category -- indexed DB issue
+              article.title = `CATEGORY ${category}: PAGE ${pageNumber.toString()}: ${article.title}`;
             }
-              return article;
+            return article;
           });
         }),
       );

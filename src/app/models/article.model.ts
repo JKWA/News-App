@@ -13,3 +13,9 @@ export class Article {
     publishedAt: string;
     id: string;
   }
+
+export class SavedArticle extends Article {
+  timestamp: any;
+  category: any;
+  key: any;
+}

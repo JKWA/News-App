@@ -3,6 +3,7 @@ import { Category } from '../enums/category.enum';
 import { Article } from '../models/article.model';
 import { Error } from '../models/error.model';
 import { Service } from '../enums/service.enum';
+import { ServiceMessageModel } from '../models/service-message.model';
 
 export enum NewsActionTypes {
   LoadNews = '[News] Load Users',
@@ -14,7 +15,11 @@ export enum NewsActionTypes {
   SaveArticlesToClient = '[News Effects] save articles to client',
   IndexedDbError = '[News Effects] Indexed db error',
   IndexedDbSaved = '[News Effects] Saved articles to indexed db',
-  NewsApiError = '[News Effects] News API error'
+  NewsApiError = '[News Effects] News API error',
+  GetExpiredData = '[News Effects] Get expired data from IndexedDb',
+  GetExpiredDataFailed = '[News Effects] Get expired data from IndexedDb failed',
+  DeleteExpiredData = '[News Effects] Delete expired data from IndexedDb',
+  DeleteExpiredDataFailed = '[News Effects] Delete expired data from IndexedDb failed'
 }
 
 export class LoadNews implements Action {
@@ -49,7 +54,7 @@ export class AddInitialArticles implements Action {
 
 export class NewsApiError implements Action {
   readonly type = NewsActionTypes.NewsApiError;
-  constructor(public payload: Error) { }
+  constructor(public payload: any) { }
 }
 
 export class AddInitialClientArticles implements Action {
@@ -72,6 +77,25 @@ export class IndexedDbSaved implements Action {
   constructor(public payload: Category) { }
 }
 
+export class GetExpiredData implements Action {
+  readonly type = NewsActionTypes.GetExpiredData;
+  constructor(public payload: number[]) { }
+}
+
+export class GetExpiredDataFailed implements Action {
+  readonly type = NewsActionTypes.GetExpiredDataFailed;
+  constructor(public payload: ServiceMessageModel) { }
+}
+
+export class DeleteExpiredData implements Action {
+  readonly type = NewsActionTypes.DeleteExpiredData;
+  constructor(public payload: ServiceMessageModel) { }
+}
+
+export class DeleteExpiredDataFailed implements Action {
+  readonly type = NewsActionTypes.DeleteExpiredDataFailed;
+  constructor(public payload: ServiceMessageModel) { }
+}
 
 
 export type NewsActions =
@@ -83,4 +107,9 @@ export type NewsActions =
     | SaveArticlesToClient
     | IndexedDbError
     | NewsApiError
-    | IndexedDbSaved;
+    | IndexedDbSaved
+    | GetExpiredData
+    | GetExpiredDataFailed
+    | DeleteExpiredData
+    | DeleteExpiredDataFailed;
+

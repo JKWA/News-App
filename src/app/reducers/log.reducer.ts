@@ -34,6 +34,23 @@ export function reducer(state = initialState, action: LogActions): State {
         logs: copy
       };
     }
+
+    case LogActionTypes.AddLog:
+    {
+      const location = action.payload.location;
+      const message = action.payload.message;
+      const time = action.payload.time;
+      const type = action.payload.type;
+      const copy = state.logs.slice(0);
+
+      copy.push(
+          {location, message, time, type}
+      );
+      return {
+        ...state,
+        logs: copy
+      };
+    }
     case LogActionTypes.DeleteAllLogs: {
       return {
         ...state,

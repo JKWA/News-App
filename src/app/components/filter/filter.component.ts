@@ -57,7 +57,6 @@ addFilter(): void {
  */
 removeFilter(item): void {
     if ( item ) {
-      // this.store.dispatch(new RemoveFilter(item));
       this.store.dispatch(new FilterActions.RemoveFilter(item));
 
     }

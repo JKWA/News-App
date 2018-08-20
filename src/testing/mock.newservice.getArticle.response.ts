@@ -1,6 +1,6 @@
 /* tslint:disable */
 import { Article } from '../app/models/article.model';
-export function getArticles(): Article[]{
+export function getArticles(): any{
     return [
     {
     source: {

@@ -1,20 +1,15 @@
 import { Injectable, InjectionToken, Optional, Inject } from '@angular/core';
+import { Observable, of, Scheduler } from 'rxjs';
+import { tap, concatMap, exhaustMap, take, map, catchError, switchMap, withLatestFrom } from 'rxjs/operators';
+import { Store, select, Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Observable, defer, of, Scheduler } from 'rxjs';
-import { tap, concatMap, flatMap, exhaustMap, take, map, catchError, switchMap, withLatestFrom } from 'rxjs/operators';
-import { Action } from '@ngrx/store';
 import * as NewsActions from '../actions/news.actions';
 import { NewsActionTypes } from '../actions/news.actions';
-import { Article } from '../models/article.model';
-import { LocalDbService } from '../service/local-db.service';
-import { NewsDataService } from '../service/news-data.service';
-import { Store, select } from '@ngrx/store';
+import { IndexedDbService } from '../services/indexed-db.service';
+import { NewsDataService } from '../services/news-data.service';
 import * as fromFilter from './../reducers';
-import * as fromNews from './../reducers';
-import { Category } from '../enums/category.enum';
 import { Service } from '../enums/service.enum';
-// import { Scheduler } from 'rxjs';
-
+import * as Message from '../messages/service.messages';
 
 export const DEBOUNCE = new InjectionToken<number>('Test Debounce');
 export const SCHEDULER = new InjectionToken<Scheduler>('Test Scheduler');
@@ -24,7 +19,7 @@ export const SCHEDULER = new InjectionToken<Scheduler>('Test Scheduler');
 export class NewsEffects {
 
   @Effect()
-  loadFoos$ = this.actions$.pipe(ofType(NewsActionTypes.LoadNews));
+  loadNews$ = this.actions$.pipe(ofType(NewsActionTypes.LoadNews));
 
   @Effect()
   initialApiNews$: Observable<Action> = this.actions$.pipe(
@@ -45,8 +40,10 @@ export class NewsEffects {
                   });
         }),
         catchError(error => {
-          console.log(error);
-          return of( new NewsActions.NewsApiError(error));
+          return of( new NewsActions.NewsApiError({
+            category: results.payload,
+            service: Service.NewsAPI,
+          }));
         })
       );
     })
@@ -59,9 +56,8 @@ export class NewsEffects {
     concatMap(results => {
       const category = results.payload;
       const service = Service.IndexedDb;
-      const client$ = this.localDb.getData(results.payload);
+      const client$ = this.indexedDbService.getData(results.payload);
         return client$.pipe(
-          tap(console.log),
           map(articles => {
               return new NewsActions.AddInitialClientArticles({
                 category: category,
@@ -78,25 +74,55 @@ export class NewsEffects {
   );
 
 
+  // TODO - change take(1) to wait until indexed DB is done, then send action
   @Effect()
   saveNewsToIndexedDb$: Observable<Action> = this.actions$.pipe(
     ofType<NewsActions.AddInitialArticles>(NewsActionTypes.AddInitialArticles),
     concatMap(results => {
       const category = results.payload.category;
       const articles = results.payload.articles;
-      const client$ = this.localDb.setData(category, articles);
+      const client$ = this.indexedDbService.setData(category, articles);
         return client$.pipe(
           take(1),
+          // tap(console.log),
           map(_ => {
               return new NewsActions.IndexedDbSaved(category);
-            }),
-            catchError(error => {
-              console.log(error);
-              return of( new NewsActions.IndexedDbError(error));
-            })
-          );
+          }),
+          catchError(error => {
+            console.log(error);
+            return of( new NewsActions.IndexedDbError(error));
+          })
+        );
       }),
   );
+
+
+  @Effect()
+  getExpiredData$: Observable<Action> = this.actions$.pipe(
+    ofType<NewsActions.AddInitialArticles>(NewsActionTypes.AddInitialArticles),
+    map(action => action.payload.category),
+    concatMap(category => this.indexedDbService.getExpiredData(category).pipe(
+      map(ids => new NewsActions.GetExpiredData(ids)),
+      catchError(err => of(new NewsActions.GetExpiredDataFailed(new Message.GetExpiredArticlesMessage().errorMessage)))
+    ))
+  );
+
+
+  @Effect({dispatch: false})
+  deleteExpiredData$ = this.actions$.pipe(
+    ofType<NewsActions.GetExpiredData>(NewsActionTypes.GetExpiredData),
+    map(results => results.payload),
+    map (keys => {
+      keys.forEach(key => {
+        this.indexedDbService.removeArticle(key).pipe(
+          tap(_ => console.log('REMOVING')),
+          map(() => new NewsActions.DeleteExpiredData(new Message.DeletedArticlesMessage().successMessage)),
+          catchError(_ => of(new NewsActions.DeleteExpiredDataFailed(new Message.DeletedArticlesMessage().errorMessage)))
+        ).subscribe();
+      });
+    })
+  );
+
 
   // init$: Observable<any> = defer(() => of(null)).pipe(
   //   tap(() => console.log('init$'))
@@ -105,7 +131,7 @@ export class NewsEffects {
   constructor(
     private actions$: Actions,
     private store: Store<fromFilter.State>,
-    private localDb: LocalDbService,
+    private indexedDbService: IndexedDbService,
     private newsService: NewsDataService,
     // used only for unit tests to be able to inject a debounce value
     @Optional()

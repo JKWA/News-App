@@ -1,28 +1,23 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SpyLocation } from '@angular/common/testing';
 import { Location } from '@angular/common';
-import { provideMockActions } from '@ngrx/effects/testing';
-import { Actions } from '@ngrx/effects';
-import { cold, hot, getTestScheduler } from 'jasmine-marbles';
-import { Observable, empty, of, defer } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
-import { Store, select } from '@ngrx/store';
+import { Observable, empty} from 'rxjs';
 import { StoreModule } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
+import { provideMockActions } from '@ngrx/effects/testing';
+import { cold, hot, getTestScheduler } from 'jasmine-marbles';
 import * as fromNews from './../reducers';
-
-
 import { Category } from '../enums/category.enum';
 import * as NewsActions from '../actions/news.actions';
-import { NewsActionTypes } from '../actions/news.actions';
 import { getArticles as MockData } from '../../testing/mock.newservice.getArticle.response';
 import { Service } from '../enums/service.enum';
-
 import { NewsEffects, SCHEDULER, DEBOUNCE } from './news.effects';
-import { NewsDataService } from './../service/news-data.service';
-import { LocalDbService } from './../service/local-db.service';
-import { Article } from '../models/article.model';
-// import {NewsDataService} from './../service/news-data.service';
+import { Article, SavedArticle } from '../models/article.model';
+import { NewsDataService } from './../services/news-data.service';
+import { IndexedDbService } from '../services/indexed-db.service';
+import { Time } from '../utility/time.utility';
+import * as ServiceMessage from '../messages/service.messages';
 
 
 export class TestActions extends Actions {
@@ -43,7 +38,7 @@ class MockNewsDataService {
   getNews = jasmine.createSpy('getNews');
 }
 
-class MockLocalDbService {
+class MockIndexedDbService {
   setNews = jasmine.createSpy('setNews');
   getNews = jasmine.createSpy('getNews');
   getExpiredData = jasmine.createSpy('getExpiredData');
@@ -54,7 +49,7 @@ describe('NewsEffects', () => {
   let actions$: TestActions;
   let effects: NewsEffects;
   let newsDataService: MockNewsDataService;
-  let localDbService: MockLocalDbService;
+  let indexDbService: MockIndexedDbService;
   let location: SpyLocation;
 
   beforeEach(() => {
@@ -63,10 +58,10 @@ describe('NewsEffects', () => {
         NewsEffects,
         provideMockActions(() => actions$),
         { provide: NewsDataService, useClass: MockNewsDataService },
-        { provide: LocalDbService, useClass: MockLocalDbService },
+        { provide: IndexedDbService, useClass: MockIndexedDbService },
         { provide: Actions, useFactory: getActions },
-        // { provide: DEBOUNCE, useValue: 30 },
-        // { provide: SCHEDULER, useFactory: getTestScheduler }
+        { provide: DEBOUNCE, useValue: 30 },
+        { provide: SCHEDULER, useFactory: getTestScheduler }
       ],
       imports: [
         StoreModule.forRoot({...fromNews.reducers}),
@@ -76,20 +71,16 @@ describe('NewsEffects', () => {
 
     effects = TestBed.get(NewsEffects);
     newsDataService = TestBed.get(NewsDataService);
-    localDbService = TestBed.get(LocalDbService);
+    indexDbService = TestBed.get(IndexedDbService);
     actions$ = TestBed.get(Actions);
     location = TestBed.get(Location);
   });
 
-  describe('initialApiNews$', () => {
-    it('should return an AddInitialArticles, with articles, on success', () => {
-
-      const filters = new Set(['trump', 'sanders']);
+  describe('get news process', () => {
+    it('"InitiateNews" should return an AddInitialArticles, with articles, on success', () => {
       const category = Category.Science;
-      const pageNumber = 1;
-      const articles = MockData();
+      const articles = MockData() as Article[];
       const service = Service.NewsAPI;
-
       const action = new NewsActions.InitiateNews(category);
       const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
       const completion = new NewsActions.AddInitialArticles(articlePayload);
@@ -100,7 +91,116 @@ describe('NewsEffects', () => {
       newsDataService.getNews.and.returnValue(response);
       expect(effects.initialApiNews$).toBeObservable(expected);
     });
+
+    it('"InitiateNews" should return an NewsApiError, with message, on fail', () => {
+      const category = Category.Science;
+      const articles = [] as Article[];
+      const service = Service.NewsAPI;
+      const action = new NewsActions.InitiateNews(category);
+      const articlePayload = {category, service};
+      const completion = new NewsActions.NewsApiError(articlePayload);
+
+      actions$.stream = hot('-a', { a: action });
+      const response = cold('-#|', { b: articles });
+      const expected = cold('--c', { c: completion });
+      newsDataService.getNews.and.returnValue(response);
+      expect(effects.initialApiNews$).toBeObservable(expected);
+    });
+
+    it('"AddInitialArticles" should return an GetExpiredData, with list if keys, on success', () => {
+      const category = Category.Sports;
+      const service = Service.NewsAPI;
+      let key = 0;
+      const articles = MockData().map(article => {
+        article.timestamp = new Time().sixtyMinutesAgo;
+        article.key = key++;
+        article.category = category;
+        return article;
+      }) as SavedArticle[];
+
+      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const action = new NewsActions.AddInitialArticles(articlePayload);
+      const completion = new NewsActions.GetExpiredData(articles.map(article => article.key));
+
+      actions$.stream = hot('-a', { a: action });
+      const response = cold('-b|', { b: articles.map(article => article.key) });
+      const expected = cold('--c', { c: completion });
+      indexDbService.getExpiredData.and.returnValue(response);
+      expect(effects.getExpiredData$).toBeObservable(expected);
+    });
+
+    it('"AddInitialArticles" should return an GetExpiredDataFailed, with list if keys, on failure', () => {
+      const category = Category.Sports;
+      const service = Service.NewsAPI;
+      let key = 0;
+
+      const articles = MockData().map(article => {
+        article.timestamp = new Time().sixtyMinutesAgo;
+        article.key = key++;
+        article.category = category;
+        return article;
+      }) as SavedArticle[];
+
+      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const action = new NewsActions.AddInitialArticles(articlePayload);
+      const completion = new NewsActions.GetExpiredDataFailed(new ServiceMessage.GetExpiredArticlesMessage().errorMessage);
+
+      actions$.stream = hot('-a', { a: action });
+      const response = cold('-#|', { b: null});
+      const expected = cold('--c', { c: completion });
+      indexDbService.getExpiredData.and.returnValue(response);
+      expect(effects.getExpiredData$).toBeObservable(expected);
+    });
   });
+
+it('"AddInitialArticles" should return an GetExpiredDataFailed, with list if keys, on failure', () => {
+    const category = Category.Sports;
+    const service = Service.NewsAPI;
+    let key = 0;
+
+    const articles = MockData().map(article => {
+      article.timestamp = new Time().sixtyMinutesAgo;
+      article.key = key++;
+      article.category = category;
+      return article;
+    }) as SavedArticle[];
+
+    const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+    const action = new NewsActions.AddInitialArticles(articlePayload);
+    const completion = new NewsActions.GetExpiredDataFailed(new ServiceMessage.GetExpiredArticlesMessage().errorMessage);
+
+    actions$.stream = hot('-a', { a: action });
+    const response = cold('-#|', { b: null});
+    const expected = cold('--c', { c: completion });
+    indexDbService.getExpiredData.and.returnValue(response);
+    expect(effects.getExpiredData$).toBeObservable(expected);
+  });
+});
+
+  // describe('saveNewsToIndexedDb$', () => {
+  //   it('should return an AddInitialArticles, with articles, on success', () => {
+
+  //     const articlePayload: NewsActions.ArticlePayload = {
+  //       category: Category.Science,
+  //       articles:  MockData(),
+  //       service: Service.IndexedDb
+  //     };
+  //     const action = new NewsActions.SaveArticlesToClient(articlePayload);
+  //     const completion = new NewsActions.IndexedDbSaved(Category.Science);
+
+  //     const savedArticle = MockData().map(article => {
+  //       article.timestamp = new Date().toISOString();
+  //       article.category = Category.Science;
+  //       return article;
+  //     }) as SavedArticle[];
+
+  //     actions$.stream = hot('-a', { a: action });
+  //     const response = cold('-b|', { b: savedArticle });
+  //     const expected = cold('--c', { c: completion });
+  //     localDbService.setNews.and.returnValue(response);
+  //     expect(effects.saveNewsToIndexedDb$).toBeObservable(expected);
+  //   });
+  // });
 
   // describe('getClientNewsData$', () => {
   //   it('should return a AddInitialArticles, with articles, on success', () => {
@@ -125,4 +225,4 @@ describe('NewsEffects', () => {
   //     // expect(effects.getClientNewsData$).toBeObservable(expected);
   //   });
   // });
-});
+// });

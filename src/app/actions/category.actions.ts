@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Category } from '../enums/category.enum';
+import { ServiceMessageModel } from '../models/service-message.model';
 
 export enum CategoryActionTypes {
   LoadCategorys = '[Category] Load Categorys',
@@ -10,7 +11,7 @@ export enum CategoryActionTypes {
   SavedSelectedCategories = '[Category Effect] Saved Selected Category Locally',
   SavedSelectedCategoriesFailed = '[Category Effect] Failed to Save Selected Category Locally',
   SavedViewedCategory = '[Category Effect] saved viewed category',
-  SavedViewedCategoryFail = '[Category Effect] Failed to save viewed category',
+  SavedViewedCategoryFailed = '[Category Effect] Failed to save viewed category',
 }
 
 export class LoadCategorys implements Action {
@@ -39,18 +40,24 @@ export class SetCategory implements Action {
 
 export class SavedSelectedCategories implements Action {
   readonly type = CategoryActionTypes.SavedSelectedCategories;
+  constructor(public payload: ServiceMessageModel) { }
+
 }
 
 export class SavedSelectedCategoriesFailed implements Action {
   readonly type = CategoryActionTypes.SavedSelectedCategoriesFailed;
+  constructor(public payload: ServiceMessageModel) { }
+
 }
 
 export class SavedViewedCategory implements Action {
   readonly type = CategoryActionTypes.SavedViewedCategory;
+  constructor(public payload: ServiceMessageModel) { }
 }
 
-export class SavedViewedCategoryFail implements Action {
-  readonly type = CategoryActionTypes.SavedViewedCategoryFail;
+export class SavedViewedCategoryFailed implements Action {
+  readonly type = CategoryActionTypes.SavedViewedCategoryFailed;
+  constructor(public payload: ServiceMessageModel) { }
 }
 
 export type CategoryActions =
@@ -62,4 +69,4 @@ export type CategoryActions =
   | SavedSelectedCategories
   | SavedSelectedCategoriesFailed
   | SavedViewedCategory
-  | SavedViewedCategoryFail;
+  | SavedViewedCategoryFailed;

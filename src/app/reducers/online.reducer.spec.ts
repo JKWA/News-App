@@ -14,7 +14,7 @@ describe('Online Reducer', () => {
 
   describe('Online actions', () => {
 
-    it('Offline should change online status to false', () => {
+    it('"Offline" should change online status to false', () => {
       const firstState: State = {
         online: true
       };
@@ -27,7 +27,7 @@ describe('Online Reducer', () => {
       expect(result).toEqual(expectedResult);
     });
 
-    it('Offline should change online status to false', () => {
+    it('"Online" should change online status to true', () => {
       const firstState: State = {
         online: false
       };

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { Article } from '../article';
 import { categoryToObject } from '../utility/category.utility';
 import { Category } from '../enums/category.enum';
@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class LocalDbService {
+export class IndexedDbService {
 
   constructor() { }
 
@@ -21,7 +21,7 @@ export class LocalDbService {
  * @param {Category} category
  * @param {Article[]} articles
  * @returns
- * @memberof LocalDbService
+ * @memberof IndexedDbService
  */
 setData(category: Category, articles: Article[]): Observable<any> {
     return new Observable(observer => {
@@ -111,7 +111,7 @@ setData(category: Category, articles: Article[]): Observable<any> {
  *
  * @param {Category} category
  * @returns
- * @memberof LocalDbService
+ * @memberof IndexedDbService
  */
 getData(category: Category): Observable<Article[]> {
     return new Observable(observer => {
@@ -186,7 +186,7 @@ getData(category: Category): Observable<Article[]> {
  *
  * @param {Category} category
  * @returns {Observable<number[]>}
- * @memberof LocalDbService
+ * @memberof IndexedDbService
  */
 getExpiredData(category: Category): Observable<number[]> {
       return new Observable(observer => {
@@ -233,8 +233,9 @@ getExpiredData(category: Category): Observable<number[]> {
                 result.push(cursor.primaryKey);
 
               } else {
+                 const waitTime: number = isDevMode ? 1 : 30; // shorten wait time for testing
                  const date: moment.Moment = moment(cursor.value.timestamp);
-                  if ( !date.add(30, 'm').isAfter(moment(new Date())) ) {
+                  if ( !date.add(waitTime, 'm').isAfter(moment(new Date())) ) {
                     result.push(cursor.primaryKey);
                   }
                 }
@@ -257,7 +258,7 @@ getExpiredData(category: Category): Observable<number[]> {
  *
  * @param {number} primaryKey
  * @returns
- * @memberof LocalDbService
+ * @memberof IndexedDbService
  */
 removeArticle(primaryKey: number): Observable<any> {
       return new Observable(observer => {

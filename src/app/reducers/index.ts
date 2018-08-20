@@ -6,7 +6,6 @@ import {
   MetaReducer
 } from '@ngrx/store';
 import { environment } from '../../environments/environment';
-import * as fromUser from './user.reducer';
 import * as fromCategory from './category.reducer';
 import * as fromFilter from './filter.reducer';
 import * as fromLog from './log.reducer';
@@ -20,7 +19,6 @@ export const getOnlineState = createFeatureSelector<fromOnline.State>('online');
 export const getNewsState = createFeatureSelector<fromNews.State>('news');
 
 export interface State {
-  user: fromUser.State;
   filter: fromFilter.State;
   category: fromCategory.State;
   log: fromLog.State;
@@ -28,7 +26,6 @@ export interface State {
 }
 
 export const reducers: ActionReducerMap<State> = {
-  user: fromUser.reducer,
   filter: fromFilter.reducer,
   category: fromCategory.reducer,
   log: fromLog.reducer,

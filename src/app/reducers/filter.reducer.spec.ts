@@ -13,7 +13,7 @@ describe('Filter Reducer', () => {
 
     describe('Filter actions', () => {
 
-      it('should add a filter to listOfFilters', () => {
+      it('"AddFilter" should add a filter to listOfFilters', () => {
         const firstState: State = {
           listOfFilters: new Set(['trump', 'sanders'])
         };
@@ -26,7 +26,7 @@ describe('Filter Reducer', () => {
         expect(result).toEqual(expectedResult);
       });
 
-      it('should remove a filter from listOfFilters', () => {
+      it('"RemoveFilter" should remove a filter from listOfFilters', () => {
         const firstState: State = {
           listOfFilters: new Set(['trump', 'sanders'])
         };
