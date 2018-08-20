@@ -20,17 +20,16 @@ export class FilterEffects {
       of(state).pipe(
         select(fromFilter.getAllFilters),
         switchMap(results => this.localStorageService.setFilters(results)
-          .pipe(
-            catchError(() => of(new FilterActions.SavedFilterToClientFailed(new LocalStorageMessage().errorMessage)))
-          )
+        // this doesn't pass either
+          // .pipe(
+          //   catchError(() => of(new FilterActions.SavedFilterToClientFailed(new LocalStorageMessage().errorMessage)))
+          // )
         ),
-        // tap(results => {
-        //   this.store.dispatch(new LogActions.AddLogFromFilterEffect({location: 'Filter Effect', message: results.statusText}));
-        // }),
       ).subscribe();
     }),
     map( () => new FilterActions.SavedFilterToClient(new LocalStorageMessage().successMessage)),
-    // catchError(errorMessage =>  of(new FilterActions.SavedFilterToClientFailed(errorMessage)))
+    // this doesn't pass
+    catchError(errorMessage =>  of(new FilterActions.SavedFilterToClientFailed(errorMessage)))
   );
 
   @Effect()
