@@ -4,11 +4,11 @@ import { Log } from '../models/log.model';
 import * as moment from 'moment';
 
 export interface State {
-  logs: Log[];
+  logs: Map<string, Log>;
 }
 
 export const initialState: State = {
-  logs: []
+  logs: new Map()
 };
 
 export function reducer(state = initialState, action: LogActions): State {
@@ -17,35 +17,16 @@ export function reducer(state = initialState, action: LogActions): State {
     case LogActionTypes.LoadLogs:
       return state;
 
-    case LogActionTypes.AddLogFromCategoryEffect:
-    case LogActionTypes.AddLogFromFilterEffect:
-    {
-      const location = action.payload.location;
-      const message = action.payload.message;
-      const date: moment.Moment = moment(new Date());
-      const type = 'message';
-      const copy = state.logs.slice(0);
-
-      copy.push(
-          {location, message, time: date.format('LTS'), type}
-      );
-      return {
-        ...state,
-        logs: copy
-      };
-    }
-
     case LogActionTypes.AddLog:
     {
-      const location = action.payload.location;
-      const message = action.payload.message;
       const time = action.payload.time;
       const type = action.payload.type;
-      const copy = state.logs.slice(0);
+      const copy = new Map(state.logs);
+      const log = {time, type, number: 1 };
+      copy.has(type)
+        ? copy.set(type, {time, type, number: copy.get(type).number + 1})
+        : copy.set(type, log);
 
-      copy.push(
-          {location, message, time, type}
-      );
       return {
         ...state,
         logs: copy
@@ -54,7 +35,7 @@ export function reducer(state = initialState, action: LogActions): State {
     case LogActionTypes.DeleteAllLogs: {
       return {
         ...state,
-        logs: []
+        logs: new Map()
       };
     }
 

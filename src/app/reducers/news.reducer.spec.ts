@@ -1,6 +1,6 @@
 import { reducer, initialState, State } from './news.reducer';
 import * as NewsActions from '../actions/news.actions';
-import { NewsActionTypes, ArticlePayload } from '../actions/news.actions';
+import { ArticlePayload } from '../actions/news.actions';
 import { Service } from '../enums/service.enum';
 import { Category } from '../enums/category.enum';
 import { getArticles as MockData } from '../../testing/mock.newservice.getArticle.response';
@@ -55,7 +55,7 @@ describe('News Reducer', () => {
           clientDataLoaded: false,
           articles: articles
         };
-      const action = new NewsActions.AddInitialArticles(payload);
+      const action = new NewsActions.AddInitialApiArticles(payload);
       const result = reducer(initialState, action);
       expect(result).toEqual(testState);
     });

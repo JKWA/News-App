@@ -33,12 +33,12 @@ class GetExpiredArticlesMessage extends Message {
     constructor() {
         super(
             {
-                status: 1000,
+                status: 2200,
                 statusText: `Received expired articles`,
                 service: Service.IndexedDb
             },
             {
-                status: 1100,
+                status: 2300,
                 statusText: `Failed to retrieve expired articles`,
                 service: Service.IndexedDb
             }
@@ -47,6 +47,23 @@ class GetExpiredArticlesMessage extends Message {
 }
 
 class DeletedArticlesMessage extends Message {
+    constructor() {
+        super(
+            {
+                status: 1100,
+                statusText: `Saved articles`,
+                service: Service.IndexedDb
+            },
+            {
+                status: 1200,
+                statusText: `Failed to save articles`,
+                service: Service.IndexedDb
+            }
+        );
+    }
+}
+
+class SavedIndexedDbMessage extends Message {
     constructor() {
         super(
             {
@@ -63,4 +80,9 @@ class DeletedArticlesMessage extends Message {
     }
 }
 
-export { LocalStorageMessage, GetExpiredArticlesMessage, DeletedArticlesMessage };
+export {
+    LocalStorageMessage,
+    GetExpiredArticlesMessage,
+    DeletedArticlesMessage,
+    SavedIndexedDbMessage
+};

@@ -51,7 +51,7 @@ export function reducer(state = initialState, action: NewsActions): State {
       };
     }
 
-    case NewsActionTypes.AddInitialArticles:
+    case NewsActionTypes.AddInitialApiArticles:
     case NewsActionTypes.AddInitialClientArticles:
     {
       const copyCurrentState = Object.assign({}, state);

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import * as LogActions from './../../actions/log.actions';
+import { tap, map, concatMap, catchError} from 'rxjs/operators';
 
 
 import { Observable } from 'rxjs';
@@ -15,13 +16,14 @@ import { Log } from '../../models/log.model';
 })
 
 export class LogComponent {
-  displayedColumns: string[] = [ 'location', 'message' ];
+  displayedColumns: string[] = [ 'time', 'type', 'number' ];
 
   constructor(private store: Store<fromLog.State>) {}
 
-  get getAllLogs(): Observable<Log[]> {
+  get getAllLogs(): Observable<any> {
     return this.store.pipe(
       select(fromLog.getAllLogs),
+      map(result => Array.from(result.values()))
     );
   }
 

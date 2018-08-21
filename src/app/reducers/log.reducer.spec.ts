@@ -18,37 +18,38 @@ describe('Log Reducer', () => {
 
     it('"AddLog" should add a log to logs', () => {
       const firstState: State = {
-        logs: []
+        logs: new Map()
       };
-
+      const type = LogActionTypes.AddLog;
       const logPayload: Log = {
-        location: 'test location',
-        message: 'test message',
         time: new Time().logFormat,
-        type: LogActionTypes.AddLog,
+        type,
+        number: 1
       };
 
       const action = new LogActions.AddLog(logPayload);
       const expectedResult: State = {
-        logs: [logPayload]
+        logs: new Map().set(type, logPayload)
       };
       const result = reducer(firstState, action);
       expect(result).toEqual(expectedResult);
     });
 
     it('DeleteAllLogs should return empty array', () => {
+      const type = LogActionTypes.AddLog;
       const logPayload: Log = {
-        location: 'test location',
-        message: 'test message',
         time: new Time().logFormat,
-        type: LogActionTypes.AddLog,
+        type,
+        number: 1
       };
+
       const firstState: State = {
-        logs: [logPayload]
+        logs: new Map().set(type, logPayload)
       };
+
       const action = new LogActions.DeleteAllLogs();
       const expectedResult: State = {
-        logs: []
+        logs: new Map()
       };
 
       const result = reducer(firstState, action);

@@ -1,7 +1,5 @@
 import { Action } from '@ngrx/store';
 import { Category } from '../enums/category.enum';
-import { Article } from '../models/article.model';
-import { Error } from '../models/error.model';
 import { Service } from '../enums/service.enum';
 import { ServiceMessageModel } from '../models/service-message.model';
 
@@ -10,12 +8,12 @@ export enum NewsActionTypes {
   InitiateNews = '[App Component] Initiating news call',
   AddNews = '[Article Component] Adding news',
   RetrievingNews = '[Article Component] Retrieving initial news articles',
-  AddInitialArticles = '[News Effects] Add initial news articles from API',
+  AddInitialApiArticles = '[News Effects] Add initial news articles from API',
   AddInitialClientArticles = '[News Effects] Add initial news articles from client',
+  AddInitialClientArticlesFailed = '[News Effects] Add initial news articles from client failed',
   SaveArticlesToClient = '[News Effects] save articles to client',
-  IndexedDbError = '[News Effects] Indexed db error',
-  IndexedDbSaved = '[News Effects] Saved articles to indexed db',
-  NewsApiError = '[News Effects] News API error',
+  SaveArticlesToClientFailed = '[News Effects] Indexed db error',
+  AddInitialApiArticlesFailed = '[News Effects] News API error',
   GetExpiredData = '[News Effects] Get expired data from IndexedDb',
   GetExpiredDataFailed = '[News Effects] Get expired data from IndexedDb failed',
   DeleteExpiredData = '[News Effects] Delete expired data from IndexedDb',
@@ -37,7 +35,7 @@ export class AddNews implements Action {
 }
 
 export class RetrievingNews implements Action {
-  readonly type = NewsActionTypes.AddInitialArticles;
+  readonly type = NewsActionTypes.AddInitialApiArticles;
   constructor(public payload: any) { }
 }
 
@@ -47,13 +45,13 @@ export interface ArticlePayload {
   service: Service;
 }
 
-export class AddInitialArticles implements Action {
-  readonly type = NewsActionTypes.AddInitialArticles;
+export class AddInitialApiArticles implements Action {
+  readonly type = NewsActionTypes.AddInitialApiArticles;
   constructor(public payload: ArticlePayload) { }
 }
 
-export class NewsApiError implements Action {
-  readonly type = NewsActionTypes.NewsApiError;
+export class AddInitialApiArticlesFailed implements Action {
+  readonly type = NewsActionTypes.AddInitialApiArticlesFailed;
   constructor(public payload: any) { }
 }
 
@@ -62,19 +60,19 @@ export class AddInitialClientArticles implements Action {
   constructor(public payload: ArticlePayload) { }
 }
 
+export class AddInitialClientArticlesFailed implements Action {
+  readonly type = NewsActionTypes.AddInitialClientArticlesFailed;
+  constructor(public payload: ServiceMessageModel) { }
+}
+
 export class SaveArticlesToClient implements Action {
   readonly type = NewsActionTypes.SaveArticlesToClient;
-  constructor(public payload: ArticlePayload) { }
+  constructor(public payload: ServiceMessageModel) { }
 }
 
-export class IndexedDbError implements Action {
-  readonly type = NewsActionTypes.IndexedDbError;
-  constructor(public payload: Error) { }
-}
-
-export class IndexedDbSaved implements Action {
-  readonly type = NewsActionTypes.IndexedDbSaved;
-  constructor(public payload: Category) { }
+export class SaveArticlesToClientFailed implements Action {
+  readonly type = NewsActionTypes.SaveArticlesToClientFailed;
+  constructor(public payload: ServiceMessageModel) { }
 }
 
 export class GetExpiredData implements Action {
@@ -102,12 +100,12 @@ export type NewsActions =
     LoadNews
     | InitiateNews
     | AddNews
-    | AddInitialArticles
+    | AddInitialApiArticles
     | AddInitialClientArticles
+    | AddInitialClientArticlesFailed
     | SaveArticlesToClient
-    | IndexedDbError
-    | NewsApiError
-    | IndexedDbSaved
+    | SaveArticlesToClientFailed
+    | AddInitialApiArticlesFailed
     | GetExpiredData
     | GetExpiredDataFailed
     | DeleteExpiredData

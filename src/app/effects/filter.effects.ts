@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, switchMap, withLatestFrom, catchError } from 'rxjs/operators';
+import { map, switchMap, exhaustMap, withLatestFrom, catchError } from 'rxjs/operators';
 import { Store, select, Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { FilterActionTypes } from '../actions/filter.actions';

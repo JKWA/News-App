@@ -22,7 +22,7 @@ export class NewsEffects {
   loadNews$ = this.actions$.pipe(ofType(NewsActionTypes.LoadNews));
 
   @Effect()
-  initialApiNews$: Observable<Action> = this.actions$.pipe(
+  getInitialApiNews$: Observable<Action> = this.actions$.pipe(
     ofType<NewsActions.InitiateNews>(NewsActionTypes.InitiateNews),
     concatMap(results => {
       return this.store.pipe(
@@ -33,14 +33,14 @@ export class NewsEffects {
           return this.newsService.getNews(category, 1, allFilters);
         }),
         map( articles => {
-          return new NewsActions.AddInitialArticles({
+          return new NewsActions.AddInitialApiArticles({
                         category: results.payload,
                         articles: articles,
                         service: Service.NewsAPI
                   });
         }),
         catchError(error => {
-          return of( new NewsActions.NewsApiError({
+          return of( new NewsActions.AddInitialApiArticlesFailed({
             category: results.payload,
             service: Service.NewsAPI,
           }));
@@ -51,7 +51,7 @@ export class NewsEffects {
 
 
   @Effect()
-  getClientNewsData$: Observable<Action> = this.actions$.pipe(
+  getInitialClientNews$: Observable<Action> = this.actions$.pipe(
     ofType<NewsActions.InitiateNews>(NewsActionTypes.InitiateNews),
     concatMap(results => {
       const category = results.payload;
@@ -65,9 +65,8 @@ export class NewsEffects {
                 service: service
               });
             }),
-            catchError(error => {
-              console.log(error);
-              return of( new NewsActions.IndexedDbError(error));
+            catchError(_ => {
+              return of( new NewsActions.AddInitialClientArticlesFailed(new Message.SavedIndexedDbMessage().errorMessage));
             })
           );
       }),
@@ -76,21 +75,18 @@ export class NewsEffects {
 
   // TODO - change take(1) to wait until indexed DB is done, then send action
   @Effect()
-  saveNewsToIndexedDb$: Observable<Action> = this.actions$.pipe(
-    ofType<NewsActions.AddInitialArticles>(NewsActionTypes.AddInitialArticles),
+  saveApiNewsToIndexedDB$: Observable<Action> = this.actions$.pipe(
+    ofType<NewsActions.AddInitialApiArticles>(NewsActionTypes.AddInitialApiArticles),
     concatMap(results => {
       const category = results.payload.category;
       const articles = results.payload.articles;
       const client$ = this.indexedDbService.setData(category, articles);
         return client$.pipe(
-          take(1),
-          // tap(console.log),
           map(_ => {
-              return new NewsActions.IndexedDbSaved(category);
+              return new NewsActions.SaveArticlesToClient(new Message.SavedIndexedDbMessage().successMessage);
           }),
-          catchError(error => {
-            console.log(error);
-            return of( new NewsActions.IndexedDbError(error));
+          catchError(_ => {
+            return of( new NewsActions.SaveArticlesToClientFailed(new Message.SavedIndexedDbMessage().errorMessage));
           })
         );
       }),
@@ -99,7 +95,7 @@ export class NewsEffects {
 
   @Effect()
   getExpiredData$: Observable<Action> = this.actions$.pipe(
-    ofType<NewsActions.AddInitialArticles>(NewsActionTypes.AddInitialArticles),
+    ofType<NewsActions.AddInitialApiArticles>(NewsActionTypes.AddInitialApiArticles),
     map(action => action.payload.category),
     concatMap(category => this.indexedDbService.getExpiredData(category).pipe(
       map(ids => new NewsActions.GetExpiredData(ids)),
@@ -115,7 +111,7 @@ export class NewsEffects {
     map (keys => {
       keys.forEach(key => {
         this.indexedDbService.removeArticle(key).pipe(
-          tap(_ => console.log('REMOVING')),
+          // tap(_ => console.log('REMOVING')),
           map(() => new NewsActions.DeleteExpiredData(new Message.DeletedArticlesMessage().successMessage)),
           catchError(_ => of(new NewsActions.DeleteExpiredDataFailed(new Message.DeletedArticlesMessage().errorMessage)))
         ).subscribe();

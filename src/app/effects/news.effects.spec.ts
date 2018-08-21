@@ -39,8 +39,8 @@ class MockNewsDataService {
 }
 
 class MockIndexedDbService {
-  setNews = jasmine.createSpy('setNews');
-  getNews = jasmine.createSpy('getNews');
+  setData = jasmine.createSpy('setData');
+  getData = jasmine.createSpy('getData');
   getExpiredData = jasmine.createSpy('getExpiredData');
   removeArticle = jasmine.createSpy('removeArticle');
 }
@@ -77,37 +77,38 @@ describe('NewsEffects', () => {
   });
 
   describe('get news process', () => {
-    it('"InitiateNews" should return an AddInitialArticles, with articles, on success', () => {
+
+    it('"InitiateNews" should return an AddInitialApiArticles, with articles, on success', () => {
       const category = Category.Science;
       const articles = MockData() as Article[];
       const service = Service.NewsAPI;
       const action = new NewsActions.InitiateNews(category);
       const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
-      const completion = new NewsActions.AddInitialArticles(articlePayload);
+      const completion = new NewsActions.AddInitialApiArticles(articlePayload);
 
       actions$.stream = hot('-a', { a: action });
       const response = cold('-b|', { b: articles });
       const expected = cold('--c', { c: completion });
       newsDataService.getNews.and.returnValue(response);
-      expect(effects.initialApiNews$).toBeObservable(expected);
+      expect(effects.getInitialApiNews$).toBeObservable(expected);
     });
 
-    it('"InitiateNews" should return an NewsApiError, with message, on fail', () => {
+    it('"InitiateNews" should return an AddInitialApiArticlesFailed, with message, on fail', () => {
       const category = Category.Science;
       const articles = [] as Article[];
       const service = Service.NewsAPI;
       const action = new NewsActions.InitiateNews(category);
       const articlePayload = {category, service};
-      const completion = new NewsActions.NewsApiError(articlePayload);
+      const completion = new NewsActions.AddInitialApiArticlesFailed(articlePayload);
 
       actions$.stream = hot('-a', { a: action });
       const response = cold('-#|', { b: articles });
       const expected = cold('--c', { c: completion });
       newsDataService.getNews.and.returnValue(response);
-      expect(effects.initialApiNews$).toBeObservable(expected);
+      expect(effects.getInitialApiNews$).toBeObservable(expected);
     });
 
-    it('"AddInitialArticles" should return an GetExpiredData, with list if keys, on success', () => {
+    it('"AddInitialApiArticles" should return an GetExpiredData, with list if keys, on success', () => {
       const category = Category.Sports;
       const service = Service.NewsAPI;
       let key = 0;
@@ -119,7 +120,7 @@ describe('NewsEffects', () => {
       }) as SavedArticle[];
 
       const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
-      const action = new NewsActions.AddInitialArticles(articlePayload);
+      const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.GetExpiredData(articles.map(article => article.key));
 
       actions$.stream = hot('-a', { a: action });
@@ -129,7 +130,7 @@ describe('NewsEffects', () => {
       expect(effects.getExpiredData$).toBeObservable(expected);
     });
 
-    it('"AddInitialArticles" should return an GetExpiredDataFailed, with list if keys, on failure', () => {
+    it('"AddInitialApiArticles" should return an GetExpiredDataFailed, with list if keys, on failure', () => {
       const category = Category.Sports;
       const service = Service.NewsAPI;
       let key = 0;
@@ -142,7 +143,7 @@ describe('NewsEffects', () => {
       }) as SavedArticle[];
 
       const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
-      const action = new NewsActions.AddInitialArticles(articlePayload);
+      const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.GetExpiredDataFailed(new ServiceMessage.GetExpiredArticlesMessage().errorMessage);
 
       actions$.stream = hot('-a', { a: action });
@@ -151,78 +152,65 @@ describe('NewsEffects', () => {
       indexDbService.getExpiredData.and.returnValue(response);
       expect(effects.getExpiredData$).toBeObservable(expected);
     });
-  });
 
-it('"AddInitialArticles" should return an GetExpiredDataFailed, with list if keys, on failure', () => {
-    const category = Category.Sports;
-    const service = Service.NewsAPI;
-    let key = 0;
+    it('"AddInitialApiArticles" should return an SaveArticlesToClient, with message, on success', () => {
+      const category = Category.Sports;
+      const service = Service.IndexedDb;
+      const articles = MockData() as Article[];
 
-    const articles = MockData().map(article => {
-      article.timestamp = new Time().sixtyMinutesAgo;
-      article.key = key++;
-      article.category = category;
-      return article;
-    }) as SavedArticle[];
+      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const action = new NewsActions.AddInitialApiArticles(articlePayload);
+      const completion = new NewsActions.SaveArticlesToClient(new ServiceMessage.SavedIndexedDbMessage().successMessage);
 
-    const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
-    const action = new NewsActions.AddInitialArticles(articlePayload);
-    const completion = new NewsActions.GetExpiredDataFailed(new ServiceMessage.GetExpiredArticlesMessage().errorMessage);
+      actions$.stream = hot('-a', { a: action });
+      const response = cold('-b|', { b: new ServiceMessage.SavedIndexedDbMessage().successMessage});
+      const expected = cold('--c', { c: completion });
+      indexDbService.setData.and.returnValue(response);
+      expect(effects.saveApiNewsToIndexedDB$).toBeObservable(expected);
+    });
 
-    actions$.stream = hot('-a', { a: action });
-    const response = cold('-#|', { b: null});
-    const expected = cold('--c', { c: completion });
-    indexDbService.getExpiredData.and.returnValue(response);
-    expect(effects.getExpiredData$).toBeObservable(expected);
+    it('"AddInitialApiArticles" should return an SaveArticlesToClientFailed, with message, on failure', () => {
+      const category = Category.Sports;
+      const service = Service.IndexedDb;
+      const articles = MockData() as Article[];
+
+      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const action = new NewsActions.AddInitialApiArticles(articlePayload);
+      const completion = new NewsActions.SaveArticlesToClientFailed(new ServiceMessage.SavedIndexedDbMessage().errorMessage);
+
+      actions$.stream = hot('-a', { a: action });
+      const response = cold('-#|', { b: new ServiceMessage.SavedIndexedDbMessage().errorMessage});
+      const expected = cold('--c', { c: completion });
+      indexDbService.setData.and.returnValue(response);
+      expect(effects.saveApiNewsToIndexedDB$).toBeObservable(expected);
+    });
+
+    it('"InitiateNews" should return an AddInitialClientArticles, with list if keys, on success', () => {
+      const category = Category.Sports;
+      const service = Service.IndexedDb;
+      const articles = MockData() as Article[];
+
+      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const action = new NewsActions.InitiateNews(category);
+      const completion = new NewsActions.AddInitialClientArticles(articlePayload);
+
+      actions$.stream = hot('-a', { a: action });
+      const response = cold('-b|', { b: articles});
+      const expected = cold('--c', { c: completion });
+      indexDbService.getData.and.returnValue(response);
+      expect(effects.getInitialClientNews$).toBeObservable(expected);
+    });
+
+    it('"InitiateNews" should return an AddInitialClientArticlesFailed, with message, on error', () => {
+      const category = Category.Sports;
+      const action = new NewsActions.InitiateNews(category);
+      const completion = new NewsActions.AddInitialClientArticlesFailed(new ServiceMessage.SavedIndexedDbMessage().errorMessage);
+
+      actions$.stream = hot('-a', { a: action });
+      const response = cold('-#|', { b: null});
+      const expected = cold('--c', { c: completion });
+      indexDbService.getData.and.returnValue(response);
+      expect(effects.getInitialClientNews$).toBeObservable(expected);
+    });
   });
 });
-
-  // describe('saveNewsToIndexedDb$', () => {
-  //   it('should return an AddInitialArticles, with articles, on success', () => {
-
-  //     const articlePayload: NewsActions.ArticlePayload = {
-  //       category: Category.Science,
-  //       articles:  MockData(),
-  //       service: Service.IndexedDb
-  //     };
-  //     const action = new NewsActions.SaveArticlesToClient(articlePayload);
-  //     const completion = new NewsActions.IndexedDbSaved(Category.Science);
-
-  //     const savedArticle = MockData().map(article => {
-  //       article.timestamp = new Date().toISOString();
-  //       article.category = Category.Science;
-  //       return article;
-  //     }) as SavedArticle[];
-
-  //     actions$.stream = hot('-a', { a: action });
-  //     const response = cold('-b|', { b: savedArticle });
-  //     const expected = cold('--c', { c: completion });
-  //     localDbService.setNews.and.returnValue(response);
-  //     expect(effects.saveNewsToIndexedDb$).toBeObservable(expected);
-  //   });
-  // });
-
-  // describe('getClientNewsData$', () => {
-  //   it('should return a AddInitialArticles, with articles, on success', () => {
-
-  //     const category = Category.General;
-  //     const articles: any = MockData().slice(0).map(article => {
-  //       // article.timestamp = new Date().toISOString();
-  //       // article.category = category;
-  //       return article;
-  //     });
-
-  //     const service = Service.IndexedDb;
-
-  //     const action = new NewsActions.InitiateNews(category);
-  //     const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
-  //     const completion = new NewsActions.AddInitialClientArticles(articlePayload);
-
-  //     actions$.stream = hot('-a', { a: action });
-  //     const response = cold('-b|', { b: articles });
-  //     const expected = cold('--c', { c: completion });
-  //     localDbService.getNews.and.returnValue(response);
-  //     // expect(effects.getClientNewsData$).toBeObservable(expected);
-  //   });
-  // });
-// });

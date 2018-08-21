@@ -73,7 +73,7 @@ describe('CategoryEffects', () => {
     expect(effects.categorySetView$).toBeObservable(expected);
   });
 
-  it('"SetCategory" should return a SavedViewedCategoryFailed, with error message, on error', () => {
+  it('"SetCategory" should return a SavedViewedCategoryFailed, with error message, on failure', () => {
 
     const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
     const category = Category.Science as Category;
@@ -101,7 +101,7 @@ describe('CategoryEffects', () => {
     expect(effects.saveSelectedCategories$).toBeObservable(expected);
   });
 
-  it('"AddCategory" should return an SavedViewedCategoryFailed, with error message, on fail', () => {
+  it('"AddCategory" should return an SavedViewedCategoryFailed, with error message, on failure', () => {
 
     const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
     const category = Category.Science as Category;
@@ -129,7 +129,7 @@ describe('CategoryEffects', () => {
     expect(effects.saveSelectedCategories$).toBeObservable(expected);
   });
 
-  it('"RemoveCategory" should return a SavedViewedCategoryFailed, with error message, on success', () => {
+  it('"RemoveCategory" should return a SavedViewedCategoryFailed, with error message, on failure', () => {
 
     const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
     const category = Category.Science as Category;

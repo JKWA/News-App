@@ -1,11 +1,11 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { LocalDbService } from './indexed-db.service';
+import { IndexedDbService } from './indexed-db.service';
 
 describe('LocalDbService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [LocalDbService]
+      providers: [IndexedDbService]
     });
   });
 
