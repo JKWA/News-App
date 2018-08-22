@@ -80,9 +80,27 @@ class SavedIndexedDbMessage extends Message {
     }
 }
 
+class NewsApiMessage extends Message {
+    constructor() {
+        super(
+            {
+                status: 100,
+                statusText: `Received articles`,
+                service: Service.NewsAPI
+            },
+            {
+                status: 200,
+                statusText: `Failed to receive articles`,
+                service: Service.NewsAPI
+            }
+        );
+    }
+}
+
 export {
     LocalStorageMessage,
     GetExpiredArticlesMessage,
     DeletedArticlesMessage,
-    SavedIndexedDbMessage
+    SavedIndexedDbMessage,
+    NewsApiMessage
 };
