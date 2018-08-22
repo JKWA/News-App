@@ -64,7 +64,7 @@ describe('FilterEffects', () => {
 
     actions$.stream = hot('-a', { a: action });
     const response = cold('-b|', { b: new Set(['trump', 'sanders', 'test_filter'])});
-    const expected = cold('-c', { c: completion });
+    const expected = cold('--c', { c: completion });
     storageService.setFilters.and.returnValue(response);
     expect(effects.setFilters$).toBeObservable(expected);
   });
@@ -76,7 +76,7 @@ describe('FilterEffects', () => {
 
     actions$.stream = hot('-a', { a: action });
     const response = cold('-#|', {}, serviceMessage);
-    const expected = cold('-b', { b: completion });
+    const expected = cold('--b', { b: completion });
     storageService.setFilters.and.returnValue(response);
     expect(effects.setFilters$).toBeObservable(expected);
   });
