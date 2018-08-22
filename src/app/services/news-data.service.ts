@@ -6,7 +6,8 @@ import { Article } from '../article';
 import { getKey } from '../utility/key';
 import { getSources } from '../utility/source.utility';
 import { Category } from '../enums/category.enum';
-
+import { Service } from '../enums/service.enum';
+import { ArticlePayload } from '../models/article-payload.model';
 class NewsResponse {
   status: string;
   totalResults: number;
@@ -38,7 +39,7 @@ export class NewsDataService {
  * @returns {Observable<Article[]>}
  * @memberof NewsDataService
  */
-getNews (category: Category, pageNumber: number, filters): Observable<Article[]> {
+getNews (category: Category, pageNumber: number, filters): Observable<ArticlePayload> {
 
     const sources: string = getSources(category).map(item => item.id).join();
 
@@ -58,7 +59,7 @@ getNews (category: Category, pageNumber: number, filters): Observable<Article[]>
           return response.articles;
         }),
         map(result => {
-          return result.map(article => {
+          const articles = result.map(article => {
               article.id = encodeURIComponent(article.title);
               // remove photo urls that are not https or that are not formatted correctly
               const expression = /https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
@@ -75,7 +76,12 @@ getNews (category: Category, pageNumber: number, filters): Observable<Article[]>
             }
             return article;
           });
+          return {category, articles, service: Service.NewsAPI};
+
         }),
+        // map(articles => {
+        //   return {category, articles, service: Service.NewsAPI};
+        // })
       );
   }
 }
