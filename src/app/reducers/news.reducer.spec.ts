@@ -75,17 +75,17 @@ describe('News Reducer', () => {
       expect(result).toEqual(testState);
     });
 
-    it('"AddInitialClientArticles" should add articles to state', () => {
+    it('"InsertAdditionalNewsFromApi" should add articles to state', () => {
       service = Service.IndexedDb;
       payload = { service, category, articles };
       testState[category] = {
-          retrieving: true,
-          page: 1,
-          firstLoadComplete: false,
+          retrieving: false,
+          page: 2,
+          firstLoadComplete: true,
           clientDataLoaded: false,
-          articles: []
+          articles: articles
         };
-      const action = new NewsActions.InitiateNews(category);
+      const action = new NewsActions.InsertAdditionalNewsFromApi(payload);
       const result = reducer(initialState, action);
       expect(result).toEqual(testState);
     });

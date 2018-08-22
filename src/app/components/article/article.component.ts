@@ -7,6 +7,7 @@ import { Store, select } from '@ngrx/store';
 import * as fromNews from './../../reducers';
 import * as fromFilters from './../../reducers';
 import * as fromCategory from './../../reducers';
+import * as NewsActions from './../../actions/news.actions';
 import { ScrollEvent } from 'ngx-scroll-event';
 
 @Component({
@@ -88,19 +89,6 @@ get getArticles(): Observable<Article[]> {
     );
   }
 
-/**
- * observe when first load of articles is completed
- *
- * @readonly
- * @memberof ArticleComponent
- */
-  // get initialArticleLoadComplete(): Observable<boolean> {
-  //   return this.stateNews.pipe(
-  //     map( results => results[this.category].firstLoadComplete)
-  //   );
-  // }
-
-
 
 /**
  * identifies which category is currently being viewed
@@ -121,16 +109,12 @@ get getArticles(): Observable<Article[]> {
  */
   public handleScroll(event: ScrollEvent): void {
 
-    // if (event.isReachingBottom
-    //     && window.navigator.onLine
-    //     && this.category === this.tabViewed.id
-    //     && !this.currentlyAddingDataLock
-    //   ) {
-    //     this.currentlyAddingDataLock = true;
-    //     clearTimeout(this.throttle);
-    //     this.throttle = setTimeout(() => this.currentlyAddingDataLock = false, 2000);
-    //     // this.store.dispatch(new AddNews(this.category));
-    // }
+    if (event.isReachingBottom
+        && window.navigator.onLine
+        && this.category === this.tabViewed
+      ) {
+        this.store.dispatch(new NewsActions.GetAdditionalNewsFromApi(this.category));
+    }
 
   }
 

@@ -1,6 +1,8 @@
 import { Injectable, InjectionToken, Optional, Inject } from '@angular/core';
-import { Observable, of, Scheduler } from 'rxjs';
-import { tap, concatMap, exhaustMap, take, map, catchError, switchMap, withLatestFrom } from 'rxjs/operators';
+import { Observable, of, Scheduler, defer, asyncScheduler } from 'rxjs';
+import {concatMap, exhaustMap,
+  take, map, catchError,
+  throttleTime, withLatestFrom } from 'rxjs/operators';
 import { Store, select, Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import * as NewsActions from '../actions/news.actions';
@@ -8,8 +10,10 @@ import { NewsActionTypes } from '../actions/news.actions';
 import { IndexedDbService } from '../services/indexed-db.service';
 import { NewsDataService } from '../services/news-data.service';
 import * as fromFilter from './../reducers';
+import * as fromNews from './../reducers';
 import { Service } from '../enums/service.enum';
 import * as Message from '../messages/service.messages';
+import { Filter } from '../models/filter';
 
 export const DEBOUNCE = new InjectionToken<number>('Test Debounce');
 export const SCHEDULER = new InjectionToken<Scheduler>('Test Scheduler');
@@ -32,18 +36,11 @@ export class NewsEffects {
           const category = results.payload;
           return this.newsService.getNews(category, 1, allFilters);
         }),
-        map( articles => {
-          return new NewsActions.AddInitialApiArticles({
-                        category: results.payload,
-                        articles: articles,
-                        service: Service.NewsAPI
-                  });
+        map( articlePayload => {
+          return new NewsActions.AddInitialApiArticles(articlePayload);
         }),
         catchError(error => {
-          return of( new NewsActions.AddInitialApiArticlesFailed({
-            category: results.payload,
-            service: Service.NewsAPI,
-          }));
+          return of( new NewsActions.AddInitialApiArticlesFailed(new Message.NewsApiMessage().errorMessage));
         })
       );
     })
@@ -99,7 +96,7 @@ export class NewsEffects {
     map(action => action.payload.category),
     concatMap(category => this.indexedDbService.getExpiredData(category).pipe(
       map(ids => new NewsActions.GetExpiredData(ids)),
-      catchError(err => of(new NewsActions.GetExpiredDataFailed(new Message.GetExpiredArticlesMessage().errorMessage)))
+      catchError(_ => of(new NewsActions.GetExpiredDataFailed(new Message.GetExpiredArticlesMessage().errorMessage)))
     ))
   );
 
@@ -119,22 +116,52 @@ export class NewsEffects {
     })
   );
 
+  get getAllFilters(): Observable<Set<Filter>> {
+    return this.store.pipe(
+      select(fromFilter.getAllFilters),
+    );
+  }
 
-  // init$: Observable<any> = defer(() => of(null)).pipe(
-  //   tap(() => console.log('init$'))
-  // );
+  get getNews() {
+    return this.store.pipe(
+      select(fromNews.getAllArticles),
+    );
+  }
+
+  @Effect()
+  search$: Observable<Action> = this.actions$.pipe(
+    ofType<NewsActions.GetAdditionalNewsFromApi>(NewsActionTypes.GetAdditionalNewsFromApi),
+    throttleTime(this.debounce || 1000, this.scheduler || asyncScheduler),
+    withLatestFrom(this.getNews, this.getAllFilters, (action, news, allFilters) => {
+      const category = action.payload;
+      const page = news[category].page;
+      return this.newsService.getNews(category, page, allFilters);
+    }),
+    concatMap(observ => observ),
+    map( articlePayload => {
+      return new NewsActions.InsertAdditionalNewsFromApi(articlePayload);
+    }),
+    catchError(error => {
+      return of( new NewsActions.InsertAdditionalNewsFromApiFailed(new Message.NewsApiMessage().errorMessage));
+    })
+  );
+
+
+  init$: Observable<any> = defer(() => of(null)).pipe(
+    // tap(() => console.log('init$'))
+  );
 
   constructor(
     private actions$: Actions,
     private store: Store<fromFilter.State>,
     private indexedDbService: IndexedDbService,
     private newsService: NewsDataService,
-    // used only for unit tests to be able to inject a debounce value
+    // for unit tests to inject debounce
     @Optional()
     @Inject(DEBOUNCE)
     private debounce: number,
 
-    // used only for unit tests to be able to inject a test scheduler for observables
+    // for unit tests to inject a scheduler for observables
     @Optional()
     @Inject(SCHEDULER)
     private scheduler: Scheduler) {}

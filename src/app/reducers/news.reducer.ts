@@ -80,6 +80,28 @@ export function reducer(state = initialState, action: NewsActions): State {
       };
     }
 
+    case NewsActionTypes.InsertAdditionalNewsFromApi:
+    {
+      const copyCurrentState = Object.assign({}, state);
+      const category = action.payload.category;
+      const result = action.payload.articles;
+      const service = action.payload.service;
+      const copyArticles = copyCurrentState[category].articles.splice(0).concat(result);
+
+      const pageUpdate = copyCurrentState[category].page + 1;
+      console.log('pageUpdate: ', pageUpdate);
+      return {
+        ...state,
+        [category]: {
+          ...state[category],
+          articles: removeDuplicateTitles(copyArticles),
+          page: pageUpdate,
+          retrieving: false,
+          firstLoadComplete: true,
+        }
+      };
+    }
+
     default:
       return state;
   }

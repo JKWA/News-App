@@ -18,6 +18,7 @@ import { NewsDataService } from './../services/news-data.service';
 import { IndexedDbService } from '../services/indexed-db.service';
 import { Time } from '../utility/time.utility';
 import * as ServiceMessage from '../messages/service.messages';
+import { ArticlePayload } from '../models/article-payload.model';
 
 
 export class TestActions extends Actions {
@@ -83,11 +84,11 @@ describe('NewsEffects', () => {
       const articles = MockData() as Article[];
       const service = Service.NewsAPI;
       const action = new NewsActions.InitiateNews(category);
-      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {category, articles, service};
       const completion = new NewsActions.AddInitialApiArticles(articlePayload);
 
       actions$.stream = hot('-a', { a: action });
-      const response = cold('-b|', { b: articles });
+      const response = cold('-b|', { b: articlePayload });
       const expected = cold('--c', { c: completion });
       newsDataService.getNews.and.returnValue(response);
       expect(effects.getInitialApiNews$).toBeObservable(expected);
@@ -99,10 +100,10 @@ describe('NewsEffects', () => {
       const service = Service.NewsAPI;
       const action = new NewsActions.InitiateNews(category);
       const articlePayload = {category, service};
-      const completion = new NewsActions.AddInitialApiArticlesFailed(articlePayload);
+      const completion = new NewsActions.AddInitialApiArticlesFailed(new ServiceMessage.NewsApiMessage().errorMessage);
 
       actions$.stream = hot('-a', { a: action });
-      const response = cold('-#|', { b: articles });
+      const response = cold('-#|', { b: articlePayload });
       const expected = cold('--c', { c: completion });
       newsDataService.getNews.and.returnValue(response);
       expect(effects.getInitialApiNews$).toBeObservable(expected);
@@ -119,7 +120,7 @@ describe('NewsEffects', () => {
         return article;
       }) as SavedArticle[];
 
-      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {category, articles, service};
       const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.GetExpiredData(articles.map(article => article.key));
 
@@ -142,7 +143,7 @@ describe('NewsEffects', () => {
         return article;
       }) as SavedArticle[];
 
-      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {category, articles, service};
       const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.GetExpiredDataFailed(new ServiceMessage.GetExpiredArticlesMessage().errorMessage);
 
@@ -158,7 +159,7 @@ describe('NewsEffects', () => {
       const service = Service.IndexedDb;
       const articles = MockData() as Article[];
 
-      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {category, articles, service};
       const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.SaveArticlesToClient(new ServiceMessage.SavedIndexedDbMessage().successMessage);
 
@@ -174,7 +175,7 @@ describe('NewsEffects', () => {
       const service = Service.IndexedDb;
       const articles = MockData() as Article[];
 
-      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {category, articles, service};
       const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.SaveArticlesToClientFailed(new ServiceMessage.SavedIndexedDbMessage().errorMessage);
 
@@ -190,7 +191,7 @@ describe('NewsEffects', () => {
       const service = Service.IndexedDb;
       const articles = MockData() as Article[];
 
-      const articlePayload: NewsActions.ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {category, articles, service};
       const action = new NewsActions.InitiateNews(category);
       const completion = new NewsActions.AddInitialClientArticles(articlePayload);
 
@@ -212,5 +213,38 @@ describe('NewsEffects', () => {
       indexDbService.getData.and.returnValue(response);
       expect(effects.getInitialClientNews$).toBeObservable(expected);
     });
+
+    it('"GetAdditionalNewsFromApi" should return a InsertAdditionalNewsFromApi, after a de-bounce, on success', () => {
+      const category = Category.Sports;
+      const service = Service.NewsAPI;
+      const articles = MockData() as Article[];
+      const articlePayload: ArticlePayload = {category, articles, service};
+      const action = new NewsActions.GetAdditionalNewsFromApi(category);
+      const completion = new NewsActions.InsertAdditionalNewsFromApi(articlePayload);
+
+      actions$.stream = hot('-a', { a: action });
+      const response = cold('-b|', { b: articlePayload });
+      const expected = cold('--c', { c: completion });
+      newsDataService.getNews.and.returnValue(response);
+
+      expect(effects.search$).toBeObservable(expected);
+    });
+
+    it('"GetAdditionalNewsFromApi" should return a InsertAdditionalNewsFromApiFailed, after a de-bounce, on failure', () => {
+      const category = Category.Sports;
+      const service = Service.NewsAPI;
+      const articles = MockData() as Article[];
+      const articlePayload: ArticlePayload = {category, articles, service};
+      const action = new NewsActions.GetAdditionalNewsFromApi(category);
+      const completion = new NewsActions.InsertAdditionalNewsFromApiFailed(new ServiceMessage.NewsApiMessage().errorMessage);
+
+      actions$.stream = hot('-a', { a: action });
+      const response = cold('-#|', { b: articlePayload });
+      const expected = cold('--c', { c: completion });
+      newsDataService.getNews.and.returnValue(response);
+
+      expect(effects.search$).toBeObservable(expected);
+    });
+
   });
 });
