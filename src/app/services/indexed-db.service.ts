@@ -233,7 +233,7 @@ getExpiredData(category: Category): Observable<number[]> {
                 result.push(cursor.primaryKey);
 
               } else {
-                 const waitTime: number = isDevMode ? 1 : 30; // shorten wait time for testing
+                 const waitTime: number = isDevMode() ? 1 : 30; // shorten wait time for testing
                  const date: moment.Moment = moment(cursor.value.timestamp);
                   if ( !date.add(waitTime, 'm').isAfter(moment(new Date())) ) {
                     result.push(cursor.primaryKey);

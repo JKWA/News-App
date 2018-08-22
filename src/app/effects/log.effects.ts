@@ -21,7 +21,7 @@ export class LogEffects {
   @Effect({ dispatch: false })
   consoleLogAllActions$: Observable<Action> = this.actions$.pipe(
       tap(results => {
-        if ( isDevMode ) {
+        if ( isDevMode() ) {
           console.log(results);
         }
       })
@@ -44,7 +44,6 @@ export class LogEffects {
         LogActionTypes.DeleteAllLogs
       ),
       map(results => {
-      console.log(results);
       return new LogActions.AddLog({
         time: new Time().logFormat,
         type: results.type

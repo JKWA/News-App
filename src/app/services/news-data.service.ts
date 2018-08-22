@@ -69,7 +69,7 @@ getNews (category: Category, pageNumber: number, filters): Observable<ArticlePay
                  article.urlToImage = null;
               }
             }
-            if ( isDevMode ) {
+            if ( isDevMode() ) {
               delete article.urlToImage; // avoid image errors on console
               // make id unique by category -- indexed DB issue
               article.title = `CATEGORY ${category}: PAGE ${pageNumber.toString()}: ${article.title}`;
