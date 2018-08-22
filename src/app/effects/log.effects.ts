@@ -32,6 +32,7 @@ export class LogEffects {
     ofType<NewsActions.InitiateNews>(
         NewsActionTypes.InitiateNews,
         NewsActionTypes.AddInitialApiArticles,
+        NewsActionTypes.InsertAdditionalNewsFromApi,
         NewsActionTypes.AddInitialClientArticles,
         NewsActionTypes.GetExpiredData,
         NewsActionTypes.DeleteExpiredData,
@@ -40,6 +41,7 @@ export class LogEffects {
         CategoryActionTypes.SetCategory,
         FilterActionTypes.AddFilter,
         FilterActionTypes.RemoveFilter,
+        LogActionTypes.DeleteAllLogs
       ),
       map(results => {
       console.log(results);
