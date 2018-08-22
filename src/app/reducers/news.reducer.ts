@@ -87,9 +87,7 @@ export function reducer(state = initialState, action: NewsActions): State {
       const result = action.payload.articles;
       const service = action.payload.service;
       const copyArticles = copyCurrentState[category].articles.splice(0).concat(result);
-
       const pageUpdate = copyCurrentState[category].page + 1;
-      console.log('pageUpdate: ', pageUpdate);
       return {
         ...state,
         [category]: {
