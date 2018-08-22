@@ -96,7 +96,7 @@ describe('CategoryEffects', () => {
 
     actions$.stream = hot('-a', { a: action });
     const response = cold('-b|', { b: serviceMessage});
-    const expected = cold('-c', { c: completion });
+    const expected = cold('--c', { c: completion });
     storageService.setSelectedCategories.and.returnValue(response);
     expect(effects.saveSelectedCategories$).toBeObservable(expected);
   });
@@ -106,11 +106,11 @@ describe('CategoryEffects', () => {
     const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
     const category = Category.Science as Category;
     const action = new CategoryActions.AddCategory(category);
-    const completion = new CategoryActions.SavedViewedCategoryFailed(serviceMessage);
+    const completion = new CategoryActions.SavedSelectedCategoriesFailed(serviceMessage);
 
     actions$.stream = hot('-a', { a: action });
     const response = cold('-#|', { b: serviceMessage});
-    const expected = cold('-c', { c: completion });
+    const expected = cold('--c', { c: completion });
     storageService.setSelectedCategories.and.returnValue(response);
     expect(effects.saveSelectedCategories$).toBeObservable(expected);
   });
@@ -124,21 +124,21 @@ describe('CategoryEffects', () => {
 
     actions$.stream = hot('-a', { a: action });
     const response = cold('-b|', { b: serviceMessage});
-    const expected = cold('-c', { c: completion });
+    const expected = cold('--c', { c: completion });
     storageService.setSelectedCategories.and.returnValue(response);
     expect(effects.saveSelectedCategories$).toBeObservable(expected);
   });
 
-  it('"RemoveCategory" should return a SavedViewedCategoryFailed, with error message, on failure', () => {
+  it('"RemoveCategory" should return a SavedSelectedCategoriesFailed, with error message, on failure', () => {
 
     const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
     const category = Category.Science as Category;
     const action = new CategoryActions.RemoveCategory(category);
-    const completion = new CategoryActions.SavedViewedCategoryFailed(serviceMessage);
+    const completion = new CategoryActions.SavedSelectedCategoriesFailed(serviceMessage);
 
     actions$.stream = hot('-a', { a: action });
     const response = cold('-#|', { b: serviceMessage});
-    const expected = cold('-c', { c: completion });
+    const expected = cold('--c', { c: completion });
     storageService.setSelectedCategories.and.returnValue(response);
     expect(effects.saveSelectedCategories$).toBeObservable(expected);
   });
