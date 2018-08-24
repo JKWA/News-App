@@ -53,7 +53,6 @@ export class AppStatusEffects {
   @Effect({ dispatch: false })
   offline$ = this.actions$.pipe(
     ofType<AppStatusActions.Offline>(AppStatusActionTypes.Offline),
-    tap(console.log),
     tap(_ => {
       this.snackBar.open('No network detected', '', {
           duration: 0,
@@ -64,7 +63,6 @@ export class AppStatusEffects {
   @Effect({ dispatch: false })
   online$ = this.actions$.pipe(
     ofType<AppStatusActions.Online>(AppStatusActionTypes.Online),
-    tap(console.log),
     tap(_ => {
       this.snackBar.dismiss();
     })
