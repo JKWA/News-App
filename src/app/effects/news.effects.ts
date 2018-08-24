@@ -115,13 +115,13 @@ export class NewsEffects {
     })
   );
 
-  get getAllFilters(): Observable<Set<Filter>> {
+  private get getAllFilters(): Observable<Set<Filter>> {
     return this.store.pipe(
       select(fromFilter.getAllFilters),
     );
   }
 
-  get getNews() {
+  private get getNews() {
     return this.store.pipe(
       select(fromNews.getAllArticles),
     );
