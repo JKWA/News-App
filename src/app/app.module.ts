@@ -39,9 +39,7 @@ import { CategoryEffects } from './effects/category.effects';
 import { FilterEffects } from './effects/filter.effects';
 import { LogEffects } from './effects/log.effects';
 import { NewsEffects } from './effects/news.effects';
-
-
-
+import { AppStatusEffects } from './effects/app-status.effects';
 import { reducers, metaReducers } from './reducers';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
@@ -84,7 +82,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     AppRoutingModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
-    EffectsModule.forRoot([CategoryEffects, FilterEffects, LogEffects, NewsEffects]),
+    EffectsModule.forRoot([AppStatusEffects, CategoryEffects, FilterEffects, LogEffects, NewsEffects]),
 
   ],
   providers: [],

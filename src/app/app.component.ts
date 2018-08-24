@@ -1,16 +1,15 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { MatSnackBar } from '@angular/material';
 import { CategoryItem } from './utility/category.utility';
 import { stringToCategory } from './utility/category.utility';
 import { Observable } from 'rxjs';
-// import { UpdateOnline } from './state/online.state';
 import { take, tap, map } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import * as fromNews from './reducers';
 import * as fromCategory from './reducers';
+import * as fromAppStatus from './reducers';
+import { Device } from './enums/device.enum';
 import * as NewsActions from './actions/news.actions';
-import * as OnlineActions from './actions/online.actions';
-
+import * as AppStateActions from './actions/app-status.actions';
 
 
 @Component({
@@ -22,7 +21,6 @@ export class AppComponent implements OnInit {
   title = 'marty-news';
 
   constructor(
-    public snackBar: MatSnackBar,
     private store: Store<fromNews.State>
   ) { }
 
@@ -33,27 +31,26 @@ export class AppComponent implements OnInit {
     );
   }
 
+  get showStandaloneMenuItem() {
+    return this.store.pipe(
+      select(fromAppStatus.getAppStatusState),
+      take(1),
+      map(state => {
+        return (state.device === Device.Iphone || state.device === Device.Android)
+                  ? state.standalone
+                    ? false
+                    : true
+                  : false;
+      }),
+    );
+  }
+
   ngOnInit() {
     this.setNewsData();
+    this.store.dispatch(new AppStateActions.LoadAppStatus());
   }
 
-/**
- * is mobile device and not standalone
- *
- * @readonly
- * @memberof AppComponent
- */
-get isMobleAndEmbedded() {
-    const isMobile = /iphone|ipad|ipod|android/.test( navigator.userAgent.toLowerCase() );
 
-    // @ts-ignore
-    const isStandalone = ('standalone' in navigator) && (navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
-    return isMobile
-            ?  isStandalone
-              ? false
-              : true // if ios and not running in standalone mode
-            : false;
-  }
 
 /**
  *get data for all selected categories
@@ -65,41 +62,32 @@ setNewsData() {
       take(1),
       tap( result => {
         result.forEach( category => {
-          // if ( category.selected ) {
-          // this.store.dispatch(new InitialNews(category.id));
-          // }
           this.store.dispatch(new NewsActions.InitiateNews(stringToCategory(category.id)));
-
         });
       })
     ).subscribe();
   }
 
   /**
-   * open offline message and dispatch status
+   * dispatch offline
    *
    * @param {*} event
    * @memberof AppComponent
    */
   @HostListener('window:offline', ['$event'])
-  openSnackbar( _ ) {
-    this.store.dispatch(new OnlineActions.Offline());
-    this.snackBar.open('No network detected', '', {
-      duration: 0,
-    });
+  dispatchOffline( _ ) {
+    this.store.dispatch(new AppStateActions.Offline());
   }
 
 /**
- * closes offline message and dispatch
+ * dispatch online
  *
  * @param {*} event
  * @memberof AppComponent
  */
   @HostListener('window:online', ['$event'])
-  closeSnackbar(event) {
-    this.store.dispatch(new OnlineActions.Online());
-
-    this.snackBar.dismiss();
+  dispatchOnline(_) {
+    this.store.dispatch(new AppStateActions.Online());
   }
 
 }

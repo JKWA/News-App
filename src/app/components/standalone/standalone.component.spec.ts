@@ -1,5 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StandaloneComponent } from './standalone.component';
+import { StoreModule } from '@ngrx/store';
+import * as fromReducers from './../../reducers';
+
 import {
   MatIconModule
   } from '@angular/material';
@@ -12,7 +15,8 @@ describe('StandaloneComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ StandaloneComponent ],
       imports: [
-        MatIconModule
+        MatIconModule,
+        StoreModule.forRoot({...fromReducers.reducers}),
       ],
     })
     .compileComponents();

@@ -22,7 +22,7 @@ export class LogEffects {
   consoleLogAllActions$: Observable<Action> = this.actions$.pipe(
       tap(results => {
         if ( isDevMode() ) {
-          console.log(results);
+          // console.log(results);
         }
       })
   );

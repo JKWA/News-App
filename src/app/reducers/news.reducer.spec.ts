@@ -1,6 +1,6 @@
 import { reducer, initialState, State } from './news.reducer';
 import * as NewsActions from '../actions/news.actions';
-import { ArticlePayload } from '../actions/news.actions';
+import { ArticlePayload } from '../models/article-payload.model';
 import { Service } from '../enums/service.enum';
 import { Category } from '../enums/category.enum';
 import { getArticles as MockData } from '../../testing/mock.newservice.getArticle.response';

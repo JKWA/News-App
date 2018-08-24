@@ -1,12 +1,14 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Article } from '../../article';
 import { Observable } from 'rxjs';
-import { map, tap, withLatestFrom } from 'rxjs/operators';
+import { map, tap, take, withLatestFrom } from 'rxjs/operators';
 import { Category } from '../../enums/category.enum';
 import { Store, select } from '@ngrx/store';
 import * as fromNews from './../../reducers';
 import * as fromFilters from './../../reducers';
 import * as fromCategory from './../../reducers';
+import * as fromAppStatus from './../../reducers';
+
 import * as NewsActions from './../../actions/news.actions';
 import { ScrollEvent } from 'ngx-scroll-event';
 
@@ -26,42 +28,27 @@ export class ArticleComponent implements OnInit, OnDestroy {
   topOffset = 1;
   scrolledToInititalView = true;
   tabViewed: Category;
-  currentlyAddingDataLock = false;
-  throttle;
   initialScroll = false;
   viewedCategorySubscription;
 
   constructor(
     private store: Store<fromNews.State>
-
   ) { }
 
   ngOnInit() {
     this.watchCategoryBeingViewed();
-
-    // this.newsStateSubscription = this.stateNews.pipe(
-    //   map( results => {
-    //     return results && results[this.category]
-    //             ? results[this.category].clientDataLoaded
-    //             : false;
-    //   }),
-    //   tap(complete => {
-    //     if ( complete && !this.initialScroll ) {
-    //       setTimeout(_ => this.scrollToLastViewed(), 300);
-    //       this.initialScroll = true;
-    //     }
-    //   })
-    // ).subscribe();
-
   }
 
   ngOnDestroy() {
     this.viewedCategorySubscription.unsubscribe();
-    clearTimeout(this.throttle);
   }
 
-  get isOnline() {
-    return this.store.pipe(select(fromFilters.getOnlineState));
+  get isOffline() {
+    return this.store.pipe(
+      select(fromAppStatus.getOnlineState),
+      take(1),
+      map(online => !online),
+    );
   }
 
 get getFilters() {
@@ -126,10 +113,8 @@ get getArticles(): Observable<Article[]> {
  * @memberof ArticleComponent
  */
   public gotToArticle (article): void {
-    window.localStorage.setItem('lastReadArticle', article.id);
-    if ( this.isOnline ) {
+      window.localStorage.setItem('lastReadArticle', article.id);
       window.location.href = article.url;
-    }
   }
 
  /**

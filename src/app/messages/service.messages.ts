@@ -97,10 +97,28 @@ class NewsApiMessage extends Message {
     }
 }
 
+class CurrentAppStatus extends Message {
+    constructor() {
+        super(
+            {
+                status: 1,
+                statusText: `Received articles`,
+                service: Service.AppStatus
+            },
+            {
+                status: 2,
+                statusText: `Failed to receive articles`,
+                service: Service.AppStatus
+            }
+        );
+    }
+}
+
 export {
     LocalStorageMessage,
     GetExpiredArticlesMessage,
     DeletedArticlesMessage,
     SavedIndexedDbMessage,
-    NewsApiMessage
+    NewsApiMessage,
+    CurrentAppStatus
 };

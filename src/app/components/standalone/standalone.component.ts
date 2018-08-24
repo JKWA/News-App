@@ -1,4 +1,13 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map, tap, take, withLatestFrom } from 'rxjs/operators';
+import { Category } from '../../enums/category.enum';
+import { Store, select } from '@ngrx/store';
+import * as fromNews from './../../reducers';
+import * as fromFilters from './../../reducers';
+import * as fromCategory from './../../reducers';
+import * as fromAppStatus from './../../reducers';
+import { Device } from './../../enums/device.enum';
 
 @Component({
   selector: 'app-standalone',
@@ -7,7 +16,9 @@ import { Component } from '@angular/core';
 })
 export class StandaloneComponent {
 
-  constructor() { }
+  constructor(
+    private store: Store<fromNews.State>
+  ) { }
 
 /**
  * test if Apple moble device
@@ -16,8 +27,12 @@ export class StandaloneComponent {
  * @type {boolean}
  * @memberof StandaloneComponent
  */
-get isApple(): boolean {
-    return /iphone|ipad|ipod/.test( navigator.userAgent.toLowerCase() );
+get isApple(): Observable<boolean> {
+    return this.store.pipe(
+      select(fromAppStatus.getDeviceState),
+      take(1),
+      map(device => device === Device.Iphone)
+    );
   }
 
 /**
@@ -27,8 +42,12 @@ get isApple(): boolean {
  * @type {boolean}
  * @memberof StandaloneComponent
  */
-get isAndroid(): boolean {
-    return /android/.test( navigator.userAgent.toLowerCase() );
+get isAndroid(): Observable<boolean> {
+    return this.store.pipe(
+      select(fromAppStatus.getDeviceState),
+      take(1),
+      map(device => device === Device.Android)
+    );
   }
 
 }

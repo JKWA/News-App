@@ -8,25 +8,27 @@ import {
 import { environment } from '../../environments/environment';
 import * as fromCategory from './category.reducer';
 import * as fromFilter from './filter.reducer';
+import * as fromAppStatus from './app-status.reducer';
+
 import * as fromLog from './log.reducer';
-import * as fromOnline from './online.reducer';
 import * as fromNews from './news.reducer';
 
 export const getCategoryState = createFeatureSelector<fromCategory.State>('category');
 export const getFilterState = createFeatureSelector<fromFilter.State>('filter');
 export const getLogState = createFeatureSelector<fromLog.State>('log');
-export const getOnlineState = createFeatureSelector<fromOnline.State>('online');
 export const getNewsState = createFeatureSelector<fromNews.State>('news');
-
+export const getAppStatusState = createFeatureSelector<fromAppStatus.State>('appStatus');
 export interface State {
   filter: fromFilter.State;
   category: fromCategory.State;
   log: fromLog.State;
   news: fromNews.State;
+  appStatus: fromAppStatus.State;
 }
 
 export const reducers: ActionReducerMap<State> = {
   filter: fromFilter.reducer,
+  appStatus: fromAppStatus.reducer,
   category: fromCategory.reducer,
   log: fromLog.reducer,
   news: fromNews.reducer
@@ -52,9 +54,19 @@ export const getAllLogs = createSelector(
   fromLog.getAllLogs
 );
 
-export const getOnlineStatus = createSelector(
-  getOnlineState,
-  fromOnline.getOnlineStatus
+export const getOnlineState = createSelector(
+  getAppStatusState,
+  fromAppStatus.getOnlineState
+);
+
+export const getDeviceState = createSelector(
+  getAppStatusState,
+  fromAppStatus.getDeviceState
+);
+
+export const getStandaloneState = createSelector(
+  getAppStatusState,
+  fromAppStatus.getStandaloneState
 );
 
 export const getAllArticles = createSelector(

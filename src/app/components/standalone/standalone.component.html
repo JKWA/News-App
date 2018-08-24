@@ -8,7 +8,7 @@
       </a>
     </nav>
 
-    <div *ngIf="isApple">
+   <div *ngIf="isApple | async">
       <h2>Add Marty-News to the iPhone home screen</h2> 
       <table>
         <tr>
@@ -44,7 +44,7 @@
       </table>
     </div>
 
-    <div *ngIf="isAndroid">
+    <div *ngIf="isAndroid | async">
         <h2>Add Marty-News to the Andorid home screen</h2> 
         <table>
           <tr>

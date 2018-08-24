@@ -30,7 +30,7 @@
       <mat-card-actions>
         <button 
           (click)="gotToArticle(article)" 
-          disabled="{{!isOnline}}"
+          disabled="{{ isOffline | async}}"
           color="primary"
           mat-button>READ</button>
       </mat-card-actions>
