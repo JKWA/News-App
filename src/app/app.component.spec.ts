@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { routes } from './app-routing.module';
-
 import { FormsModule } from '@angular/forms';
 import { ScrollEventModule } from 'ngx-scroll-event';
 import { HttpClientModule } from '@angular/common/http';
@@ -15,19 +14,7 @@ import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from '../testing/in-memory-data.service';
 import { StoreModule } from '@ngrx/store';
 import * as fromReducers from './reducers';
-import {
-  MatButtonModule,
-  MatCardModule,
-  MatIconModule,
-  MatInputModule,
-  MatMenuModule,
-  MatProgressSpinnerModule,
-  MatSlideToggleModule,
-  MatSnackBarModule,
-  MatTableModule,
-  MatTabsModule,
-  MatToolbarModule
-  } from '@angular/material';
+import { MaterialModule } from './material/material.module';
 import { NewsComponent } from './components/news/news.component';
 import { LogComponent } from './components/log/log.component';
 import { CategoryComponent } from './components/category/category.component';
@@ -56,17 +43,7 @@ describe('AppComponent', () => {
         ! environment.production
         ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 })
         : [],
-        MatButtonModule,
-        MatCardModule,
-        MatMenuModule,
-        MatIconModule,
-        MatInputModule,
-        MatProgressSpinnerModule,
-        MatSlideToggleModule,
-        MatSnackBarModule,
-        MatTabsModule,
-        MatTableModule,
-        MatToolbarModule,
+        MaterialModule,
         FormsModule,
         ScrollEventModule,
         StoreModule.forRoot({...fromReducers.reducers}),

@@ -9,21 +9,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout';
-import {
-  MatToolbarModule,
-  MatTableModule,
-  MatButtonModule,
-  MatInputModule,
-  MatSidenavModule,
-  MatSlideToggleModule,
-  MatSnackBarModule,
-  MatIconModule,
-  MatListModule,
-  MatGridListModule,
-  MatCardModule,
-  MatMenuModule,
-  MatTabsModule,
-  MatProgressSpinnerModule} from '@angular/material';
+import { MaterialModule } from './material/material.module';
 import { NewsComponent } from './components/news/news.component';
 import { LogComponent } from './components/log/log.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -64,20 +50,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     FormsModule,
     ScrollEventModule,
     LayoutModule,
-    MatToolbarModule,
-    MatTableModule,
-    MatButtonModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    MatSidenavModule,
-    MatSlideToggleModule,
-    MatSnackBarModule,
-    MatIconModule,
-    MatListModule,
-    MatGridListModule,
-    MatCardModule,
-    MatMenuModule,
-    MatTabsModule,
+    MaterialModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
     AppRoutingModule,
     StoreModule.forRoot(reducers, { metaReducers }),
