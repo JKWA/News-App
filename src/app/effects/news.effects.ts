@@ -70,7 +70,6 @@ export class NewsEffects {
   );
 
 
-  // TODO - change take(1) to wait until indexed DB is done, then send action
   @Effect()
   saveApiNewsToIndexedDB$: Observable<Action> = this.actions$.pipe(
     ofType<NewsActions.AddInitialApiArticles>(NewsActionTypes.AddInitialApiArticles, NewsActionTypes.InsertAdditionalNewsFromApi),
