@@ -128,7 +128,7 @@ export class NewsEffects {
   }
 
   @Effect()
-  search$: Observable<Action> = this.actions$.pipe(
+  getAddionalNews$: Observable<Action> = this.actions$.pipe(
     ofType<NewsActions.GetAdditionalNewsFromApi>(NewsActionTypes.GetAdditionalNewsFromApi),
     throttleTime(this.debounce || 1000, this.scheduler || asyncScheduler),
     withLatestFrom(this.getNews, this.getAllFilters, (action, news, allFilters) => {

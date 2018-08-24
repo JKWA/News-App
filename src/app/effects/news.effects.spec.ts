@@ -227,7 +227,7 @@ describe('NewsEffects', () => {
       const expected = cold('--c---c', { c: completion });
       newsDataService.getNews.and.returnValue(response);
 
-      expect(effects.search$).toBeObservable(expected);
+      expect(effects.getAddionalNews$).toBeObservable(expected);
     });
 
     // it('"GetAdditionalNewsFromApi" should return a InsertAdditionalNewsFromApiFailed, after throttle, on failure', () => {
