@@ -35,9 +35,6 @@ export const initialState: State = {
 export function reducer(state = initialState, action: NewsActions): State {
   switch (action.type) {
 
-    case NewsActionTypes.LoadNews:
-      return state;
-
     case NewsActionTypes.InitiateNews: {
       const copyCurrentState = Object.assign({}, state);
       const category = action.payload;

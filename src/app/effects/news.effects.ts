@@ -22,8 +22,13 @@ export const SCHEDULER = new InjectionToken<Scheduler>('Test Scheduler');
 @Injectable()
 export class NewsEffects {
 
-  @Effect()
-  loadNews$ = this.actions$.pipe(ofType(NewsActionTypes.LoadNews));
+   // flatMap( a => {
+        //   return zip(
+        //     ofew NewsActions.AddInitialApiArticles(a)),
+        //     of(new LogActions.AddLog(new Message.NewsApiMessage().successMessage))
+        //   );
+        // }),
+
 
   @Effect()
   getInitialApiNews$: Observable<Action> = this.actions$.pipe(

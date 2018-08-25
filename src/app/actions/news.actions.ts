@@ -5,7 +5,6 @@ import { ServiceMessageModel } from '../models/service-message.model';
 import { ArticlePayload } from '../models/article-payload.model';
 
 export enum NewsActionTypes {
-  LoadNews = '[News] Load Users',
   InitiateNews = '[App Component] Initiating news call',
   GetAdditionalNewsFromApi = '[Article Component] Initiate additional news call',
   GetAdditionalNewsFromApiFailed = '[Article Component] Initiate additional news call failed',
@@ -24,9 +23,9 @@ export enum NewsActionTypes {
 }
 
 
-export class LoadNews implements Action {
-  readonly type = NewsActionTypes.LoadNews;
-}
+// export class LoadNews implements Action {
+//   readonly type = NewsActionTypes.LoadNews;
+// }
 
 export class InitiateNews implements Action {
   readonly type = NewsActionTypes.InitiateNews;
@@ -105,7 +104,7 @@ export class DeleteExpiredDataFailed implements Action {
 
 
 export type NewsActions =
-    LoadNews
+    // LoadNews
     | InitiateNews
     | AddInitialApiArticles
     | AddInitialApiArticlesFailed
