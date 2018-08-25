@@ -462,15 +462,15 @@ function sourceData (): any[] {
                 language:'en',
                 country:'au'
             },
-            {  
-                id: 'bloomberg',
-                name: 'Bloomberg',
-                description:'Bloomberg delivers business and markets news, data, analysis, and video to the world, featuring stories from Businessweek and Bloomberg News.',
-                url:'http://www.bloomberg.com',
-                category: Category.Business,
-                language:'en',
-                country:'us'
-            },
+            // {  
+            //     id: 'bloomberg',
+            //     name: 'Bloomberg',
+            //     description:'Bloomberg delivers business and markets news, data, analysis, and video to the world, featuring stories from Businessweek and Bloomberg News.',
+            //     url:'http://www.bloomberg.com',
+            //     category: Category.Business,
+            //     language:'en',
+            //     country:'us'
+            // },
             {  
                 id:'business-insider',
                 name:'Business Insider',
