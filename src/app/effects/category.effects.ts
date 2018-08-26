@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { tap, take, map, switchMap, withLatestFrom, catchError } from 'rxjs/operators';
+import { tap, map, switchMap, withLatestFrom, catchError } from 'rxjs/operators';
 import { Actions, Effect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { Store, select, Action } from '@ngrx/store';
 import * as fromCategory from './../reducers';
@@ -65,12 +65,11 @@ export class CategoryEffects {
                 ? categoryItem.selected = true
                 : categoryItem.selected = false;
         });
-        return  new CategoryActions.LoadCategorys({setCategory: viewedCategory, allCategories});
+        return  new CategoryActions.LoadCategories({setCategory: viewedCategory, allCategories});
 
       }),
 
   );
-
 
   constructor(
     private actions$: Actions,

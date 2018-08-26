@@ -3,7 +3,7 @@ import { Category } from '../enums/category.enum';
 import { ServiceMessageModel } from '../models/service-message.model';
 
 export enum CategoryActionTypes {
-  LoadCategorys = '[Category] Load Categorys',
+  LoadCategories = '[Category] Load Categorys',
   AddCategory = '[Category Component] Add Selected Category',
   AddGeneralCategory = '[Category Effects] Add General Category',
   RemoveCategory = '[Category Component] Remove Selected Category',
@@ -14,10 +14,9 @@ export enum CategoryActionTypes {
   SavedViewedCategoryFailed = '[Category Effect] Failed to save viewed category',
 }
 
-export class LoadCategorys implements Action {
-  readonly type = CategoryActionTypes.LoadCategorys;
+export class LoadCategories implements Action {
+  readonly type = CategoryActionTypes.LoadCategories;
   constructor(public payload: any) { }
-
 }
 
 export class AddCategory implements Action {
@@ -63,7 +62,7 @@ export class SavedViewedCategoryFailed implements Action {
 }
 
 export type CategoryActions =
-  LoadCategorys
+  LoadCategories
   | AddCategory
   | AddGeneralCategory
   | RemoveCategory

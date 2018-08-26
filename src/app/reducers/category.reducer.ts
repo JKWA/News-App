@@ -1,26 +1,22 @@
-import { Action } from '@ngrx/store';
 import { CategoryActions, CategoryActionTypes } from '../actions/category.actions';
-import { stringToCategory } from '../shared/utility/category.utility';
 import { CategoryItemModel } from '../models/category-item.model';
 import { Category } from '../enums/category.enum';
 import { categoryToObject } from '../shared/utility/category.utility';
-import { CategoryDefault } from '../shared/defaults/category.default';
 
 export interface State {
   setCategory: Category;
   allCategories: Map<string, CategoryItemModel>;
 }
 
-// TODO move local storage to service
 export const initialState: State = {
   setCategory: null,
-  allCategories: new Map() // new CategoryDefault().createAllCategories
+  allCategories: new Map()
 };
 
 export function reducer(state = initialState, action: CategoryActions): State {
   switch (action.type) {
 
-    case CategoryActionTypes.LoadCategorys:
+    case CategoryActionTypes.LoadCategories:
       return {
         ...state,
         allCategories: action.payload.allCategories,
