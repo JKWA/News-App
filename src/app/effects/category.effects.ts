@@ -8,7 +8,7 @@ import * as CategoryActions from '../actions/category.actions';
 import { CategoryActionTypes } from '../actions/category.actions';
 import { LocalStorageService } from '../services/local-storage.service';
 import * as ServiceMessage from '../messages/service.messages';
-
+import { Category } from '../enums/category.enum';
 
 @Injectable()
 export class CategoryEffects {
@@ -16,9 +16,14 @@ export class CategoryEffects {
   @Effect()
   saveSelectedCategories$: Observable<Action> = this.actions$.pipe(
     ofType<CategoryActions.AddCategory>(CategoryActionTypes.AddCategory, CategoryActionTypes.RemoveCategory),
-    withLatestFrom(this.store, ( action , state) => state), // {
+    withLatestFrom(this.store, ( action , state) => state),
     select(fromCategory.getAllCategories),
     map(allCategories => Array.from(allCategories.values()).filter(result => result.selected).map(category => category.id)),
+    tap(allCategories => {
+      if ( allCategories.length === 0 ) {
+        this.store.dispatch( new CategoryActions.AddCategory(Category.General));
+      }
+    }),
     switchMap(arrayOfCategoryIds => this.localStorageService.setSelectedCategories(arrayOfCategoryIds)
       .pipe(
         map(() => new CategoryActions.SavedSelectedCategories(new ServiceMessage.LocalStorageMessage().successMessage)),
