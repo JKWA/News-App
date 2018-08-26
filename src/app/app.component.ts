@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { CategoryItem } from './shared/utility/category.utility';
+import { CategoryItemModel } from './models/category-item.model';
 import { stringToCategory } from './shared/utility/category.utility';
 import { Observable } from 'rxjs';
 import { take, tap, map } from 'rxjs/operators';
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
     private store: Store<fromNews.State>
   ) { }
 
-  get getSelectedCategories(): Observable<CategoryItem[]> {
+  get getSelectedCategories(): Observable<CategoryItemModel[]> {
     return this.store.pipe(
       select(fromCategory.getAllCategories),
       map(results => Array.from(results.values()).filter(result => result.selected))

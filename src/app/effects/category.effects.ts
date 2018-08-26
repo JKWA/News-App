@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { tap, take, map, switchMap, withLatestFrom, catchError } from 'rxjs/operators';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, Effect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { Store, select, Action } from '@ngrx/store';
 import * as fromCategory from './../reducers';
 import * as CategoryActions from '../actions/category.actions';
@@ -9,6 +9,9 @@ import { CategoryActionTypes } from '../actions/category.actions';
 import { LocalStorageService } from '../services/local-storage.service';
 import * as ServiceMessage from '../messages/service.messages';
 import { Category } from '../enums/category.enum';
+import { CategoryDefault } from '../shared/defaults/category.default';
+import { stringToCategory } from '../shared/utility/category.utility';
+
 
 @Injectable()
 export class CategoryEffects {
@@ -46,7 +49,28 @@ export class CategoryEffects {
   );
 
   @Effect()
-  loadCategory$ = this.actions$.pipe(ofType(CategoryActionTypes.LoadCategorys));
+  init$: Observable<Action> = this.actions$.pipe(
+    ofType(ROOT_EFFECTS_INIT),
+    withLatestFrom(
+      of(new CategoryDefault().createAllCategories),
+      this.localStorageService.getCategoryViewed(),
+      this.localStorageService.getSelectedCategories(),
+      ( _ , allCategories, viewedCategory, savedSelectedCategories) => {
+        const selectedCategories = savedSelectedCategories
+            ? savedSelectedCategories
+            : new CategoryDefault().getDefaultSelectedCategories;
+
+        allCategories.forEach(categoryItem => {
+            selectedCategories.has(stringToCategory(categoryItem.id))
+                ? categoryItem.selected = true
+                : categoryItem.selected = false;
+        });
+        return  new CategoryActions.LoadCategorys({setCategory: viewedCategory, allCategories});
+
+      }),
+
+  );
+
 
   constructor(
     private actions$: Actions,

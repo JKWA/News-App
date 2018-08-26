@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CategoryItem } from '../../shared/utility/category.utility';
+import { CategoryItemModel } from '../../models/category-item.model';
 import * as CategoryActions from './../../actions/category.actions';
 import { stringToCategory } from '../../shared/utility/category.utility';
 import { Observable } from 'rxjs';
@@ -18,7 +18,7 @@ export class CategoryComponent {
 
     constructor(private store: Store<fromCategory.State>) {}
 
-    get getAllCategories(): Observable<Set<CategoryItem>> {
+    get getAllCategories(): Observable<Set<CategoryItemModel>> {
       return this.store.pipe(
         select(fromCategory.getAllCategories),
         map(results => new Set(Array.from(results.values())))

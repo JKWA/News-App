@@ -29,7 +29,9 @@ export function getActions() {
 }
 
 class MockStorageService {
+  getSelectedCategories = jasmine.createSpy('getSelectedCategories');
   setSelectedCategories = jasmine.createSpy('setSelectedCategories');
+  getCategoryViewed = jasmine.createSpy('getCategoryViewed');
   setCategoryViewed = jasmine.createSpy('setCategoryViewed');
 }
 

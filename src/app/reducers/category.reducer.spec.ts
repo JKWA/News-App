@@ -1,7 +1,8 @@
 import { reducer, initialState, State} from './category.reducer';
 import * as CategoryActions from '../actions/category.actions';
 import { Category } from '../enums/category.enum';
-import { createAllCategories } from '../shared/utility/category.utility';
+// import { createAllCategories } from '../shared/utility/category.utility';
+import { CategoryDefault } from '../shared/defaults/category.default';
 
 describe('Category Reducer', () => {
   describe('unknown action', () => {
@@ -13,8 +14,9 @@ describe('Category Reducer', () => {
       expect(result).toBe(initialState);
     });
   });
+
   describe('SetCategory: Category actions', () => {
-    const allCategories = createAllCategories();
+    const allCategories = new CategoryDefault().createAllCategories;
     it('should change the category being viewed', () => {
       const firstState: State = {
         setCategory: Category.General,

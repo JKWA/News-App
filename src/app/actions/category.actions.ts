@@ -16,6 +16,8 @@ export enum CategoryActionTypes {
 
 export class LoadCategorys implements Action {
   readonly type = CategoryActionTypes.LoadCategorys;
+  constructor(public payload: any) { }
+
 }
 
 export class AddCategory implements Action {

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { stringToCategory, CategoryItem } from '../../shared/utility/category.utility';
+import { stringToCategory } from '../../shared/utility/category.utility';
+import { CategoryItemModel } from '../../models/category-item.model';
 import * as CategoryActions from './../../actions/category.actions';
 import { Observable, of } from 'rxjs';
 import { map, tap, withLatestFrom, catchError } from 'rxjs/operators';
@@ -28,10 +29,10 @@ export class NewsComponent {
  *
  *
  * @readonly
- * @type {Observable<Set<CategoryItem>>}
+ * @type {Observable<Set<CategoryItemModel>>}
  * @memberof NewsComponent
  */
-get getSelectedCategories(): Observable<CategoryItem[]> {
+get getSelectedCategories(): Observable<CategoryItemModel[]> {
   return this.store.pipe(
     select(fromCategory.getAllCategories),
     map(results => Array.from(results.values()).filter(result => result.selected))
