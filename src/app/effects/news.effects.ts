@@ -1,7 +1,7 @@
 import { Injectable, InjectionToken, Optional, Inject } from '@angular/core';
 import { Observable, of, Scheduler, defer, asyncScheduler } from 'rxjs';
 import {concatMap, exhaustMap,
-  take, map, catchError,
+  take, map, catchError, tap,
   throttleTime, withLatestFrom } from 'rxjs/operators';
 import { Store, select, Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -148,11 +148,6 @@ export class NewsEffects {
     catchError(error => {
       return of( new NewsActions.InsertAdditionalNewsFromApiFailed(new Message.NewsApiMessage().errorMessage));
     })
-  );
-
-
-  init$: Observable<any> = defer(() => of(null)).pipe(
-    // tap(() => console.log('init$'))
   );
 
   constructor(
