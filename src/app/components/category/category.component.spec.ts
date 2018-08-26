@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { tap, take } from 'rxjs/operators';
 import { CategoryComponent } from './category.component';
 import { StoreModule } from '@ngrx/store';
 import * as fromCategory from './../../reducers';
@@ -39,13 +38,6 @@ describe('CategoryComponent', () => {
   });
 
   describe('HTML', () => {
-    it('expect three toggles are checked', () => {
-      const componentDebug = fixture.debugElement;
-      const allToggles = componentDebug.queryAll(By.directive(MatSlideToggle));
-      const checkedToggles = allToggles.filter(toggle => toggle.attributes['ng-reflect-checked'] === 'true');
-      expect(checkedToggles.length).toEqual(3);
-    });
-
     it('expect each toggle should call onClick method', () => {
       const componentDebug = fixture.debugElement;
       spyOn(component, 'onClick');
@@ -54,19 +46,6 @@ describe('CategoryComponent', () => {
         toggle.triggerEventHandler('change', null);
         expect(component.onClick).toHaveBeenCalled();
       });
-    });
-  });
-
-  describe('Defaults', () => {
-    it('expect 7 categories with 3 selected', () => {
-      component.getAllCategories.pipe(
-        take(1),
-        tap (categories => {
-          expect(categories.size).toEqual(7);
-          const selectedCategories = Array.from(categories).filter(category => category.selected);
-          expect(selectedCategories.length).toEqual(3);
-        })
-      ).subscribe();
     });
   });
 

@@ -4,8 +4,6 @@ import { tap, take } from 'rxjs/operators';
 import { NewsComponent } from './news.component';
 import { ArticleComponent } from '../article/article.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// import { CategoryState } from '../state/category.state';
-// import { FilterState } from '../state/filter.state';
 import { StoreModule } from '@ngrx/store';
 import * as fromNews from './../../reducers';
 import {
@@ -15,7 +13,6 @@ import {
   MatProgressSpinnerModule,
   } from '@angular/material';
 import { ScrollEventModule } from 'ngx-scroll-event';
-
 
 describe('NewsComponent', () => {
   let component: NewsComponent;
@@ -64,12 +61,6 @@ describe('NewsComponent', () => {
         expect( tabGroup.attributes['ng-reflect-selected-index'] ).toEqual('0');
       });
     });
-
-    it('expect general articles to be displayed', () => {
-      const componentDebug = fixture.debugElement;
-      const article = componentDebug.query(By.directive(ArticleComponent));
-      expect( article.attributes['ng-reflect-category'] ).toEqual('general');
-    });
   });
 
   describe('Defaults', () => {
@@ -79,24 +70,6 @@ describe('NewsComponent', () => {
         take(1),
         tap (index => {
           expect(index).toEqual(0);
-        })
-      ).subscribe();
-    });
-
-    it('expect 3 categories to be displayed', () => {
-      component.getSelectedCategories.pipe(
-        take(1),
-        tap(categories => {
-          expect(categories.length).toEqual(3);
-        })
-      ).subscribe();
-    });
-
-    it('expect general category to be selected', () => {
-      component.getViewingCategory.pipe(
-        take(1),
-        tap(category => {
-          expect(category).toBe('general');
         })
       ).subscribe();
     });
