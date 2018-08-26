@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, defer } from 'rxjs';
 import { map, tap, switchMap, catchError } from 'rxjs/operators';
-import { Action } from '@ngrx/store';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { Actions, Effect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { MatSnackBar } from '@angular/material';
 import { AppComponent } from '../app.component';
 import { AppStatusActionTypes } from '../actions/app-status.actions';
+import * as fromAppStatus from './../reducers';
+
 import * as AppStatusActions from '../actions/app-status.actions';
 import { AppStatusService } from '../services/app-status.service';
 import * as ServiceMessage from '../messages/service.messages';
+// import { AppStatusActions } from '../actions/app-status.actions';
 
 @Injectable()
 export class AppStatusEffects {
@@ -68,10 +71,18 @@ export class AppStatusEffects {
     })
   );
 
+  @Effect({ dispatch: false })
+  init$ = this.actions$
+    .ofType(ROOT_EFFECTS_INIT)
+    .pipe(
+      tap(_ => this.store.dispatch(new AppStatusActions.LoadAppStatus()))
+    );
+
   constructor(
     private actions$: Actions,
     private appStatusService: AppStatusService,
     public snackBar: MatSnackBar,
+    private store: Store<fromAppStatus.State>,
 
   ) {}
 }

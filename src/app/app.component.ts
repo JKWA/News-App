@@ -47,7 +47,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.setNewsData();
-    this.store.dispatch(new AppStateActions.LoadAppStatus());
   }
 
 
