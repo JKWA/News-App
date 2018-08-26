@@ -40,16 +40,7 @@ describe('FilterComponent', () => {
   });
 
   describe('HTML', () => {
-    it('expect remove button should call "removeFilter" method',  async(() => {
-      spyOn(component, 'removeFilter');
-      const button = fixture.debugElement.nativeElement.querySelector('button[aria-label="Remove filter"]');
-      button.click();
-        fixture.whenStable().then(() => {
-          expect(component.removeFilter).toHaveBeenCalled();
-        });
 
-      })
-    );
     it('expect add button should call "addFilter" method',  async(() => {
       spyOn(component, 'addFilter');
       const button = fixture.debugElement.nativeElement.querySelector('button[aria-label="Add filter"]');
@@ -60,22 +51,6 @@ describe('FilterComponent', () => {
 
       })
     );
-  });
-
-  describe('Defaults', () => {
-    it('expect trump and sanders filters', () => {
-      component.getAllFilters.pipe(
-        tap (filter => {
-          expect(filter).toEqual(new Set(['trump', 'sanders']));
-        })
-      ).subscribe();
-    });
-
-    it('expect display two filters', () => {
-      const filterNodes = fixture.nativeElement.querySelectorAll('h3');
-      const filters = Array.from(filterNodes);
-      expect(filters.length).toEqual(2);
-    });
   });
 
 });

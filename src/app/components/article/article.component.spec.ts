@@ -61,10 +61,5 @@ describe('ArticleComponent', () => {
       .subscribe();
     });
 
-    it('expect filters are set to trump and sanders', () => {
-      component.getFilters.pipe(
-        tap(result =>  expect( result ).toEqual(new Set ([ 'trump', 'sanders' ])))
-      ).subscribe();
-    });
   });
 });
