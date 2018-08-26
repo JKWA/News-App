@@ -1,6 +1,6 @@
 import { Injectable, isDevMode } from '@angular/core';
 import { Article } from '../article';
-import { categoryToObject } from '../utility/category.utility';
+import { categoryToObject } from '../shared/utility/category.utility';
 import { Category } from '../enums/category.enum';
 import * as moment from 'moment';
 import { Observable } from 'rxjs';

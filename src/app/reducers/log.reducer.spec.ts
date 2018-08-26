@@ -2,7 +2,7 @@ import { reducer, initialState, State } from './log.reducer';
 import * as LogActions from '../actions/log.actions';
 import {LogActionTypes} from '../actions/log.actions';
 import { Log } from '../models/log.model';
-import { Time } from '../utility/time.utility';
+import { Time } from '../shared/utility/time.utility';
 
 
 describe('Log Reducer', () => {

@@ -21,6 +21,7 @@ import { CategoryComponent } from './components/category/category.component';
 import { ArticleComponent } from './components/article/article.component';
 import { FilterComponent } from './components/filter/filter.component';
 import { StandaloneComponent } from './components/standalone/standalone.component';
+import { SharedModule } from './shared/shared.module';
 
 describe('AppComponent', () => {
   let location: Location;
@@ -44,6 +45,7 @@ describe('AppComponent', () => {
         ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 })
         : [],
         MaterialModule,
+        SharedModule,
         FormsModule,
         ScrollEventModule,
         StoreModule.forRoot({...fromReducers.reducers}),

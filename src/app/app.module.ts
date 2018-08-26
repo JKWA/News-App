@@ -28,6 +28,7 @@ import { NewsEffects } from './effects/news.effects';
 import { AppStatusEffects } from './effects/app-status.effects';
 import { reducers, metaReducers } from './reducers';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     ScrollEventModule,
     LayoutModule,
     MaterialModule,
+    SharedModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
     AppRoutingModule,
     StoreModule.forRoot(reducers, { metaReducers }),

@@ -1,7 +1,7 @@
 import { reducer, initialState, State} from './category.reducer';
 import * as CategoryActions from '../actions/category.actions';
 import { Category } from '../enums/category.enum';
-import { createAllCategories } from '../utility/category.utility';
+import { createAllCategories } from '../shared/utility/category.utility';
 
 describe('Category Reducer', () => {
   describe('unknown action', () => {

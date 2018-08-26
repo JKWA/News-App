@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { CategoryItem } from './utility/category.utility';
-import { stringToCategory } from './utility/category.utility';
+import { CategoryItem } from './shared/utility/category.utility';
+import { stringToCategory } from './shared/utility/category.utility';
 import { Observable } from 'rxjs';
 import { take, tap, map } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';

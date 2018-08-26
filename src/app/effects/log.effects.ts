@@ -11,7 +11,7 @@ import { CategoryActionTypes } from '../actions/category.actions';
 import { FilterActionTypes } from '../actions/filter.actions';
 import { AppStatusActionTypes } from '../actions/app-status.actions';
 import * as fromReducers from './../reducers';
-import { Time } from './../utility/time.utility';
+import { Time } from './../shared/utility/time.utility';
 import * as ServiceMessage from '../messages/service.messages';
 
 

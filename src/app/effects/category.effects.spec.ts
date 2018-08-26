@@ -11,6 +11,7 @@ import * as CategoryActions from './../actions/category.actions';
 import { ServiceMessageModel } from '../models/service-message.model';
 import { LocalStorageMessage } from '../messages/service.messages';
 import { LocalStorageService } from './../services/local-storage.service';
+import { SharedModule } from './../shared/shared.module';
 
 
 export class TestActions extends Actions {
@@ -46,6 +47,7 @@ describe('CategoryEffects', () => {
         { provide: Actions, useFactory: getActions },
       ],
       imports: [
+        SharedModule,
         StoreModule.forRoot({...fromCategory.reducers}),
       ],
     });

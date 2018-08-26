@@ -4,7 +4,7 @@ import { tap, take } from 'rxjs/operators';
 import { CategoryComponent } from './category.component';
 import { StoreModule } from '@ngrx/store';
 import * as fromCategory from './../../reducers';
-
+import { SharedModule } from './../../shared/shared.module';
 import {
   MatIconModule,
   MatSlideToggle, MatSlideToggleModule,
@@ -21,6 +21,7 @@ describe('CategoryComponent', () => {
       imports: [
         MatIconModule,
         MatSlideToggleModule,
+        SharedModule,
         StoreModule.forRoot({...fromCategory.reducers}),
       ],
       providers: []

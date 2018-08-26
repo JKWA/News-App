@@ -1,4 +1,4 @@
- import { Article } from '../models/article.model';
+ import { Article } from '../../models/article.model';
 
  /**
    * Unduplicate articles by title, important to keep the article ids unique

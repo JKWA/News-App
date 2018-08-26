@@ -16,7 +16,7 @@ import { NewsEffects, SCHEDULER, DEBOUNCE } from './news.effects';
 import { Article, SavedArticle } from '../models/article.model';
 import { NewsDataService } from './../services/news-data.service';
 import { IndexedDbService } from '../services/indexed-db.service';
-import { Time } from '../utility/time.utility';
+import { Time } from '../shared/utility/time.utility';
 import * as ServiceMessage from '../messages/service.messages';
 import { ArticlePayload } from '../models/article-payload.model';
 

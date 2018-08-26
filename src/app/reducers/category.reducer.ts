@@ -1,8 +1,8 @@
 import { Action } from '@ngrx/store';
 import { CategoryActions, CategoryActionTypes } from '../actions/category.actions';
-import { CategoryItem, stringToCategory, createAllCategories } from '../utility/category.utility';
+import { CategoryItem, stringToCategory, createAllCategories } from '../shared/utility/category.utility';
 import { Category } from '../enums/category.enum';
-import { categoryToObject } from '../utility/category.utility';
+import { categoryToObject } from '../shared/utility/category.utility';
 
 
 export interface State {
@@ -14,7 +14,7 @@ export interface State {
 export const initialState: State = {
   setCategory: (window.localStorage.getItem('setCategory'))
     ? stringToCategory(window.localStorage.getItem('setCategory'))
-    : Category.General,
+    : null,
   allCategories: createAllCategories()
 };
 

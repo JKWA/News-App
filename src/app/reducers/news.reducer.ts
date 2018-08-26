@@ -1,7 +1,7 @@
 import { Action } from '@ngrx/store';
 import { NewsActions, NewsActionTypes } from '../actions/news.actions';
 import { NewsCategory as NewsCategoryModel} from '../models/news-category.model';
-import { removeDuplicateTitles } from '../utility/article.utility';
+import { removeDuplicateTitles } from '../shared/utility/article.utility';
 import { Service } from '../enums/service.enum';
 
 export interface State {
