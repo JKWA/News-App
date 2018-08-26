@@ -28,6 +28,8 @@ export function getActions() {
 
 class MockStorageService {
   setFilters = jasmine.createSpy('setFilters');
+  getFilters = jasmine.createSpy('getFilters');
+
 }
 
 describe('FilterEffects', () => {

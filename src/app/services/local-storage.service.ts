@@ -44,7 +44,6 @@ export class LocalStorageService {
   getCategoryViewed(): Observable<Category> {
     return  new Observable(observer => {
      const localStorage = window.localStorage;
-      console.log('HERE');
      if ( ! localStorage ) {
        return observer.error(new LocalStorageMessage().errorMessage);
      }
@@ -67,14 +66,18 @@ export class LocalStorageService {
    });
  }
 
-  getFilters(): Observable<any> {
+  getFilters(): Observable<Set<Filter>> {
     return  new Observable(observer => {
       const localStorage = window.localStorage;
 
       if ( ! localStorage ) {
         return observer.error(new LocalStorageMessage().errorMessage);
       }
-      return observer.next(localStorage.getItem('filters'));
+      const filterString = localStorage.getItem('filters');
+      const filters = filterString
+        ? new Set (filterString.split(',').map(filter => filter.trim()))
+        : new Set();
+      return observer.next(filters);
     });
   }
 
@@ -85,11 +88,7 @@ export class LocalStorageService {
       if ( ! localStorage ) {
         return observer.error(new LocalStorageMessage().errorMessage);
       }
-
-      filters.size
-        ? localStorage.setItem('filters', Array.from(filters).join().toLowerCase())
-        : localStorage.setItem('filters', '$NONE$');
-
+      localStorage.setItem('filters', Array.from(filters).join().toLowerCase());
       return observer.next(new LocalStorageMessage().successMessage);
    });
  }

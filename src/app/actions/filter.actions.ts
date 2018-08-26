@@ -12,6 +12,7 @@ export enum FilterActionTypes {
 
 export class LoadFilters implements Action {
   readonly type = FilterActionTypes.LoadFilters;
+  constructor(public payload: Set<Filter>) { }
 }
 
 export class AddFilter implements Action {

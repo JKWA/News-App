@@ -1,4 +1,3 @@
-import { Action } from '@ngrx/store';
 import { FilterActions, FilterActionTypes } from '../actions/filter.actions';
 import { Filter } from '../models/filter';
 
@@ -7,16 +6,18 @@ export interface State {
 }
 
 export const initialState: State = {
-  listOfFilters: (window.localStorage.getItem('filters'))
-  ? convertToFilter(window.localStorage.getItem('filters'))
-  : new Set ([ 'trump', 'sanders' ])
+  listOfFilters: new Set ()
 };
 
 export function reducer(state = initialState, action: FilterActions): State {
   switch (action.type) {
 
-    case FilterActionTypes.LoadFilters:
-      return state;
+    case FilterActionTypes.LoadFilters: {
+      return {
+        ...state,
+        listOfFilters: action.payload
+      };
+    }
 
     case FilterActionTypes.AddFilter: {
       const copy = new Set(state.listOfFilters);
@@ -43,18 +44,4 @@ export function reducer(state = initialState, action: FilterActions): State {
   }
 }
 
-
-// TODO move this over to local storage service
 export const getAllFilters = (state: State) => state.listOfFilters;
-
-function convertToFilter(filterString: string): Set<Filter> {
-  const listOfFilters = [];
-
-  if (filterString !== '$NONE$') {
-    filterString.split(',').map(filter => {
-      listOfFilters.push(filter.trim());
-    });
-  }
-
-  return new Set(listOfFilters);
-}
