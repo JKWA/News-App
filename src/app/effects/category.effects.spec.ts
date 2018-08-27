@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { Observable, empty } from 'rxjs';
+import { Observable, of, empty } from 'rxjs';
 import { StoreModule } from '@ngrx/store';
 import { cold, hot } from 'jasmine-marbles';
 import { provideMockActions } from '@ngrx/effects/testing';
-import { Actions } from '@ngrx/effects';
+import { Actions, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { CategoryEffects } from './category.effects';
 import * as fromCategory from './../reducers';
 import { Category } from '../enums/category.enum';
@@ -12,7 +12,8 @@ import { ServiceMessageModel } from '../models/service-message.model';
 import { LocalStorageMessage } from '../messages/service.messages';
 import { LocalStorageService } from './../services/local-storage.service';
 import { SharedModule } from './../shared/shared.module';
-
+import { CategoryDefault } from '../shared/defaults/category.default';
+import { State } from '../reducers/category.reducer';
 
 export class TestActions extends Actions {
   constructor() {
@@ -145,6 +146,42 @@ describe('CategoryEffects', () => {
     const expected = cold('--c', { c: completion });
     storageService.setSelectedCategories.and.returnValue(response);
     expect(effects.saveSelectedCategories$).toBeObservable(expected);
+  });
+
+
+  it('"InitCategories" should return a LoadCategories, with default and/or saved data, on success', () => {
+
+    const category = Category.Science as Category;
+    const allCategories = new CategoryDefault().createAllCategories;
+    const selectedCategories = new Set([Category.General, Category.Health, Category.Sports]);
+
+     // combine selected category data with all categories
+     selectedCategories.forEach(result => {
+      allCategories.set(result, {...allCategories.get(result), selected: true});
+    });
+
+    // the LoadCategories payload
+    const newState: State = {
+      allCategories: allCategories,
+      setCategory: category
+    };
+
+    const action = new CategoryActions.InitCategories();
+    const completion = new CategoryActions.LoadCategories(newState);
+
+    actions$.stream = hot('-a', { a: action });
+    const response = cold('-b|', { b: newState});
+    const expected = cold('--c', { c: completion });
+
+    // do I need to fire off both services?
+    storageService.getSelectedCategories.and.returnValue(selectedCategories);
+    storageService.getCategoryViewed.and.returnValue(category);
+
+    // ***  here is the first problem ***
+    // loadInitialValues$ is not sending a stream,
+    // is "withLatestFrom" is the problem?
+    // perhaps because not flattened?
+    expect(effects.loadInitialValues$).toBeObservable(expected);
   });
 
 });
