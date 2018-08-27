@@ -1,22 +1,33 @@
 import { Action } from '@ngrx/store';
 import { Category } from '../enums/category.enum';
 import { ServiceMessageModel } from '../models/service-message.model';
-
+import { State } from '../reducers/category.reducer';
 export enum CategoryActionTypes {
-  LoadCategories = '[Category] Load Categorys',
-  AddCategory = '[Category Component] Add Selected Category',
-  AddGeneralCategory = '[Category Effects] Add General Category',
-  RemoveCategory = '[Category Component] Remove Selected Category',
-  SetCategory = '[News Component] Set Viewed Category',
-  SavedSelectedCategories = '[Category Effect] Saved Selected Category Locally',
-  SavedSelectedCategoriesFailed = '[Category Effect] Failed to Save Selected Category Locally',
-  SavedViewedCategory = '[Category Effect] saved viewed category',
+  InitCategories = '[ROOT_EFFECTS_INIT] Initialize category store',
+  LoadCategories = '[Category Effect] Load either saved or default categories',
+  LoadCategoriesFailed = '[Category Effect] Load default categories',
+  AddCategory = '[Category Component] Add selected category',
+  AddGeneralCategory = '[Category Effects] Add general category',
+  RemoveCategory = '[Category Component] Remove selected category',
+  SetCategory = '[News Component] Set viewed category',
+  SavedSelectedCategories = '[Category Effect] Saved selected category',
+  SavedSelectedCategoriesFailed = '[Category Effect] Failed to save selected category',
+  SavedViewedCategory = '[Category Effect] Saved viewed category',
   SavedViewedCategoryFailed = '[Category Effect] Failed to save viewed category',
+}
+
+export class InitCategories implements Action {
+  readonly type = CategoryActionTypes.InitCategories;
 }
 
 export class LoadCategories implements Action {
   readonly type = CategoryActionTypes.LoadCategories;
-  constructor(public payload: any) { }
+  constructor(public payload: State) { }
+}
+
+export class LoadCategoriesFailed implements Action {
+  readonly type = CategoryActionTypes.LoadCategoriesFailed;
+  constructor(public payload: State) { }
 }
 
 export class AddCategory implements Action {
@@ -27,7 +38,6 @@ export class AddCategory implements Action {
 export class AddGeneralCategory implements Action {
   readonly type = CategoryActionTypes.AddGeneralCategory;
 }
-
 
 export class RemoveCategory implements Action {
   readonly type = CategoryActionTypes.RemoveCategory;
@@ -42,13 +52,11 @@ export class SetCategory implements Action {
 export class SavedSelectedCategories implements Action {
   readonly type = CategoryActionTypes.SavedSelectedCategories;
   constructor(public payload: ServiceMessageModel) { }
-
 }
 
 export class SavedSelectedCategoriesFailed implements Action {
   readonly type = CategoryActionTypes.SavedSelectedCategoriesFailed;
   constructor(public payload: ServiceMessageModel) { }
-
 }
 
 export class SavedViewedCategory implements Action {
@@ -62,7 +70,9 @@ export class SavedViewedCategoryFailed implements Action {
 }
 
 export type CategoryActions =
-  LoadCategories
+  InitCategories
+  | LoadCategories
+  | LoadCategoriesFailed
   | AddCategory
   | AddGeneralCategory
   | RemoveCategory

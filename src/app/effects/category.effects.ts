@@ -49,8 +49,8 @@ export class CategoryEffects {
   );
 
   @Effect()
-  init$: Observable<Action> = this.actions$.pipe(
-    ofType(ROOT_EFFECTS_INIT),
+  loadInitialValues$: Observable<Action> = this.actions$.pipe(
+    ofType(CategoryActionTypes.InitCategories),
     withLatestFrom(
       of(new CategoryDefault().createAllCategories),
       this.localStorageService.getCategoryViewed(),
@@ -68,6 +68,20 @@ export class CategoryEffects {
         return  new CategoryActions.LoadCategories({setCategory: viewedCategory, allCategories});
 
       }),
+      catchError(_ => {
+        const allCategories = new CategoryDefault().createAllCategories;
+        allCategories.set(Category.General, {...allCategories.get(Category.General), selected: true});
+        allCategories.set(Category.Science, {...allCategories.get(Category.Science), selected: true});
+        allCategories.set(Category.Technology, {...allCategories.get(Category.Technology), selected: true});
+        return of(new CategoryActions.LoadCategoriesFailed({setCategory: Category.General, allCategories}));
+      })
+
+  );
+
+  @Effect()
+  init$: Observable<Action> = this.actions$.pipe(
+    ofType(ROOT_EFFECTS_INIT),
+    map(result => new CategoryActions.InitCategories())
 
   );
 

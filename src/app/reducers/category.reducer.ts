@@ -17,11 +17,13 @@ export function reducer(state = initialState, action: CategoryActions): State {
   switch (action.type) {
 
     case CategoryActionTypes.LoadCategories:
+    case CategoryActionTypes.LoadCategoriesFailed: {
       return {
         ...state,
         allCategories: action.payload.allCategories,
         setCategory: action.payload.setCategory
       };
+    }
 
     case CategoryActionTypes.AddCategory: {
       const categoryItem = categoryToObject(action.payload);
