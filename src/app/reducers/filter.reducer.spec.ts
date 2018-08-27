@@ -13,6 +13,26 @@ describe('Filter Reducer', () => {
 
     describe('Filter actions', () => {
 
+      it('"LoadFilters" should add filters to listOfFilters', () => {
+        const action = new FilterActions.LoadFilters(new Set(['trump', 'sanders']));
+        const expectedResult: State = {
+          listOfFilters: new Set(['trump', 'sanders'])
+        };
+
+        const result = reducer(initialState, action);
+        expect(result).toEqual(expectedResult);
+      });
+
+      it('"LoadFiltersFailed" should add filters to listOfFilters', () => {
+        const action = new FilterActions.LoadFiltersFailed(new Set(['trump', 'sanders']));
+        const expectedResult: State = {
+          listOfFilters: new Set(['trump', 'sanders'])
+        };
+
+        const result = reducer(initialState, action);
+        expect(result).toEqual(expectedResult);
+      });
+
       it('"AddFilter" should add a filter to listOfFilters', () => {
         const firstState: State = {
           listOfFilters: new Set(['trump', 'sanders'])

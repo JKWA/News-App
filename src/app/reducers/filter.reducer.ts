@@ -12,7 +12,8 @@ export const initialState: State = {
 export function reducer(state = initialState, action: FilterActions): State {
   switch (action.type) {
 
-    case FilterActionTypes.LoadFilters: {
+    case FilterActionTypes.LoadFilters:
+    case FilterActionTypes.LoadFiltersFailed: {
       return {
         ...state,
         listOfFilters: action.payload

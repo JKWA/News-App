@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable, empty } from 'rxjs';
 import { provideMockActions } from '@ngrx/effects/testing';
-import { Actions } from '@ngrx/effects';
+import { Actions, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { cold, hot } from 'jasmine-marbles';
 import { FilterEffects } from './filter.effects';
@@ -10,6 +10,7 @@ import * as FilterActions from './../actions/filter.actions';
 import { ServiceMessageModel } from '../models/service-message.model';
 import { LocalStorageMessage } from '../messages/service.messages';
 import { LocalStorageService } from './../services/local-storage.service';
+import { FilterDefault } from '../shared/defaults/filter.default';
 
 
 export class TestActions extends Actions {
@@ -29,7 +30,6 @@ export function getActions() {
 class MockStorageService {
   setFilters = jasmine.createSpy('setFilters');
   getFilters = jasmine.createSpy('getFilters');
-
 }
 
 describe('FilterEffects', () => {
@@ -50,9 +50,9 @@ describe('FilterEffects', () => {
       ],
     });
 
-  effects = TestBed.get(FilterEffects);
-  storageService = TestBed.get(LocalStorageService);
-  actions$ = TestBed.get(Actions);
+    effects = TestBed.get(FilterEffects);
+    storageService = TestBed.get(LocalStorageService);
+    actions$ = TestBed.get(Actions);
   });
 
   it('Filter Effect should be created', () => {
@@ -81,6 +81,31 @@ describe('FilterEffects', () => {
     const expected = cold('--b', { b: completion });
     storageService.setFilters.and.returnValue(response);
     expect(effects.setFilters$).toBeObservable(expected);
+  });
+
+  it('InitFilters should return a LoadFilters, with saved or default filters, on success', () => {
+    const filters = new Set(['foo', 'bar']);
+    const action = new FilterActions.InitFilters();
+    const completion = new FilterActions.LoadFilters(filters);
+
+    actions$.stream = hot('-a', { a: action });
+    const response = cold('-b|', { b: filters});
+    const expected = cold('--c', { c: completion });
+    storageService.getFilters.and.returnValue(response);
+    expect(effects.loadInitialFilters$).toBeObservable(expected);
+  });
+
+  it('InitFilters should return a LoadFiltersFailed, with default filters, on fail', () => {
+    const filters = new Set(['foo', 'bar']);
+    const defaultFilters = new FilterDefault().getDefaultFilters;
+    const action = new FilterActions.InitFilters();
+    const completion = new FilterActions.LoadFiltersFailed(defaultFilters);
+
+    actions$.stream = hot('-a', { a: action });
+    const response = cold('-#|', { b: defaultFilters});
+    const expected = cold('--c', { c: completion });
+    storageService.getFilters.and.returnValue(response);
+    expect(effects.loadInitialFilters$).toBeObservable(expected);
   });
 
 });
