@@ -69,11 +69,13 @@ export class CategoryEffects {
 
       }),
       catchError(_ => {
+        const setCategory = new CategoryDefault().getDefaultViewingCategory;
         const allCategories = new CategoryDefault().createAllCategories;
-        allCategories.set(Category.General, {...allCategories.get(Category.General), selected: true});
-        allCategories.set(Category.Science, {...allCategories.get(Category.Science), selected: true});
-        allCategories.set(Category.Technology, {...allCategories.get(Category.Technology), selected: true});
-        return of(new CategoryActions.LoadCategoriesFailed({setCategory: Category.General, allCategories}));
+        const defaultSelected = new CategoryDefault().getDefaultSelectedCategories;
+        defaultSelected.forEach(selectedCategory => {
+          allCategories.set(selectedCategory, {...allCategories.get(selectedCategory), selected: true});
+        });
+        return of(new CategoryActions.LoadCategoriesFailed({setCategory, allCategories}));
       })
 
   );
