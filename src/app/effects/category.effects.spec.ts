@@ -8,6 +8,7 @@ import { CategoryEffects } from './category.effects';
 import * as fromCategory from './../reducers';
 import { Category } from '../enums/category.enum';
 import * as CategoryActions from './../actions/category.actions';
+import * as NewsActions from './../actions/news.actions';
 import { ServiceMessageModel } from '../models/service-message.model';
 import { LocalStorageMessage } from '../messages/service.messages';
 import { LocalStorageService } from './../services/local-storage.service';
@@ -64,11 +65,10 @@ describe('CategoryEffects', () => {
     expect(effects).toBeTruthy();
   });
 
-  it('"SetCategory" should return a SavedViewedCategory, with success message, on success', () => {
-
+  it('"SetCurrentlyViewingCategory" should return a SavedViewedCategory, with success message, on success', () => {
     const serviceMessage: ServiceMessageModel = new LocalStorageMessage().successMessage;
     const category = Category.Science as Category;
-    const action = new CategoryActions.SetCategory(category);
+    const action = new CategoryActions.SetCurrentlyViewingCategory(category);
     const completion = new CategoryActions.SavedViewedCategory(serviceMessage);
 
     actions$.stream = hot('-a', { a: action });
@@ -78,11 +78,11 @@ describe('CategoryEffects', () => {
     expect(effects.categorySetView$).toBeObservable(expected);
   });
 
-  it('"SetCategory" should return a SavedViewedCategoryFailed, with error message, on failure', () => {
+  it('"SetCurrentlyViewingCategory" should return a SavedViewedCategoryFailed, with error message, on failure', () => {
 
     const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
     const category = Category.Science as Category;
-    const action = new CategoryActions.SetCategory(category);
+    const action = new CategoryActions.SetCurrentlyViewingCategory(category);
     const completion = new CategoryActions.SavedViewedCategoryFailed(serviceMessage);
 
     actions$.stream = hot('-a', { a: action });
@@ -93,7 +93,6 @@ describe('CategoryEffects', () => {
   });
 
   it('"AddCategory" should return a SavedSelectedCategories, with success message, on success', () => {
-
     const serviceMessage: ServiceMessageModel = new LocalStorageMessage().successMessage;
     const category = Category.Science as Category;
     const action = new CategoryActions.AddCategory(category);
@@ -104,6 +103,39 @@ describe('CategoryEffects', () => {
     const expected = cold('--c', { c: completion });
     storageService.setSelectedCategories.and.returnValue(response);
     expect(effects.saveSelectedCategories$).toBeObservable(expected);
+  });
+
+
+  it('"AddCategory" should return a SavedSelectedCategories, with success message, on success', () => {
+    const category = Category.Science as Category;
+    const action = new CategoryActions.AddCategory(category);
+    const completion = new NewsActions.GetAdditionalNewsFromApi(category);
+
+    actions$.stream = hot('-a', { a: action });
+    const response = cold('-b|', { b: category});
+    const expected = cold('-c', { c: completion });
+    storageService.setSelectedCategories.and.returnValue(response);
+    expect(effects.addNewCategoryApiData$).toBeObservable(expected);
+  });
+
+  it('"AddCategory" should return a SavedSelectedCategories, with success message, on success', () => {
+    const category = Category.Science as Category;
+    const action = new CategoryActions.AddCategory(category);
+    const completion = new CategoryActions.SetCurrentlyViewingCategory(category);
+
+    actions$.stream = hot('-a', { a: action });
+    const expected = cold('-c', { c: completion });
+    expect(effects.switchCategoryViewed$).toBeObservable(expected);
+  });
+
+  it('"AddCategory" should return a SetCurrentlyViewingCategory, with category, on success', () => {
+    const category = Category.Science as Category;
+    const action = new CategoryActions.AddCategory(category);
+    const completion = new CategoryActions.SetCurrentlyViewingCategory(category);
+
+    actions$.stream = hot('-a', { a: action });
+    const expected = cold('-c', { c: completion });
+    expect(effects.switchCategoryViewed$).toBeObservable(expected);
   });
 
   it('"AddCategory" should return an SavedViewedCategoryFailed, with error message, on failure', () => {

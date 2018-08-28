@@ -5,6 +5,8 @@ import { Actions, Effect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { Store, select, Action } from '@ngrx/store';
 import * as fromCategory from './../reducers';
 import * as CategoryActions from '../actions/category.actions';
+import * as NewsActions from '../actions/news.actions';
+
 import { CategoryActionTypes } from '../actions/category.actions';
 import { LocalStorageService } from '../services/local-storage.service';
 import * as ServiceMessage from '../messages/service.messages';
@@ -35,9 +37,24 @@ export class CategoryEffects {
     )
   );
 
+
+  @Effect()
+  addNewCategoryApiData$: Observable<Action> = this.actions$.pipe(
+    ofType<CategoryActions.AddCategory>(CategoryActionTypes.AddCategory),
+    map(result => new NewsActions.GetAdditionalNewsFromApi(result.payload)),
+  );
+
+
+  @Effect()
+  switchCategoryViewed$: Observable<Action> = this.actions$.pipe(
+    ofType<CategoryActions.AddCategory>(CategoryActionTypes.AddCategory),
+    map(result => new CategoryActions.SetCurrentlyViewingCategory(result.payload)),
+  );
+
+
   @Effect()
   categorySetView$: Observable<Action> = this.actions$.pipe(
-    ofType<CategoryActions.SetCategory>(CategoryActionTypes.SetCategory),
+    ofType<CategoryActions.SetCurrentlyViewingCategory>(CategoryActionTypes.SetCurrentlyViewingCategory),
     switchMap(results => this.localStorageService.setCategoryViewed(results.payload)
       .pipe(
         map( sucessMessage => new CategoryActions.SavedViewedCategory(sucessMessage)),
@@ -68,12 +85,15 @@ export class CategoryEffects {
         return  new CategoryActions.LoadCategories({setCategory: viewedCategory, allCategories});
 
       }),
-      catchError(_ => {
+      catchError( _ => {
         const setCategory = new CategoryDefault().getDefaultViewingCategory;
         const allCategories = new CategoryDefault().createAllCategories;
         const defaultSelected = new CategoryDefault().getDefaultSelectedCategories;
-        defaultSelected.forEach(selectedCategory => {
-          allCategories.set(selectedCategory, {...allCategories.get(selectedCategory), selected: true});
+
+        allCategories.forEach(categoryItem => {
+          defaultSelected.has(stringToCategory(categoryItem.id))
+              ? categoryItem.selected = true
+              : categoryItem.selected = false;
         });
         return of(new CategoryActions.LoadCategoriesFailed({setCategory, allCategories}));
       })
