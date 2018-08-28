@@ -15,14 +15,14 @@ describe('Category Reducer', () => {
     });
   });
 
-  describe('SetCategory: Category actions', () => {
+  describe('SetCurrentlyViewingCategory: Category actions', () => {
     const allCategories = new CategoryDefault().createAllCategories;
     it('should change the category being viewed', () => {
       const firstState: State = {
         setCategory: Category.General,
         allCategories
     };
-      const action = new CategoryActions.SetCategory(Category.Sports);
+      const action = new CategoryActions.SetCurrentlyViewingCategory(Category.Sports);
       const expectedResult: State = {
         setCategory: Category.Sports,
         allCategories

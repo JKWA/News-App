@@ -18,10 +18,11 @@ export class CategoryComponent {
 
     constructor(private store: Store<fromCategory.State>) {}
 
-    get getAllCategories(): Observable<Set<CategoryItemModel>> {
+    get getAllCategories(): Observable<CategoryItemModel[]> {
       return this.store.pipe(
         select(fromCategory.getAllCategories),
-        map(results => new Set(Array.from(results.values())))
+        map(results => Array.from(results.values())),
+        // tap(console.log)
       );
     }
 

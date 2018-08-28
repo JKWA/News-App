@@ -9,9 +9,10 @@ export enum CategoryActionTypes {
   AddCategory = '[Category Component] Add selected category',
   AddGeneralCategory = '[Category Effects] Add general category',
   RemoveCategory = '[Category Component] Remove selected category',
-  SetCategory = '[News Component] Set viewed category',
+  SetCurrentlyViewingCategory = '[News Component] Set viewed category',
+  SetCurrentlyViewingCategoryFailed = '[News Component] Set viewed category failed',
   SavedSelectedCategories = '[Category Effect] Saved selected category',
-  SavedSelectedCategoriesFailed = '[Category Effect] Failed to save selected category',
+  SavedSelectedCategoriesFailed = '[Category Effect] Saved selected category',
   SavedViewedCategory = '[Category Effect] Saved viewed category',
   SavedViewedCategoryFailed = '[Category Effect] Failed to save viewed category',
 }
@@ -44,8 +45,13 @@ export class RemoveCategory implements Action {
   constructor(public payload: Category) { }
 }
 
-export class SetCategory implements Action {
-  readonly type = CategoryActionTypes.SetCategory;
+export class SetCurrentlyViewingCategory implements Action {
+  readonly type = CategoryActionTypes.SetCurrentlyViewingCategory;
+  constructor(public payload: Category) { }
+}
+
+export class SetCurrentlyViewingCategoryFailed implements Action {
+  readonly type = CategoryActionTypes.SetCurrentlyViewingCategoryFailed;
   constructor(public payload: Category) { }
 }
 
@@ -76,7 +82,8 @@ export type CategoryActions =
   | AddCategory
   | AddGeneralCategory
   | RemoveCategory
-  | SetCategory
+  | SetCurrentlyViewingCategory
+  | SetCurrentlyViewingCategoryFailed
   | SavedSelectedCategories
   | SavedSelectedCategoriesFailed
   | SavedViewedCategory

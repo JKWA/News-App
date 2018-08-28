@@ -38,7 +38,7 @@ export class LogEffects {
         NewsActionTypes.DeleteExpiredData,
         CategoryActionTypes.AddCategory,
         CategoryActionTypes.RemoveCategory,
-        CategoryActionTypes.SetCategory,
+        CategoryActionTypes.SetCurrentlyViewingCategory,
         FilterActionTypes.AddFilter,
         FilterActionTypes.RemoveFilter,
         LogActionTypes.DeleteAllLogs,

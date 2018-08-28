@@ -48,7 +48,7 @@ get selectedIndex(): Observable<number> {
           const catArray = Array.from(categories);
           const find = catArray.find(cat => cat.id === setCategory);
           if (!find) {
-            this.store.dispatch(new CategoryActions.SetCategory(stringToCategory(catArray[0].id)));
+            this.store.dispatch(new CategoryActions.SetCurrentlyViewingCategory(stringToCategory(catArray[0].id)));
           }
           return find ? catArray.indexOf(find) : 0;
         }),
@@ -68,7 +68,7 @@ public tabChanged(event): void {
   this.store.pipe(
     select(fromCategory.getAllCategories),
     map(results => Array.from(results.values()).filter(result => result.selected)[event]),
-    tap(result => this.store.dispatch(new CategoryActions.SetCategory(stringToCategory(result.id))))
+    tap(result => this.store.dispatch(new CategoryActions.SetCurrentlyViewingCategory(stringToCategory(result.id))))
   ).subscribe();
   }
 

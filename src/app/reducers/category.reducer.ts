@@ -56,7 +56,7 @@ export function reducer(state = initialState, action: CategoryActions): State {
       };
     }
 
-    case CategoryActionTypes.SetCategory: {
+    case CategoryActionTypes.SetCurrentlyViewingCategory: {
       return {
         ...state,
         setCategory: action.payload
