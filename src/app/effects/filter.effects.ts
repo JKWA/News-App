@@ -17,13 +17,13 @@ export class FilterEffects {
 
   @Effect()
   setFilters$: Observable<Action> = this.actions$.pipe(
-    ofType<FilterActions.AddFilter>(FilterActionTypes.AddFilter, FilterActionTypes.RemoveFilter),
-    withLatestFrom(this.store, ( action , state) => state),
+    ofType<FilterActions.AddFilter | FilterActions.RemoveFilter>(FilterActionTypes.AddFilter, FilterActionTypes.RemoveFilter),
+    withLatestFrom(this.store, ( _ , state) => state),
     select(fromFilter.getAllFilters),
     switchMap(filters => {
       const setFilters = filters.size
         ? filters
-        : filters.add(this.NONE);
+        : new Set([this.NONE]);
       return this.localStorageService.setFilters(setFilters)
       .pipe(
         map(() => new FilterActions.SavedFilterToClient(new ServiceMessage.LocalStorageMessage().successMessage)),
@@ -44,6 +44,7 @@ export class FilterEffects {
             const selectFilters: Set<Filter> = savedFilters.size
             ? savedFilters
             : defaultFilters;
+            selectFilters.delete(this.NONE);
             return selectFilters;
           }),
           map(filters => new FilterActions.LoadFilters(filters)),
