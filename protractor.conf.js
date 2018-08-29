@@ -5,24 +5,21 @@ const { SpecReporter } = require('jasmine-spec-reporter');
 
 exports.config = {
   allScriptsTimeout: 11000,
-  specs: [
-    './src/**/*.e2e-spec.ts'
-  ],
   capabilities: {
     'browserName': 'chrome'
   },
-  directConnect: true,
   baseUrl: 'http://localhost:4200/',
-  SELENIUM_PROMISE_MANAGER: false,
   framework: 'jasmine',
+  specs: ['./e2e/*.ts'],
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: 999999,
+    defaultTimeoutInterval: 30000,
     print: function() {}
   },
+  SELENIUM_PROMISE_MANAGER: false, // Disable the Control Flow
   onPrepare() {
     require('ts-node').register({
-      project: require('path').join(__dirname, './tsconfig.e2e.json')
+      project: 'e2e/tsconfig.e2e.json'
     });
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
   }
