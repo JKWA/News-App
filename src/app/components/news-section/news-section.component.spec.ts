@@ -1,39 +1,39 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { CategoryComponent } from './category.component';
+import { NewsSectionComponent } from './news-section.component';
 import { StoreModule } from '@ngrx/store';
-import * as fromCategory from './../../reducers';
-import { SharedModule } from './../../shared/shared.module';
+import * as fromNewsSection from '../../reducers';
+import { SharedModule } from '../../shared/shared.module';
 import {
   MatIconModule,
   MatSlideToggle, MatSlideToggleModule,
   } from '@angular/material';
 
 
-describe('CategoryComponent', () => {
-  let component: CategoryComponent;
-  let fixture: ComponentFixture<CategoryComponent>;
+describe('NewsSectionComponent', () => {
+  let component: NewsSectionComponent;
+  let fixture: ComponentFixture<NewsSectionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CategoryComponent ],
+      declarations: [ NewsSectionComponent ],
       imports: [
         MatIconModule,
         MatSlideToggleModule,
         SharedModule,
-        StoreModule.forRoot({...fromCategory.reducers}),
+        StoreModule.forRoot({...fromNewsSection.reducers}),
       ],
       providers: []
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CategoryComponent);
+    fixture = TestBed.createComponent(NewsSectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
 
 
-  it('should create category component', () => {
+  it('should create newsSection component', () => {
     expect(component).toBeTruthy();
   });
 

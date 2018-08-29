@@ -7,7 +7,7 @@ import * as LogActions from '../actions/log.actions';
 import { LogActionTypes } from '../actions/log.actions';
 import * as NewsActions from '../actions/news.actions';
 import { NewsActionTypes } from '../actions/news.actions';
-import { CategoryActionTypes } from '../actions/category.actions';
+import { NewsSectionActionTypes } from '../actions/news-section.actions';
 import { FilterActionTypes } from '../actions/filter.actions';
 import { AppStatusActionTypes } from '../actions/app-status.actions';
 import * as fromReducers from './../reducers';
@@ -36,9 +36,9 @@ export class LogEffects {
         NewsActionTypes.AddInitialClientArticles,
         NewsActionTypes.GetExpiredData,
         NewsActionTypes.DeleteExpiredData,
-        CategoryActionTypes.AddCategory,
-        CategoryActionTypes.RemoveCategory,
-        CategoryActionTypes.SetCurrentlyViewingCategory,
+        NewsSectionActionTypes.AddNewsSection,
+        NewsSectionActionTypes.RemoveNewsSection,
+        NewsSectionActionTypes.SetCurrentlyViewingNewsSection,
         FilterActionTypes.AddFilter,
         FilterActionTypes.RemoveFilter,
         LogActionTypes.DeleteAllLogs,

@@ -17,7 +17,7 @@ import * as fromReducers from './reducers';
 import { MaterialModule } from './material/material.module';
 import { NewsComponent } from './components/news/news.component';
 import { LogComponent } from './components/log/log.component';
-import { CategoryComponent } from './components/category/category.component';
+import { NewsSectionComponent } from './components/news-section/news-section.component';
 import { ArticleComponent } from './components/article/article.component';
 import { FilterComponent } from './components/filter/filter.component';
 import { StandaloneComponent } from './components/standalone/standalone.component';
@@ -33,7 +33,7 @@ describe('AppComponent', () => {
         AppComponent,
         NewsComponent,
         LogComponent,
-        CategoryComponent,
+        NewsSectionComponent,
         ArticleComponent,
         FilterComponent,
         StandaloneComponent,
@@ -90,10 +90,10 @@ describe('AppComponent', () => {
       expect(location.path()).toBe('/news');
     }));
 
-    it('expect navigate to "category" takes to /category', fakeAsync(() => {
-      router.navigate(['category']);
+    it('expect navigate to "Section" takes to /news-section', fakeAsync(() => {
+      router.navigate(['news-section']);
       tick();
-      expect(location.path()).toBe('/category');
+      expect(location.path()).toBe('/news-section');
     }));
 
     it('expect navigate to "log" takes to /log', fakeAsync(() => {

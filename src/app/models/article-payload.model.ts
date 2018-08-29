@@ -1,9 +1,9 @@
-import { Category } from '../enums/category.enum';
+import { NewsSection } from '../enums/news-section.enum';
 import { Service } from '../enums/service.enum';
 
 
 export class ArticlePayload {
-    category: Category;
+    newsSection: NewsSection;
     articles: any;
     service: Service;
   }

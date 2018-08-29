@@ -9,16 +9,16 @@
     </a>
   </nav>
 
-  <h2>Categories</h2>
+  <h2>News Sections</h2>
 
-  <div *ngFor="let category of getAllCategories | async">
+  <div *ngFor="let section of getAllNewsSections | async">
       <div class="button-wrapper">
         <mat-slide-toggle 
-        aria-label="Toggle {{category.display}}"
-          id="{{category.id}}" 
-          checked="{{category.selected}}"  
-          (change)="onClick(category, $event)">
-          {{category.display}}
+        aria-label="Toggle {{section.display}}"
+          id="{{section.id}}" 
+          checked="{{section.selected}}"  
+          (change)="onClick(section, $event)">
+          {{section.display}}
         </mat-slide-toggle> 
       </div>
   </div>

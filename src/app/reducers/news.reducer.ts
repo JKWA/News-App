@@ -1,20 +1,20 @@
 import { Action } from '@ngrx/store';
 import { NewsActions, NewsActionTypes } from '../actions/news.actions';
-import { NewsCategory as NewsCategoryModel} from '../models/news-category.model';
+import { NewsDataModel } from '../models/news-data.model';
 import { removeDuplicateTitles } from '../shared/utility/article.utility';
 import { Service } from '../enums/service.enum';
 
 export interface State {
-  business: NewsCategoryModel;
-  entertainment: NewsCategoryModel;
-  general: NewsCategoryModel;
-  health: NewsCategoryModel;
-  science: NewsCategoryModel;
-  sports: NewsCategoryModel;
-  technology: NewsCategoryModel;
+  business: NewsDataModel;
+  entertainment: NewsDataModel;
+  general: NewsDataModel;
+  health: NewsDataModel;
+  science: NewsDataModel;
+  sports: NewsDataModel;
+  technology: NewsDataModel;
 }
 
-const defaultValue: NewsCategoryModel = {
+const defaultValue: NewsDataModel = {
   retrieving: false,
   page: 1,
   firstLoadComplete: false,
@@ -37,12 +37,12 @@ export function reducer(state = initialState, action: NewsActions): State {
 
     case NewsActionTypes.InitiateNews: {
       const copyCurrentState = Object.assign({}, state);
-      const category = action.payload;
+      const newsSection = action.payload;
 
       return {
         ...state,
-        [category]: {
-          ...copyCurrentState[category],
+        [newsSection]: {
+          ...copyCurrentState[newsSection],
           retrieving: true
         }
       };
@@ -52,22 +52,22 @@ export function reducer(state = initialState, action: NewsActions): State {
     case NewsActionTypes.AddInitialClientArticles:
     {
       const copyCurrentState = Object.assign({}, state);
-      const category = action.payload.category;
+      const newsSection = action.payload.newsSection;
       const result = action.payload.articles;
       const service = action.payload.service;
-      const copyArticles = copyCurrentState[category].articles.splice(0).concat(result);
-      const clientFlag = (copyCurrentState[category].clientDataLoaded)
+      const copyArticles = copyCurrentState[newsSection].articles.splice(0).concat(result);
+      const clientFlag = (copyCurrentState[newsSection].clientDataLoaded)
         ? true
         :  service === Service.IndexedDb ? true : false;
 
       const pageUpdate = service === Service.NewsAPI
-        ? copyCurrentState[category].page + 1
-        : copyCurrentState[category].page;
+        ? copyCurrentState[newsSection].page + 1
+        : copyCurrentState[newsSection].page;
 
       return {
         ...state,
-        [category]: {
-          ...state[category],
+        [newsSection]: {
+          ...state[newsSection],
           articles: removeDuplicateTitles(copyArticles),
           page: pageUpdate,
           retrieving: false,
@@ -80,15 +80,15 @@ export function reducer(state = initialState, action: NewsActions): State {
     case NewsActionTypes.InsertAdditionalNewsFromApi:
     {
       const copyCurrentState = Object.assign({}, state);
-      const category = action.payload.category;
+      const newsSection = action.payload.newsSection;
       const result = action.payload.articles;
       const service = action.payload.service;
-      const copyArticles = copyCurrentState[category].articles.splice(0).concat(result);
-      const pageUpdate = copyCurrentState[category].page + 1;
+      const copyArticles = copyCurrentState[newsSection].articles.splice(0).concat(result);
+      const pageUpdate = copyCurrentState[newsSection].page + 1;
       return {
         ...state,
-        [category]: {
-          ...state[category],
+        [newsSection]: {
+          ...state[newsSection],
           articles: removeDuplicateTitles(copyArticles),
           page: pageUpdate,
           retrieving: false,

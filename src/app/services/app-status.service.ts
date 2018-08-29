@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Filter } from '../models/filter';
-import { Category } from '../enums/category.enum';
+import { NewsSection } from '../enums/news-section.enum';
 import { ServiceMessageModel } from '../models/service-message.model';
 import * as ServiceMessage from '../messages/service.messages';
 import { Device } from '../enums/device.enum';

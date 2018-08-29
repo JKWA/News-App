@@ -1,4 +1,4 @@
-export enum Category {
+export enum NewsSection {
     Business = 'business',
     Entertainment = 'entertainment',
     General = 'general',

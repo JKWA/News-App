@@ -38,8 +38,8 @@ export class NewsEffects {
         select(fromFilter.getAllFilters),
         take(1),
         exhaustMap(allFilters => {
-          const category = results.payload;
-          return this.newsService.getNews(category, 1, allFilters);
+          const newsSection = results.payload;
+          return this.newsService.getNews(newsSection, 1, allFilters);
         }),
         map( articlePayload => {
           return new NewsActions.AddInitialApiArticles(articlePayload);
@@ -56,13 +56,13 @@ export class NewsEffects {
   getInitialClientNews$: Observable<Action> = this.actions$.pipe(
     ofType<NewsActions.InitiateNews>(NewsActionTypes.InitiateNews),
     concatMap(results => {
-      const category = results.payload;
+      const newsSection = results.payload;
       const service = Service.IndexedDb;
       const client$ = this.indexedDbService.getData(results.payload);
         return client$.pipe(
           map(articles => {
               return new NewsActions.AddInitialClientArticles({
-                category: category,
+                newsSection: newsSection,
                 articles: articles,
                 service: service
               });
@@ -79,9 +79,9 @@ export class NewsEffects {
   saveApiNewsToIndexedDB$: Observable<Action> = this.actions$.pipe(
     ofType<NewsActions.AddInitialApiArticles>(NewsActionTypes.AddInitialApiArticles, NewsActionTypes.InsertAdditionalNewsFromApi),
     concatMap(results => {
-      const category = results.payload.category;
+      const newsSection = results.payload.newsSection;
       const articles = results.payload.articles;
-      const client$ = this.indexedDbService.setData(category, articles);
+      const client$ = this.indexedDbService.setData(newsSection, articles);
         return client$.pipe(
           map(_ => {
               return new NewsActions.SaveArticlesToClient(new Message.SavedIndexedDbMessage().successMessage);
@@ -97,8 +97,8 @@ export class NewsEffects {
   @Effect()
   getExpiredData$: Observable<Action> = this.actions$.pipe(
     ofType<NewsActions.AddInitialApiArticles>(NewsActionTypes.AddInitialApiArticles),
-    map(action => action.payload.category),
-    concatMap(category => this.indexedDbService.getExpiredData(category).pipe(
+    map(action => action.payload.newsSection),
+    concatMap(newsSection => this.indexedDbService.getExpiredData(newsSection).pipe(
       map(ids => new NewsActions.GetExpiredData(ids)),
       catchError(_ => of(new NewsActions.GetExpiredDataFailed(new Message.GetExpiredArticlesMessage().errorMessage)))
     ))
@@ -137,9 +137,9 @@ export class NewsEffects {
     ofType<NewsActions.GetAdditionalNewsFromApi>(NewsActionTypes.GetAdditionalNewsFromApi),
     throttleTime(this.debounce || 1000, this.scheduler || asyncScheduler),
     withLatestFrom(this.getNews, this.getAllFilters, (action, news, allFilters) => {
-      const category = action.payload;
-      const page = news[category].page;
-      return this.newsService.getNews(category, page, allFilters);
+      const newsSection = action.payload;
+      const page = news[newsSection].page;
+      return this.newsService.getNews(newsSection, page, allFilters);
     }),
     concatMap(observ => observ),
     map( articlePayload => {

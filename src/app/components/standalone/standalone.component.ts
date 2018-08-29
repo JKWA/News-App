@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap, take, withLatestFrom } from 'rxjs/operators';
-import { Category } from '../../enums/category.enum';
+import { NewsSection } from '../../enums/news-section.enum';
 import { Store, select } from '@ngrx/store';
 import * as fromNews from './../../reducers';
 import * as fromFilters from './../../reducers';
-import * as fromCategory from './../../reducers';
+import * as fromNewsSection from './../../reducers';
 import * as fromAppStatus from './../../reducers';
 import { Device } from './../../enums/device.enum';
 

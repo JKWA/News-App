@@ -2,11 +2,11 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Article } from '../../article';
 import { Observable } from 'rxjs';
 import { map, tap, take, withLatestFrom } from 'rxjs/operators';
-import { Category } from '../../enums/category.enum';
+import { NewsSection } from '../../enums/news-section.enum';
 import { Store, select } from '@ngrx/store';
 import * as fromNews from './../../reducers';
 import * as fromFilters from './../../reducers';
-import * as fromCategory from './../../reducers';
+import * as fromNewsSection from './../../reducers';
 import * as fromAppStatus from './../../reducers';
 
 import * as NewsActions from './../../actions/news.actions';
@@ -21,26 +21,26 @@ import { ScrollEvent } from 'ngx-scroll-event';
 
 export class ArticleComponent implements OnInit, OnDestroy {
 
-  @Input() category: string;
+  @Input() newsSection: string;
   pageNumber = 1;
   retrieving = true;
   bottomOffset = 1000;
   topOffset = 1;
   scrolledToInititalView = true;
-  tabViewed: Category;
+  tabViewed: NewsSection;
   initialScroll = false;
-  viewedCategorySubscription;
+  viewedNewsSectionSubscription;
 
   constructor(
     private store: Store<fromNews.State>
   ) { }
 
   ngOnInit() {
-    this.watchCategoryBeingViewed();
+    this.watchNewsSectionBeingViewed();
   }
 
   ngOnDestroy() {
-    this.viewedCategorySubscription.unsubscribe();
+    this.viewedNewsSectionSubscription.unsubscribe();
   }
 
   get isOffline() {
@@ -62,8 +62,8 @@ get getArticles(): Observable<Article[]> {
       map(([stateNews, filters]) => {
         const regFilter = new RegExp(Array.from(filters).join('|'), 'i');
 
-        const allArticles = stateNews && stateNews.hasOwnProperty(this.category)
-                              ? stateNews[this.category].articles
+        const allArticles = stateNews && stateNews.hasOwnProperty(this.newsSection)
+                              ? stateNews[this.newsSection].articles
                               : [];
         return filters.size
           ? allArticles.filter(article => {
@@ -78,14 +78,14 @@ get getArticles(): Observable<Article[]> {
 
 
 /**
- * identifies which category is currently being viewed
+ * identifies which newsSection is currently being viewed
  *
  * @private
  * @memberof ArticleComponent
  */
-  private watchCategoryBeingViewed() {
-    this.viewedCategorySubscription = this.store.pipe(
-      select(fromCategory.getViewingCategory),
+  private watchNewsSectionBeingViewed() {
+    this.viewedNewsSectionSubscription = this.store.pipe(
+      select(fromNewsSection.getViewingNewsSection),
       tap(result => this.tabViewed = result)
     ).subscribe();
   }
@@ -98,9 +98,9 @@ get getArticles(): Observable<Article[]> {
 
     if (event.isReachingBottom
         && window.navigator.onLine
-        && this.category === this.tabViewed
+        && this.newsSection === this.tabViewed
       ) {
-        this.store.dispatch(new NewsActions.GetAdditionalNewsFromApi(this.category));
+        this.store.dispatch(new NewsActions.GetAdditionalNewsFromApi(this.newsSection));
     }
 
   }
@@ -129,7 +129,7 @@ get getArticles(): Observable<Article[]> {
       const article = document.getElementById(anchor);
       if (this.scrolledToInititalView) {
         if (article) {
-          if (this.category === this.tabViewed) {
+          if (this.newsSection === this.tabViewed) {
             article.scrollIntoView({behavior: 'smooth'});
             this.scrolledToInititalView = false;
             // this.store.dispatch(new AddMessage('Article Component', 'scrolled to last viewed'));

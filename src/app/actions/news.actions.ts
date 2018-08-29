@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Category } from '../enums/category.enum';
+import { NewsSection } from '../enums/news-section.enum';
 import { Service } from '../enums/service.enum';
 import { ServiceMessageModel } from '../models/service-message.model';
 import { ArticlePayload } from '../models/article-payload.model';
@@ -29,12 +29,12 @@ export enum NewsActionTypes {
 
 export class InitiateNews implements Action {
   readonly type = NewsActionTypes.InitiateNews;
-  constructor(public payload: Category) { }
+  constructor(public payload: NewsSection) { }
 }
 
 export class GetAdditionalNewsFromApi implements Action {
   readonly type = NewsActionTypes.GetAdditionalNewsFromApi;
-  constructor(public payload: Category) { }
+  constructor(public payload: NewsSection) { }
 }
 
 export class GetAdditionalNewsFromApiFailed implements Action {

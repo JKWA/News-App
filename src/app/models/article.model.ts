@@ -16,6 +16,6 @@ export class Article {
 
 export class SavedArticle extends Article {
   timestamp: any;
-  category: any;
+  newsSection: any;
   key: any;
 }

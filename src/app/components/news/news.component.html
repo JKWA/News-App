@@ -6,7 +6,7 @@
     <div *ngFor="let tab of getSelectedCategories | async">
         <mat-tab label="{{tab.display}}">
             <div class="articles">
-                <app-article category="{{tab.id}}"></app-article>
+                <app-article newsSection="{{tab.id}}"></app-article>
             </div>
         </mat-tab>
     </div>

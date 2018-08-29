@@ -1,7 +1,7 @@
 import { Injectable, isDevMode } from '@angular/core';
 import { Article } from '../article';
-import { categoryToObject } from '../shared/utility/category.utility';
-import { Category } from '../enums/category.enum';
+import { newsSectionToObject } from '../shared/utility/news-section.utility';
+import { NewsSection } from '../enums/news-section.enum';
 import * as moment from 'moment';
 import { Observable } from 'rxjs';
 
@@ -18,12 +18,12 @@ export class IndexedDbService {
 /**
  * save articles to indexed DB
  *
- * @param {Category} category
+ * @param {NewsSection} newsSection
  * @param {Article[]} articles
  * @returns
  * @memberof IndexedDbService
  */
-setData(category: Category, articles: Article[]): Observable<any> {
+setData(newsSection: NewsSection, articles: Article[]): Observable<any> {
     return new Observable(observer => {
       const indexedDB = window.indexedDB;
 
@@ -40,7 +40,7 @@ setData(category: Category, articles: Article[]): Observable<any> {
         const db = open.result;
         const store = db.createObjectStore('ArticleObjectStore', {autoIncrement : true });
         store.createIndex('PublishedIndex', 'publishedAt', { unique: false });
-        store.createIndex('CategoryIndex', 'category', { unique: false });
+        store.createIndex('NewsSectionIndex', 'newsSection', { unique: false });
         store.createIndex('TitleIndex', 'title', { unique: false });
       };
 
@@ -64,7 +64,7 @@ setData(category: Category, articles: Article[]): Observable<any> {
             check.onsuccess = (event) => {
               if ( !check.result ) {
                 store.put({
-                  category: categoryToObject(category).id,
+                  newsSection: newsSectionToObject(newsSection).id,
                   timestamp: new Date().toISOString(),
                   source: article.source,
                   author: article.author,
@@ -76,7 +76,7 @@ setData(category: Category, articles: Article[]): Observable<any> {
                 });
               }
               observer.next({
-                category: categoryToObject(category).id,
+                newsSection: newsSectionToObject(newsSection).id,
                   timestamp: new Date().toISOString(),
                   source: article.source,
                   author: article.author,
@@ -107,13 +107,13 @@ setData(category: Category, articles: Article[]): Observable<any> {
 
 
 /**
- * gets articles from indexed DB by category
+ * gets articles from indexed DB by newsSection
  *
- * @param {Category} category
+ * @param {NewsSection} newsSection
  * @returns
  * @memberof IndexedDbService
  */
-getData(category: Category): Observable<Article[]> {
+getData(newsSection: NewsSection): Observable<Article[]> {
     return new Observable(observer => {
       const indexedDB = window.indexedDB;
 
@@ -130,7 +130,7 @@ getData(category: Category): Observable<Article[]> {
         const db = open.result;
         const store = db.createObjectStore('ArticleObjectStore', {autoIncrement : true });
         store.createIndex('PublishedIndex', 'publishedAt', { unique: false });
-        store.createIndex('CategoryIndex', 'category', { unique: false });
+        store.createIndex('NewsSectionIndex', 'newsSection', { unique: false });
         store.createIndex('TitleIndex', 'title', { unique: false });
       };
 
@@ -146,9 +146,9 @@ getData(category: Category): Observable<Article[]> {
         const db = open.result;
         const tx = db.transaction('ArticleObjectStore', 'readwrite');
         const store = tx.objectStore('ArticleObjectStore');
-        const index = store.index('CategoryIndex');
+        const index = store.index('NewsSectionIndex');
         const result: Article[] = [];
-        index.openCursor(categoryToObject(category).id)
+        index.openCursor(newsSectionToObject(newsSection).id)
           .onsuccess = event => {
             const cursor = event.target.result;
             if (cursor) {
@@ -184,11 +184,11 @@ getData(category: Category): Observable<Article[]> {
 /**
  * gets articles older than 30 minutes
  *
- * @param {Category} category
+ * @param {NewsSection} newsSection
  * @returns {Observable<number[]>}
  * @memberof IndexedDbService
  */
-getExpiredData(category: Category): Observable<number[]> {
+getExpiredData(newsSection: NewsSection): Observable<number[]> {
       return new Observable(observer => {
 
       const indexedDB = window.indexedDB;
@@ -206,7 +206,7 @@ getExpiredData(category: Category): Observable<number[]> {
         const db = open.result;
         const store = db.createObjectStore('ArticleObjectStore', {autoIncrement : true });
         store.createIndex('PublishedIndex', 'publishedAt', { unique: false });
-        store.createIndex('CategoryIndex', 'category', { unique: false });
+        store.createIndex('NewsSectionIndex', 'newsSection', { unique: false });
         store.createIndex('TitleIndex', 'title', { unique: false });
       };
 
@@ -222,10 +222,10 @@ getExpiredData(category: Category): Observable<number[]> {
         const db = open.result;
         const tx = db.transaction('ArticleObjectStore', 'readwrite');
         const store = tx.objectStore('ArticleObjectStore');
-        const index = store.index('CategoryIndex');
+        const index = store.index('NewsSectionIndex');
         const result: number[] = [];
 
-        index.openCursor(categoryToObject(category).id)
+        index.openCursor(newsSectionToObject(newsSection).id)
           .onsuccess = event => {
             const cursor = event.target.result;
             if (cursor) {
@@ -278,7 +278,7 @@ removeArticle(primaryKey: number): Observable<any> {
         const db = open.result;
         const store = db.createObjectStore('ArticleObjectStore', {autoIncrement : true });
         store.createIndex('PublishedIndex', 'publishedAt', { unique: false });
-        store.createIndex('CategoryIndex', 'category', { unique: false });
+        store.createIndex('NewsSectionIndex', 'newsSection', { unique: false });
         store.createIndex('TitleIndex', 'title', { unique: false });
       };
 

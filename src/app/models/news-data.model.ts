@@ -1,6 +1,6 @@
 import { Article } from './article.model';
 
-export class NewsCategory {
+export class NewsDataModel {
     retrieving: boolean;
     page: number;
     firstLoadComplete: boolean;

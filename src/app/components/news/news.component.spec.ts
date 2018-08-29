@@ -87,7 +87,7 @@ describe('NewsComponent', () => {
   //   fixture.detectChanges();
   //   fixture.whenStable().then(() => {
   //     expect( tabGroup.attributes['ng-reflect-selected-index'] ).toBe('1');
-  //     expect( localStorage.getItem('setCategory') ).toBe('science');
+  //     expect( localStorage.getItem('currentlyViewingNewsSection') ).toBe('science');
   //     // delete local storage when done
   //     localStorage.clear();
   //   });

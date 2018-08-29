@@ -2,10 +2,10 @@ import { reducer, initialState, State } from './news.reducer';
 import * as NewsActions from '../actions/news.actions';
 import { ArticlePayload } from '../models/article-payload.model';
 import { Service } from '../enums/service.enum';
-import { Category } from '../enums/category.enum';
+import { NewsSection } from '../enums/news-section.enum';
 import { getArticles as MockData } from '../../testing/mock.newservice.getArticle.response';
 import { Article } from '../models/article.model';
-import { NewsCategory as NewsCategoryModel} from '../models/news-category.model';
+import { NewsDataModel} from '../models/news-data.model';
 
 describe('News Reducer', () => {
   describe('unknown action', () => {
@@ -20,12 +20,12 @@ describe('News Reducer', () => {
   describe('News actions - add articles', () => {
     let articles: Article[];
     let testState: State;
-    let category: Category;
+    let newsSection: NewsSection;
     let service: Service;
     let payload: ArticlePayload;
     beforeEach(() => {
       articles = MockData() as Article[];
-      const defaultValue: NewsCategoryModel = {
+      const defaultValue: NewsDataModel = {
         retrieving: false,
         page: 1,
         firstLoadComplete: false,
@@ -41,14 +41,14 @@ describe('News Reducer', () => {
         sports: Object.assign({}, defaultValue),
         technology: Object.assign({}, defaultValue),
       };
-      category = Category.Health;
+      newsSection = NewsSection.Health;
 
     });
 
     it('"AddInitialArticles" should add articles to state', () => {
       service = Service.NewsAPI;
-      payload = { service, category, articles };
-      testState[category] = {
+      payload = { service, newsSection, articles };
+      testState[newsSection] = {
           retrieving: false,
           page: 2,
           firstLoadComplete: true,
@@ -62,8 +62,8 @@ describe('News Reducer', () => {
 
     it('"AddInitialClientArticles" should add articles to state', () => {
       service = Service.IndexedDb;
-      payload = { service, category, articles };
-      testState[category] = {
+      payload = { service, newsSection, articles };
+      testState[newsSection] = {
           retrieving: false,
           page: 1,
           firstLoadComplete: true,
@@ -77,8 +77,8 @@ describe('News Reducer', () => {
 
     it('"InsertAdditionalNewsFromApi" should add articles to state', () => {
       service = Service.IndexedDb;
-      payload = { service, category, articles };
-      testState[category] = {
+      payload = { service, newsSection, articles };
+      testState[newsSection] = {
           retrieving: false,
           page: 2,
           firstLoadComplete: true,

@@ -14,14 +14,14 @@ import { NewsComponent } from './components/news/news.component';
 import { LogComponent } from './components/log/log.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-import { CategoryComponent } from './components/category/category.component';
+import { NewsSectionComponent } from './components/news-section/news-section.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ArticleComponent } from './components/article/article.component';
 import { FilterComponent } from './components/filter/filter.component';
 import { StandaloneComponent } from './components/standalone/standalone.component';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import { CategoryEffects } from './effects/category.effects';
+import { NewsSectionEffects } from './effects/news-sections.effects';
 import { FilterEffects } from './effects/filter.effects';
 import { LogEffects } from './effects/log.effects';
 import { NewsEffects } from './effects/news.effects';
@@ -35,7 +35,7 @@ import { SharedModule } from './shared/shared.module';
     AppComponent,
     NewsComponent,
     LogComponent,
-    CategoryComponent,
+    NewsSectionComponent,
     ArticleComponent,
     FilterComponent,
     StandaloneComponent,
@@ -57,7 +57,7 @@ import { SharedModule } from './shared/shared.module';
     AppRoutingModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
-    EffectsModule.forRoot([AppStatusEffects, CategoryEffects, FilterEffects, LogEffects, NewsEffects]),
+    EffectsModule.forRoot([AppStatusEffects, NewsSectionEffects, FilterEffects, LogEffects, NewsEffects]),
 
   ],
   providers: [],

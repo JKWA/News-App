@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { stringToCategory } from '../../shared/utility/category.utility';
-import { CategoryItemModel } from '../../models/category-item.model';
-import * as CategoryActions from './../../actions/category.actions';
+import { stringToNewsSection } from '../../shared/utility/news-section.utility';
+import { NewsSectionModel } from '../../models/news-section.model';
+import * as NewsSectionActions from '../../actions/news-section.actions';
 import { Observable, of } from 'rxjs';
 import { map, tap, withLatestFrom, catchError } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
-import * as fromCategory from './../../reducers';
+import * as fromNewsSection from './../../reducers';
 
 
 
@@ -19,22 +19,22 @@ export class NewsComponent {
 
   tabSelected = 0;
 
-  constructor(private store: Store<fromCategory.State>) {}
+  constructor(private store: Store<fromNewsSection.State>) {}
 
-  get getViewingCategory() {
-    return this.store.pipe(select(fromCategory.getViewingCategory));
+  get getViewingNewsSection() {
+    return this.store.pipe(select(fromNewsSection.getViewingNewsSection));
   }
 
 /**
  *
  *
  * @readonly
- * @type {Observable<Set<CategoryItemModel>>}
+ * @type {Observable<Set<NewsSectionModel>>}
  * @memberof NewsComponent
  */
-get getSelectedCategories(): Observable<CategoryItemModel[]> {
+get getSelectedCategories(): Observable<NewsSectionModel[]> {
   return this.store.pipe(
-    select(fromCategory.getAllCategories),
+    select(fromNewsSection.getAllNewsSections),
     map(results => Array.from(results.values()).filter(result => result.selected))
   );
 }
@@ -43,12 +43,12 @@ get getSelectedCategories(): Observable<CategoryItemModel[]> {
 get selectedIndex(): Observable<number> {
 
     return this.getSelectedCategories.pipe(
-        withLatestFrom(this.getViewingCategory),
-        map(([categories, setCategory]) => {
+        withLatestFrom(this.getViewingNewsSection),
+        map(([categories, currentlyViewingNewsSection]) => {
           const catArray = Array.from(categories);
-          const find = catArray.find(cat => cat.id === setCategory);
+          const find = catArray.find(cat => cat.id === currentlyViewingNewsSection);
           if (!find) {
-            this.store.dispatch(new CategoryActions.SetCurrentlyViewingCategory(stringToCategory(catArray[0].id)));
+            this.store.dispatch(new NewsSectionActions.SetCurrentlyViewingNewsSection(stringToNewsSection(catArray[0].id)));
           }
           return find ? catArray.indexOf(find) : 0;
         }),
@@ -58,7 +58,7 @@ get selectedIndex(): Observable<number> {
 
 
 /**
- * tab changes are reflected to category state
+ * tab changes are reflected to newsSection state
  *
  * @param {*} event
  * @memberof NewsComponent
@@ -66,9 +66,9 @@ get selectedIndex(): Observable<number> {
 public tabChanged(event): void {
 
   this.store.pipe(
-    select(fromCategory.getAllCategories),
+    select(fromNewsSection.getAllNewsSections),
     map(results => Array.from(results.values()).filter(result => result.selected)[event]),
-    tap(result => this.store.dispatch(new CategoryActions.SetCurrentlyViewingCategory(stringToCategory(result.id))))
+    tap(result => this.store.dispatch(new NewsSectionActions.SetCurrentlyViewingNewsSection(stringToNewsSection(result.id))))
   ).subscribe();
   }
 

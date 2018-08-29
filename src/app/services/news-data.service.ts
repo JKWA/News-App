@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { Article } from '../article';
 import { getKey } from '../shared/defaults/key';
 import { getSources } from '../shared/defaults/source.default';
-import { Category } from '../enums/category.enum';
+import { NewsSection } from '../enums/news-section.enum';
 import { Service } from '../enums/service.enum';
 import { ArticlePayload } from '../models/article-payload.model';
 class NewsResponse {
@@ -33,15 +33,15 @@ export class NewsDataService {
 /**
  * gets news from the api
  *
- * @param {Category} category
+ * @param {NewsSection} newsSection
  * @param {number} pageNumber
  * @param {*} filters
  * @returns {Observable<Article[]>}
  * @memberof NewsDataService
  */
-getNews (category: Category, pageNumber: number, filters): Observable<ArticlePayload> {
+getNews (newsSection: NewsSection, pageNumber: number, filters): Observable<ArticlePayload> {
 
-    const sources: string = getSources(category).map(item => item.id).join();
+    const sources: string = getSources(newsSection).map(item => item.id).join();
 
       let url = `${this.endpoint}?`;
 
@@ -71,16 +71,16 @@ getNews (category: Category, pageNumber: number, filters): Observable<ArticlePay
             }
             if ( isDevMode() ) {
               delete article.urlToImage; // avoid image errors on console
-              // make id unique by category -- indexed DB issue
-              article.title = `CATEGORY ${category}: PAGE ${pageNumber.toString()}: ${article.title}`;
+              // make id unique by newsSection -- indexed DB issue
+              article.title = `SECTION ${newsSection}: PAGE ${pageNumber.toString()}: ${article.title}`;
             }
             return article;
           });
-          return {category, articles, service: Service.NewsAPI};
+          return {newsSection, articles, service: Service.NewsAPI};
 
         }),
         // map(articles => {
-        //   return {category, articles, service: Service.NewsAPI};
+        //   return {newsSection, articles, service: Service.NewsAPI};
         // })
       );
   }

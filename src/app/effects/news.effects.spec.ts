@@ -8,7 +8,7 @@ import { Actions } from '@ngrx/effects';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { cold, hot, getTestScheduler } from 'jasmine-marbles';
 import * as fromNews from './../reducers';
-import { Category } from '../enums/category.enum';
+import { NewsSection } from '../enums/news-section.enum';
 import * as NewsActions from '../actions/news.actions';
 import { getArticles as MockData } from '../../testing/mock.newservice.getArticle.response';
 import { Service } from '../enums/service.enum';
@@ -80,11 +80,11 @@ describe('NewsEffects', () => {
   describe('get news process', () => {
 
     it('"InitiateNews" should return an AddInitialApiArticles, with articles, on success', () => {
-      const category = Category.Science;
+      const newsSection = NewsSection.Science;
       const articles = MockData() as Article[];
       const service = Service.NewsAPI;
-      const action = new NewsActions.InitiateNews(category);
-      const articlePayload: ArticlePayload = {category, articles, service};
+      const action = new NewsActions.InitiateNews(newsSection);
+      const articlePayload: ArticlePayload = {newsSection, articles, service};
       const completion = new NewsActions.AddInitialApiArticles(articlePayload);
 
       actions$.stream = hot('-a', { a: action });
@@ -95,11 +95,11 @@ describe('NewsEffects', () => {
     });
 
     it('"InitiateNews" should return an AddInitialApiArticlesFailed, with message, on fail', () => {
-      const category = Category.Science;
+      const newsSection = NewsSection.Science;
       const articles = [] as Article[];
       const service = Service.NewsAPI;
-      const action = new NewsActions.InitiateNews(category);
-      const articlePayload = {category, service};
+      const action = new NewsActions.InitiateNews(newsSection);
+      const articlePayload = {newsSection, service};
       const completion = new NewsActions.AddInitialApiArticlesFailed(new ServiceMessage.NewsApiMessage().errorMessage);
 
       actions$.stream = hot('-a', { a: action });
@@ -110,17 +110,17 @@ describe('NewsEffects', () => {
     });
 
     it('"AddInitialApiArticles" should return an GetExpiredData, with list if keys, on success', () => {
-      const category = Category.Sports;
+      const newsSection = NewsSection.Sports;
       const service = Service.NewsAPI;
       let key = 0;
       const articles = MockData().map(article => {
         article.timestamp = new Time().sixtyMinutesAgo;
         article.key = key++;
-        article.category = category;
+        article.newsSection = newsSection;
         return article;
       }) as SavedArticle[];
 
-      const articlePayload: ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {newsSection, articles, service};
       const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.GetExpiredData(articles.map(article => article.key));
 
@@ -132,18 +132,18 @@ describe('NewsEffects', () => {
     });
 
     it('"AddInitialApiArticles" should return an GetExpiredDataFailed, with list if keys, on failure', () => {
-      const category = Category.Sports;
+      const newsSection = NewsSection.Sports;
       const service = Service.NewsAPI;
       let key = 0;
 
       const articles = MockData().map(article => {
         article.timestamp = new Time().sixtyMinutesAgo;
         article.key = key++;
-        article.category = category;
+        article.newsSection = newsSection;
         return article;
       }) as SavedArticle[];
 
-      const articlePayload: ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {newsSection, articles, service};
       const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.GetExpiredDataFailed(new ServiceMessage.GetExpiredArticlesMessage().errorMessage);
 
@@ -155,11 +155,11 @@ describe('NewsEffects', () => {
     });
 
     it('"AddInitialApiArticles" should return an SaveArticlesToClient, with message, on success', () => {
-      const category = Category.Sports;
+      const newsSection = NewsSection.Sports;
       const service = Service.IndexedDb;
       const articles = MockData() as Article[];
 
-      const articlePayload: ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {newsSection, articles, service};
       const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.SaveArticlesToClient(new ServiceMessage.SavedIndexedDbMessage().successMessage);
 
@@ -171,11 +171,11 @@ describe('NewsEffects', () => {
     });
 
     it('"AddInitialApiArticles" should return an SaveArticlesToClientFailed, with message, on failure', () => {
-      const category = Category.Sports;
+      const newsSection = NewsSection.Sports;
       const service = Service.IndexedDb;
       const articles = MockData() as Article[];
 
-      const articlePayload: ArticlePayload = {category, articles, service};
+      const articlePayload: ArticlePayload = {newsSection, articles, service};
       const action = new NewsActions.AddInitialApiArticles(articlePayload);
       const completion = new NewsActions.SaveArticlesToClientFailed(new ServiceMessage.SavedIndexedDbMessage().errorMessage);
 
@@ -187,12 +187,12 @@ describe('NewsEffects', () => {
     });
 
     it('"InitiateNews" should return an AddInitialClientArticles, with list if keys, on success', () => {
-      const category = Category.Sports;
+      const newsSection = NewsSection.Sports;
       const service = Service.IndexedDb;
       const articles = MockData() as Article[];
 
-      const articlePayload: ArticlePayload = {category, articles, service};
-      const action = new NewsActions.InitiateNews(category);
+      const articlePayload: ArticlePayload = {newsSection, articles, service};
+      const action = new NewsActions.InitiateNews(newsSection);
       const completion = new NewsActions.AddInitialClientArticles(articlePayload);
 
       actions$.stream = hot('-a', { a: action });
@@ -203,8 +203,8 @@ describe('NewsEffects', () => {
     });
 
     it('"InitiateNews" should return an AddInitialClientArticlesFailed, with message, on error', () => {
-      const category = Category.Sports;
-      const action = new NewsActions.InitiateNews(category);
+      const newsSection = NewsSection.Sports;
+      const action = new NewsActions.InitiateNews(newsSection);
       const completion = new NewsActions.AddInitialClientArticlesFailed(new ServiceMessage.SavedIndexedDbMessage().errorMessage);
 
       actions$.stream = hot('-a', { a: action });
@@ -215,11 +215,11 @@ describe('NewsEffects', () => {
     });
 
     it('"GetAdditionalNewsFromApi" should return a InsertAdditionalNewsFromApi, after throttle, on success', () => {
-      const category = Category.Sports;
+      const newsSection = NewsSection.Sports;
       const service = Service.NewsAPI;
       const articles = MockData() as Article[];
-      const articlePayload: ArticlePayload = {category, articles, service};
-      const action = new NewsActions.GetAdditionalNewsFromApi(category);
+      const articlePayload: ArticlePayload = {newsSection, articles, service};
+      const action = new NewsActions.GetAdditionalNewsFromApi(newsSection);
       const completion = new NewsActions.InsertAdditionalNewsFromApi(articlePayload);
 
       actions$.stream = hot('-aaaaaaa', { a: action });
@@ -231,11 +231,11 @@ describe('NewsEffects', () => {
     });
 
     // it('"GetAdditionalNewsFromApi" should return a InsertAdditionalNewsFromApiFailed, after throttle, on failure', () => {
-    //   const category = Category.Sports;
+    //   const newsSection = NewsSection.Sports;
     //   const service = Service.NewsAPI;
     //   const articles = MockData() as Article[];
-    //   const articlePayload: ArticlePayload = {category, articles, service};
-    //   const action = new NewsActions.GetAdditionalNewsFromApi(category);
+    //   const articlePayload: ArticlePayload = {newsSection, articles, service};
+    //   const action = new NewsActions.GetAdditionalNewsFromApi(newsSection);
     //   const completion = new NewsActions.InsertAdditionalNewsFromApiFailed(new ServiceMessage.NewsApiMessage().errorMessage);
 
     //   actions$.stream = hot('-aa', { a: action });

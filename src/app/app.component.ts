@@ -1,11 +1,11 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { CategoryItemModel } from './models/category-item.model';
-import { stringToCategory } from './shared/utility/category.utility';
+import { NewsSectionModel } from './models/news-section.model';
+import { stringToNewsSection } from './shared/utility/news-section.utility';
 import { Observable } from 'rxjs';
 import { take, tap, map } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import * as fromNews from './reducers';
-import * as fromCategory from './reducers';
+import * as fromNewsSection from './reducers';
 import * as fromAppStatus from './reducers';
 import { Device } from './enums/device.enum';
 import * as NewsActions from './actions/news.actions';
@@ -24,9 +24,9 @@ export class AppComponent implements OnInit {
     private store: Store<fromNews.State>
   ) { }
 
-  get getSelectedCategories(): Observable<CategoryItemModel[]> {
+  get getSelectedCategories(): Observable<NewsSectionModel[]> {
     return this.store.pipe(
-      select(fromCategory.getAllCategories),
+      select(fromNewsSection.getAllNewsSections),
       map(results => Array.from(results.values()).filter(result => result.selected))
     );
   }
@@ -60,8 +60,8 @@ setNewsData() {
     this.getSelectedCategories.pipe(
       take(1),
       tap( result => {
-        result.forEach( category => {
-          this.store.dispatch(new NewsActions.InitiateNews(stringToCategory(category.id)));
+        result.forEach( newsSection => {
+          this.store.dispatch(new NewsActions.InitiateNews(stringToNewsSection(newsSection.id)));
         });
       })
     ).subscribe();

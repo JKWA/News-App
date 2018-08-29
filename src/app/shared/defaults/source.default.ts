@@ -1,9 +1,9 @@
 
 /* tslint:disable */
-import {Category} from '../../enums/category.enum';
+import {NewsSection} from '../../enums/news-section.enum';
 
-export function getSources (category: Category) {
-    return sourceData().filter(item => item.category === category);
+export function getSources (newsSection: NewsSection) {
+    return sourceData().filter(item => item.newsSection === newsSection);
 }
 
 interface Source {
@@ -11,7 +11,7 @@ interface Source {
     name: string;
     description: string;
     url: string;
-    category: Category;
+    newsSection: NewsSection;
     language: string;
     country: string;
 }
@@ -24,7 +24,7 @@ function sourceData (): any[] {
             // name: 'ABC News',
             // description: 'Your trusted source for breaking news, analysis, exclusive interviews, headlines, and videos at ABCNews.com.',
             // url: 'http://abcnews.go.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -32,7 +32,7 @@ function sourceData (): any[] {
             // name: 'Al Jazeera English',
             // description: 'News, analysis from the Middle East and worldwide, multimedia and interactives, opinions, documentaries, podcasts, long reads and broadcast schedule.',
             // url: 'http://www.aljazeera.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -40,7 +40,7 @@ function sourceData (): any[] {
             // name: 'Associated Press',
             // description: 'The AP delivers in-depth coverage on the international, politics, lifestyle, business, and entertainment news.',
             // url: 'https://apnews.com/',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -48,7 +48,7 @@ function sourceData (): any[] {
             name: 'Axios',
             description: 'Axios are a new media company delivering vital, trustworthy news and analysis in the most efficient, illuminating and shareable ways possible.',
             url: 'https://www.axios.com',
-            category: Category.General,
+            newsSection: NewsSection.General,
             language: 'en',
             country: 'us' },
 
@@ -56,7 +56,7 @@ function sourceData (): any[] {
             // name: 'Breitbart News',
             // description: 'Syndicated news and opinion website providing continuously updated headlines to top news and analysis sources.',
             // url: 'http://www.breitbart.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -64,7 +64,7 @@ function sourceData (): any[] {
             name: 'BBC News',
             description: '',
             url: 'http://www.bbc.co.uk',
-            category: Category.General,
+            newsSection: NewsSection.General,
             language: 'en',
             country: 'us' },
 
@@ -72,7 +72,7 @@ function sourceData (): any[] {
             name: 'CBC News',
             description: 'CBC News is the division of the Canadian Broadcasting Corporation responsible for the news gathering and production of news programs on the corporation\'s English-language operations, namely CBC Television, CBC Radio, CBC News Network, and CBC.ca.',
             url: 'http://www.cbc.ca',
-            category: Category.General,
+            newsSection: NewsSection.General,
             language: 'en',
             country: 'ca' },
 
@@ -81,7 +81,7 @@ function sourceData (): any[] {
             // name: 'CBS News',
             // description: 'CBS News: dedicated to providing the best in journalism under standards it pioneered at the dawn of radio and television and continue in the digital age.',
             // url: 'http://www.cbsnews.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -89,7 +89,7 @@ function sourceData (): any[] {
             // name: 'CNN',
             // description: 'View the latest news and breaking news today for U.S., world, weather, entertainment, politics and health at CNN',
             // url: 'http://us.cnn.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -97,7 +97,7 @@ function sourceData (): any[] {
             // name: 'Fox News',
             // description: 'Breaking News, Latest News and Current News from FOXNews.com. Breaking news and video. Latest Current News: U.S., World, Entertainment, Health, Business, Technology, Politics, Sports.',
             // url: 'http://www.foxnews.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -105,7 +105,7 @@ function sourceData (): any[] {
             // name: 'Google News',
             // description: 'Comprehensive, up-to-date news coverage, aggregated from sources all over the world by Google News.',
             // url: 'https://news.google.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -113,7 +113,7 @@ function sourceData (): any[] {
             // name: 'MSNBC',
             // description: 'Breaking news and in-depth analysis of the headlines, as well as commentary and informed perspectives from The Rachel Maddow Show, Morning Joe & more.',
             // url: 'http://www.msnbc.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -121,7 +121,7 @@ function sourceData (): any[] {
             // name: 'National Review',
             // description: 'National Review: Conservative News, Opinion, Politics, Policy, & Current Events.',
             // url: 'https://www.nationalreview.com/',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -129,7 +129,7 @@ function sourceData (): any[] {
             // name: 'NBC News',
             // description: 'Breaking news, videos, and the latest top stories in world news, business, politics, health and pop culture.',
             // url: 'http://www.nbcnews.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -137,7 +137,7 @@ function sourceData (): any[] {
             // name: 'Newsweek',
             // description: 'Newsweek provides in-depth analysis, news and opinion about international issues, technology, business, culture and politics.',
             // url: 'http://www.newsweek.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -145,7 +145,7 @@ function sourceData (): any[] {
             name: 'New York Magazine',
             description: 'NYMAG and New York magazine cover the new, the undiscovered, the next in politics, culture, food, fashion, and behavior nationally, through a New York lens.',
             url: 'http://nymag.com',
-            category: Category.General,
+            newsSection: NewsSection.General,
             language: 'en',
             country: 'us' },
 
@@ -153,7 +153,7 @@ function sourceData (): any[] {
             name: 'Politico',
             description: 'Political news about Congress, the White House, campaigns, lobbyists and issues.',
             url: 'https://www.politico.com',
-            category: Category.General,
+            newsSection: NewsSection.General,
             language: 'en',
             country: 'us' },
 
@@ -161,7 +161,7 @@ function sourceData (): any[] {
             // name: 'Reddit /r/all',
             // description: 'Reddit is an entertainment, social news networking service, and news website. Reddit\'s registered community members can submit content, such as text posts or direct links.',
             // url: 'https://www.reddit.com/r/all',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -169,7 +169,7 @@ function sourceData (): any[] {
             // name: 'Reuters',
             // description: 'Reuters.com brings you the latest news from around the world, covering breaking news in business, politics, entertainment, technology, video and pictures.',
             // url: 'http://www.reuters.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -177,7 +177,7 @@ function sourceData (): any[] {
             // name: 'The American Conservative',
             // description: 'Realism and reform. A new voice for a new generation of conservatives.',
             // url: 'http://www.theamericanconservative.com/',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -185,7 +185,7 @@ function sourceData (): any[] {
             // name: 'The Hill',
             // description: 'The Hill is a top US political website, read by the White House and more lawmakers than any other site -- vital for policy, politics and election campaigns.',
             // url: 'http://thehill.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -193,7 +193,7 @@ function sourceData (): any[] {
             // name: 'The Huffington Post',
             // description: 'The Huffington Post is a politically liberal American online news aggregator and blog that has both localized and international editions founded by Arianna Huffington, Kenneth Lerer, Andrew Breitbart, and Jonah Peretti, featuring columnists.',
             // url: 'http://www.huffingtonpost.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -201,7 +201,7 @@ function sourceData (): any[] {
             name: 'The New York Times',
             description: 'The New York Times: Find breaking news, multimedia, reviews & opinion on Washington, business, sports, movies, travel, books, jobs, education, real estate, cars & more at nytimes.com.',
             url: 'http://www.nytimes.com',
-            category: Category.General,
+            newsSection: NewsSection.General,
             language: 'en',
             country: 'us' },
 
@@ -209,7 +209,7 @@ function sourceData (): any[] {
             name: 'The Washington Post',
             description: 'Breaking news and analysis on politics, business, world national news, entertainment more. In-depth DC, Virginia, Maryland news coverage including traffic, weather, crime, education, restaurant reviews and more.',
             url: 'https://www.washingtonpost.com',
-            category: Category.General,
+            newsSection: NewsSection.General,
             language: 'en',
             country: 'us' },
 
@@ -217,7 +217,7 @@ function sourceData (): any[] {
             name: 'The Washington Times',
             description: 'The Washington Times delivers breaking news and commentary on the issues that affect the future of our nation.',
             url: 'https://www.washingtontimes.com/',
-            category: Category.General,
+            newsSection: NewsSection.General,
             language: 'en',
             country: 'us' },
 
@@ -225,7 +225,7 @@ function sourceData (): any[] {
             // name: 'Time',
             // description: 'Breaking news and analysis from TIME.com. Politics, world news, photos, video, tech reviews, health, science and entertainment news.',
             // url: 'http://time.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -233,7 +233,7 @@ function sourceData (): any[] {
             // name: 'USA Today',
             // description: 'Get the latest national, international, and political news at USATODAY.com.',
             // url: 'http://www.usatoday.com/news',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -241,7 +241,7 @@ function sourceData (): any[] {
             // name: 'Vice News',
             // description: 'Vice News is Vice Media, Inc.\'s current affairs channel, producing daily documentary essays and video through its website and YouTube channel. It promotes itself on its coverage of \'under - reported stories\'.',
             // url: 'https://news.vice.com',
-            // category: Category.General,
+            // newsSection: NewsSection.General,
             // language: 'en',
             // country: 'us' },
 
@@ -249,7 +249,7 @@ function sourceData (): any[] {
             name: 'National Geographic',
             description: 'Reporting our world daily: original nature and science news from National Geographic.',
             url: 'http://news.nationalgeographic.com',
-            category: Category.Science,
+            newsSection: NewsSection.Science,
             language: 'en',
             country: 'us' },
 
@@ -257,7 +257,7 @@ function sourceData (): any[] {
             name: 'New Scientist',
             description: 'Breaking science and technology news from around the world. Exclusive stories and expert analysis on space, technology, health, physics, life and Earth.',
             url: 'https://www.newscientist.com/section/news',
-            category: Category.Science,
+            newsSection: NewsSection.Science,
             language: 'en',
             country: 'us' },
 
@@ -265,7 +265,7 @@ function sourceData (): any[] {
             name: 'Next Big Future',
             description: 'Coverage of science and technology that have the potential for disruption, and analysis of plans, policies, and technology that enable radical improvement.',
             url: 'https://www.nextbigfuture.com',
-            category: Category.Science,
+            newsSection: NewsSection.Science,
             language: 'en',
             country: 'us' },
 
@@ -273,7 +273,7 @@ function sourceData (): any[] {
             name: 'Ars Technica',
             description: 'The PC enthusiast\'s resource. Power users and the tools they love, without computing religion.',
             url: 'http://arstechnica.com',
-            category: Category.Technology,
+            newsSection: NewsSection.Technology,
             language: 'en',
             country: 'us' },
 
@@ -281,7 +281,7 @@ function sourceData (): any[] {
             // name: 'Crypto Coins News',
             // description: 'Providing breaking cryptocurrency news - focusing on Bitcoin, Ethereum, ICOs, blockchain technology, and smart contracts.',
             // url: 'https://www.ccn.com',
-            // category: Category.Technology,
+            // newsSection: NewsSection.Technology,
             // language: 'en',
             // country: 'us' },
 
@@ -289,7 +289,7 @@ function sourceData (): any[] {
             name: 'Engadget',
             description: 'Engadget is a web magazine with obsessive daily coverage of everything new in gadgets and consumer electronics.',
             url: 'https://www.engadget.com',
-            category: Category.Technology,
+            newsSection: NewsSection.Technology,
             language: 'en',
             country: 'us' },
 
@@ -297,7 +297,7 @@ function sourceData (): any[] {
             name: 'Hacker News',
             description: 'Hacker News is a social news website focusing on computer science and entrepreneurship. It is run by Paul Graham\'s investment fund and startup incubator, Y Combinator. In general, content that can be submitted is defined as \'anything that gratifies one\'s intellectual curiosity\'.',
             url: 'https://news.ycombinator.com',
-            category: Category.Technology,
+            newsSection: NewsSection.Technology,
             language: 'en',
             country: 'us' },
 
@@ -305,7 +305,7 @@ function sourceData (): any[] {
             name: 'Recode',
             description: 'Get the latest independent tech news, reviews and analysis from Recode with the most informed and respected journalists in technology and media.',
             url: 'http://www.recode.net',
-            category: Category.Technology,
+            newsSection: NewsSection.Technology,
             language: 'en',
             country: 'us' },
 
@@ -313,7 +313,7 @@ function sourceData (): any[] {
             name: 'TechCrunch',
             description: 'TechCrunch is a leading technology media property, dedicated to obsessively profiling startups, reviewing new Internet products, and breaking tech news.',
             url: 'https://techcrunch.com',
-            category: Category.Technology,
+            newsSection: NewsSection.Technology,
             language: 'en',
             country: 'us' },
 
@@ -321,7 +321,7 @@ function sourceData (): any[] {
             name: 'TechRadar',
             description: 'The latest technology news and reviews, covering computing, home entertainment systems, gadgets and more.',
             url: 'http://www.techradar.com',
-            category: Category.Technology,
+            newsSection: NewsSection.Technology,
             language: 'en',
             country: 'us' },
 
@@ -329,7 +329,7 @@ function sourceData (): any[] {
             name: 'The Next Web',
             description: 'The Next Web is one of the world’s largest online publications that delivers an international perspective on the latest news about Internet technology, business and culture.',
             url: 'http://thenextweb.com',
-            category: Category.Technology,
+            newsSection: NewsSection.Technology,
             language: 'en',
             country: 'us' },
 
@@ -337,7 +337,7 @@ function sourceData (): any[] {
             name: 'The Verge',
             description: 'The Verge covers the intersection of technology, science, art, and culture.',
             url: 'http://www.theverge.com',
-            category: Category.Technology,
+            newsSection: NewsSection.Technology,
             language: 'en',
             country: 'us' },
 
@@ -345,7 +345,7 @@ function sourceData (): any[] {
             name: 'Wired',
             description: 'Wired is a monthly American magazine, published in print and online editions, that focuses on how emerging technologies affect culture, the economy, and politics.',
             url: 'https://www.wired.com',
-            category: Category.Technology,
+            newsSection: NewsSection.Technology,
             language: 'en',
             country: 'us' },
 
@@ -353,7 +353,7 @@ function sourceData (): any[] {
             name: 'Buzzfeed',
             description: 'BuzzFeed is a cross-platform, global network for news and entertainment that generates seven billion views each month.',
             url: 'https://www.buzzfeed.com',
-            category: Category.Entertainment,
+            newsSection: NewsSection.Entertainment,
             language: 'en',
             country: 'us' },
 
@@ -361,7 +361,7 @@ function sourceData (): any[] {
             name: 'Entertainment Weekly',
             description: 'Online version of the print magazine includes entertainment news, interviews, reviews of music, film, TV and books, and a special area for magazine subscribers.',
             url: 'http://www.ew.com',
-            category: Category.Entertainment,
+            newsSection: NewsSection.Entertainment,
             language: 'en',
             country: 'us' },
 
@@ -369,7 +369,7 @@ function sourceData (): any[] {
             name: 'IGN',
             description: 'IGN is your site for Xbox One, PS4, PC, Wii-U, Xbox 360, PS3, Wii, 3DS, PS Vita and iPhone games with expert reviews, news, previews, trailers, cheat codes, wiki guides and walkthroughs.',
             url: 'http://www.ign.com',
-            category: Category.Entertainment,
+            newsSection: NewsSection.Entertainment,
             language: 'en',
             country: 'us' },
 
@@ -377,7 +377,7 @@ function sourceData (): any[] {
             name: 'Mashable',
             description: 'Mashable is a global, multi-platform media and entertainment company.',
             url: 'http://mashable.com',
-            category: Category.Entertainment,
+            newsSection: NewsSection.Entertainment,
             language: 'en',
             country: 'us' },
 
@@ -385,7 +385,7 @@ function sourceData (): any[] {
             name: 'MTV News',
             description: 'The ultimate news source for music, celebrity, entertainment, movies, and current events on the web. It\'s pop culture on steroids.',
             url: 'http://www.mtv.com/news',
-            category: Category.Entertainment,
+            newsSection: NewsSection.Entertainment,
             language: 'en',
             country: 'us' },
 
@@ -393,7 +393,7 @@ function sourceData (): any[] {
             name: 'Polygon',
             description: 'Polygon is a gaming website in partnership with Vox Media. Our culture focused site covers games, their creators, the fans, trending stories and entertainment news.',
             url: 'http://www.polygon.com',
-            category: Category.Entertainment,
+            newsSection: NewsSection.Entertainment,
             language: 'en',
             country: 'us' },
 
@@ -401,7 +401,7 @@ function sourceData (): any[] {
             name: 'Medical News Today',
             description: 'Medical news and health news headlines posted throughout the day, every day.',
             url: 'http://www.medicalnewstoday.com',
-            category: 'health',
+            newsSection: 'health',
             language: 'en',
             country: 'us' },
 
@@ -409,7 +409,7 @@ function sourceData (): any[] {
             name: 'Bleacher Report',
             description: 'Sports journalists and bloggers covering NFL, MLB, NBA, NHL, MMA, college football and basketball, NASCAR, fantasy sports and more. News, photos, mock drafts, game scores, player profiles and more!',
             url: 'http://www.bleacherreport.com',
-            category: Category.Sports,
+            newsSection: NewsSection.Sports,
             language: 'en',
             country: 'us' },
 
@@ -417,7 +417,7 @@ function sourceData (): any[] {
             name: 'ESPN',
             description: 'ESPN has up-to-the-minute sports news coverage, scores, highlights and commentary for NFL, MLB, NBA, College Football, NCAA Basketball and more.',
             url: 'http://espn.go.com',
-            category: Category.Sports,
+            newsSection: NewsSection.Sports,
             language: 'en',
             country: 'us' },
 
@@ -425,7 +425,7 @@ function sourceData (): any[] {
             name: 'ESPN Cric Info',
             description: 'ESPN Cricinfo provides the most comprehensive cricket coverage available including live ball-by-ball commentary, news, unparalleled statistics, quality editorial comment and analysis.',
             url: 'http://www.espncricinfo.com/',
-            category: Category.Sports,
+            newsSection: NewsSection.Sports,
             language: 'en',
             country: 'us' },
 
@@ -433,7 +433,7 @@ function sourceData (): any[] {
             name: 'Fox Sports',
             description: 'Find live scores, player and team news, videos, rumors, stats, standings, schedules and fantasy games on FOX Sports.',
             url: 'http://www.foxsports.com',
-            category: Category.Sports,
+            newsSection: NewsSection.Sports,
             language: 'en',
             country: 'us' },
 
@@ -441,7 +441,7 @@ function sourceData (): any[] {
             name: 'NFL News',
             description: 'The official source for NFL news, schedules, stats, scores and more.',
             url: 'http://www.nfl.com/news',
-            category: Category.Sports,
+            newsSection: NewsSection.Sports,
             language: 'en',
             country: 'us' },
 
@@ -449,7 +449,7 @@ function sourceData (): any[] {
             name: 'NHL News',
             description: 'The most up-to-date breaking hockey news from the official source including interviews, rumors, statistics and schedules.',
             url: 'https://www.nhl.com/news',
-            category: Category.Sports,
+            newsSection: NewsSection.Sports,
             language: 'en',
             country: 'us' },
 
@@ -458,7 +458,7 @@ function sourceData (): any[] {
                 name:'Australian Financial Review',
                 description:'The Australian Financial Review reports the latest news from business, finance, investment and politics, updated in real time. It has a reputation for independent, award-winning journalism and is essential reading for the business and investor community.',
                 url:'http://www.afr.com',
-                category: Category.Business,
+                newsSection: NewsSection.Business,
                 language:'en',
                 country:'au'
             },
@@ -467,7 +467,7 @@ function sourceData (): any[] {
             //     name: 'Bloomberg',
             //     description:'Bloomberg delivers business and markets news, data, analysis, and video to the world, featuring stories from Businessweek and Bloomberg News.',
             //     url:'http://www.bloomberg.com',
-            //     category: Category.Business,
+            //     newsSection: NewsSection.Business,
             //     language:'en',
             //     country:'us'
             // },
@@ -476,7 +476,7 @@ function sourceData (): any[] {
                 name:'Business Insider',
                 description:'Business Insider is a fast-growing business site with deep financial, media, tech, and other industry verticals. Launched in 2007, the site is now the largest business news site on the web.',
                 url:'http://www.businessinsider.com',
-                category: Category.Business,
+                newsSection: NewsSection.Business,
                 language:'en',
                 country:'us'
             },
@@ -485,7 +485,7 @@ function sourceData (): any[] {
                 name:'Business Insider (UK)',
                 description:'Business Insider is a fast-growing business site with deep financial, media, tech, and other industry verticals. Launched in 2007, the site is now the largest business news site on the web.',
                 url:'http://uk.businessinsider.com',
-                category: Category.Business,
+                newsSection: NewsSection.Business,
                 language:'en',
                 country:'gb'
             },
@@ -494,7 +494,7 @@ function sourceData (): any[] {
                 name:'CNBC',
                 description:'Get latest business news on stock markets, financial & earnings on CNBC. View world markets streaming charts & video; check stock tickers and quotes.',
                 url:'http://www.cnbc.com',
-                category: Category.Business,
+                newsSection: NewsSection.Business,
                 language:'en',
                 country:'us'
             },
@@ -503,7 +503,7 @@ function sourceData (): any[] {
                 name:'Financial Post',
                 description:'Find the latest happenings in the Canadian Financial Sector and stay up to date with changing trends in Business Markets. Read trading and investing advice from professionals.',
                 url:'http://business.financialpost.com',
-                category: Category.Business,
+                newsSection: NewsSection.Business,
                 language:'en',
                 country:'ca'
             },
@@ -512,7 +512,7 @@ function sourceData (): any[] {
                 name:'Financial Times',
                 description:'The latest UK and international business, finance, economic and political news, comment and analysis from the Financial Times on FT.com.',
                 url:'http://www.ft.com/home/uk',
-                category: Category.Business,
+                newsSection: NewsSection.Business,
                 language:'en',
                 country:'gb'
             },
@@ -521,7 +521,7 @@ function sourceData (): any[] {
                 name:'Fortune',
                 description:'Fortune 500 Daily and Breaking Business News',
                 url:'http://fortune.com',
-                category: Category.Business,
+                newsSection: NewsSection.Business,
                 language:'en',
                 country:'us'
             },
@@ -530,7 +530,7 @@ function sourceData (): any[] {
                 name:'The Economist',
                 description:'The Economist offers authoritative insight and opinion on international news, politics, business, finance, science, technology and the connections between them.',
                 url:'http://www.economist.com',
-                category: Category.Business,
+                newsSection: NewsSection.Business,
                 language:'en',
                 country:'gb'
             },
@@ -539,7 +539,7 @@ function sourceData (): any[] {
                 name:'The Wall Street Journal',
                 description:'WSJ online coverage of breaking news and current headlines from the US and around the world. Top stories, photos, videos, detailed analysis and in-depth reporting.',
                 url:'http://www.wsj.com',
-                category: Category.Business,
+                newsSection: NewsSection.Business,
                 language:'en',
                 country:'us'
             }
