@@ -32,7 +32,7 @@ export class NewsComponent {
  * @type {Observable<Set<NewsSectionModel>>}
  * @memberof NewsComponent
  */
-get getSelectedCategories(): Observable<NewsSectionModel[]> {
+get getSelectedSections(): Observable<NewsSectionModel[]> {
   return this.store.pipe(
     select(fromNewsSection.getAllNewsSections),
     map(results => Array.from(results.values()).filter(result => result.selected))
@@ -42,7 +42,7 @@ get getSelectedCategories(): Observable<NewsSectionModel[]> {
 
 get selectedIndex(): Observable<number> {
 
-    return this.getSelectedCategories.pipe(
+    return this.getSelectedSections.pipe(
         withLatestFrom(this.getViewingNewsSection),
         map(([categories, currentlyViewingNewsSection]) => {
           const catArray = Array.from(categories);
