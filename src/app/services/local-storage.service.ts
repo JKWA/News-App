@@ -1,95 +1,95 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { Filter } from '../models/filter';
 import { NewsSection } from '../enums/news-section.enum';
 import { ServiceMessageModel } from '../models/service-message.model';
-import { LocalStorageMessage } from '../messages/service.messages';
-import { stringToNewsSections, stringToNewsSection } from '../shared/utility/news-section.utility';
+import { LocalStorageGetMessage, LocalStorageSetMessage } from '../messages/service.messages';
+import { stringToNewsSection } from '../shared/utility/news-section.utility';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
-
-  constructor() { }
+  hasLocalStorage: boolean;
+  constructor() {
+    this.hasLocalStorage = (('localStorage' in window) && (localStorage !== undefined) && (localStorage !== null))
+      ? true : false;
+   }
 
   getSelectedNewsSections(): Observable<Set<NewsSection>> {
-    return  new Observable(observer => {
-    const localStorage = window.localStorage;
-
-    if ( ! localStorage ) {
-      return observer.error(new LocalStorageMessage().errorMessage);
+    if (this.hasLocalStorage) {
+      const sections: string[] = JSON.parse(localStorage.getItem('newsSections'));
+      if ( sections ) {
+        const sectionSet: Set<NewsSection> = new Set();
+        sections.map(section => {
+          sectionSet.add(stringToNewsSection(section));
+        });
+        return of(sectionSet);
+      }
     }
-    return observer.next(new Set(stringToNewsSections(localStorage.getItem('newsSections'))));
-  });
+    return throwError(new LocalStorageGetMessage().errorMessage);
  }
 
   setSelectedNewsSections(categories: string[]): Observable<ServiceMessageModel> {
-    return  new Observable(observer => {
-      const localStorage = window.localStorage;
-
-      if ( ! localStorage ) {
-        return observer.error(new LocalStorageMessage().errorMessage);
-      }
-
+    if (this.hasLocalStorage) {
       categories.length
-        ? localStorage.setItem('newsSections', categories.join())
+        ? localStorage.setItem('newsSections', JSON.stringify(categories))
         : localStorage.removeItem('newsSections');
-
-      return observer.next(new LocalStorageMessage().successMessage);
-    });
+      return of(new LocalStorageSetMessage().successMessage);
+    }
+    return throwError(new LocalStorageSetMessage().errorMessage);
   }
+
 
   getNewsSectionViewing(): Observable<NewsSection> {
-    return  new Observable(observer => {
-     const localStorage = window.localStorage;
-     if ( ! localStorage ) {
-       return observer.error(new LocalStorageMessage().errorMessage);
-     }
-     return observer.next(stringToNewsSection(localStorage.getItem('currentlyViewingNewsSection')));
-   });
+    if (this.hasLocalStorage) {
+      const currentlyViewed: string = localStorage.getItem('currentlyViewingNewsSection');
+      if ( currentlyViewed ) {
+        return of(stringToNewsSection(currentlyViewed));
+      }
+    }
+    return throwError(new LocalStorageGetMessage().errorMessage);
  }
+
+
 
   setNewsSectionViewing(newsSection: NewsSection): Observable<ServiceMessageModel> {
-    return  new Observable(observer => {
-      const localStorage = window.localStorage;
-
-      if ( ! localStorage ) {
-        return observer.error(new LocalStorageMessage().errorMessage);
+    if (this.hasLocalStorage) {
+      try {
+        localStorage.setItem('currentlyViewingNewsSection', newsSection);
+        return of(new LocalStorageSetMessage().successMessage);
+      } catch (error) {
+        return throwError(new LocalStorageSetMessage().errorMessage);
       }
-
-      newsSection
-        ? localStorage.setItem('currentlyViewingNewsSection', newsSection)
-        : localStorage.removeItem('currentlyViewingNewsSection');
-      return observer.next(new LocalStorageMessage().successMessage);
-   });
+    }
+    return throwError(new LocalStorageSetMessage().errorMessage);
  }
 
-  getFilters(): Observable<Set<Filter>> {
-    return  new Observable(observer => {
-      const localStorage = window.localStorage;
 
-      if ( ! localStorage ) {
-        return observer.error(new LocalStorageMessage().errorMessage);
+  getFilters(): Observable<Set<Filter>> {
+    if (this.hasLocalStorage) {
+      try {
+        const filterArray = JSON.parse(localStorage.getItem('filters'));
+        return of (new Set(filterArray));
+      } catch (error) {
+        return throwError(new LocalStorageGetMessage().errorMessage);
       }
-      const filterString = localStorage.getItem('filters');
-      const filters = filterString
-        ? new Set (filterString.split(',').map(filter => filter.trim()))
-        : new Set();
-      return observer.next(filters);
-    });
-  }
+    }
+    return throwError(new LocalStorageGetMessage().errorMessage);
+ }
+
 
   setFilters(filters: Set<Filter>): Observable<ServiceMessageModel> {
-    return  new Observable(observer => {
-      const localStorage = window.localStorage;
-
-      if ( ! localStorage ) {
-        return observer.error(new LocalStorageMessage().errorMessage);
+    if (this.hasLocalStorage) {
+      try {
+        const deduplicated = new Set(Array.from(filters).map( filter => filter.toLowerCase()));
+        localStorage.setItem('filters', JSON.stringify(Array.from(deduplicated)));
+        return of(new LocalStorageSetMessage().successMessage);
+      } catch (error) {
+        return throwError(new LocalStorageSetMessage().errorMessage);
       }
-      localStorage.setItem('filters', Array.from(filters).join().toLowerCase());
-      return observer.next(new LocalStorageMessage().successMessage);
-   });
+    }
+    return throwError(new LocalStorageSetMessage().errorMessage);
  }
 }
