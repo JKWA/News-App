@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { tap, map, switchMap, withLatestFrom, catchError } from 'rxjs/operators';
+import { tap, map, take, concatMap, switchMap, withLatestFrom, catchError } from 'rxjs/operators';
 import { Actions, Effect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { Store, select, Action } from '@ngrx/store';
 import * as fromNewsSection from '../reducers';
 import * as NewsSectionActions from '../actions/news-section.actions';
 import * as NewsActions from '../actions/news.actions';
-
+import { setSelectedNewsSections } from '../shared/utility/news-section.utility';
 import { NewsSectionActionTypes } from '../actions/news-section.actions';
 import { LocalStorageService } from '../services/local-storage.service';
 import * as ServiceMessage from '../messages/service.messages';
@@ -29,10 +29,11 @@ export class NewsSectionEffects {
         this.store.dispatch( new NewsSectionActions.AddNewsSection(NewsSection.General));
       }
     }),
-    switchMap(arrayOfNewsSectionIds => this.localStorageService.setSelectedNewsSections(arrayOfNewsSectionIds)
+    concatMap(arrayOfNewsSectionIds => this.localStorageService.setSelectedNewsSections(arrayOfNewsSectionIds)
       .pipe(
-        map(() => new NewsSectionActions.SavedSelectedNewsSections(new ServiceMessage.LocalStorageMessage().successMessage)),
-        catchError(() => of(new NewsSectionActions.SavedSelectedNewsSectionsFailed(new ServiceMessage.LocalStorageMessage().errorMessage)))
+        map(() => new NewsSectionActions.SavedSelectedNewsSections(new ServiceMessage.LocalStorageSetMessage().successMessage)),
+        catchError(() => of(new NewsSectionActions.SavedSelectedNewsSectionsFailed(
+          new ServiceMessage.LocalStorageSetMessage().errorMessage)))
       )
     )
   );
@@ -59,52 +60,45 @@ export class NewsSectionEffects {
       .pipe(
         map( sucessMessage => new NewsSectionActions.SavedViewedNewsSection(sucessMessage)),
         catchError(() => {
-          return of(new NewsSectionActions.SavedViewedNewsSectionFailed(new ServiceMessage.LocalStorageMessage().errorMessage));
+          return of(new NewsSectionActions.SavedViewedNewsSectionFailed(new ServiceMessage.LocalStorageSetMessage().errorMessage));
         }),
       ),
     ),
   );
 
   @Effect()
-  loadInitialValues$: Observable<Action> = this.actions$.pipe(
+  getNewsSectionViewing$: Observable<Action> = this.actions$.pipe(
     ofType(NewsSectionActionTypes.InitNewsSections),
-    withLatestFrom(
-      of(new NewsSectionDefault().createAllNewsSections),
-      this.localStorageService.getNewsSectionViewing(),
-      this.localStorageService.getSelectedNewsSections(),
-      ( _ , allNewsSections, viewedNewsSection, savedSelectedNewsSections) => {
-        const selectedNewsSections = savedSelectedNewsSections
-            ? savedSelectedNewsSections
-            : new NewsSectionDefault().getDefaultSelectedNewsSections;
-
-        allNewsSections.forEach(newsSelectionItem => {
-            selectedNewsSections.has(stringToNewsSection(newsSelectionItem.id))
-                ? newsSelectionItem.selected = true
-                : newsSelectionItem.selected = false;
-        });
-        return  new NewsSectionActions.LoadNewsSections({currentlyViewingNewsSection: viewedNewsSection, allNewsSections});
-
-      }),
-      catchError( _ => {
-        const currentlyViewingNewsSection = new NewsSectionDefault().getDefaultViewingNewsSection;
-        const allNewsSections = new NewsSectionDefault().createAllNewsSections;
-        const defaultSelected = new NewsSectionDefault().getDefaultSelectedNewsSections;
-
-        allNewsSections.forEach(newsSelectionItem => {
-          defaultSelected.has(stringToNewsSection(newsSelectionItem.id))
-              ? newsSelectionItem.selected = true
-              : newsSelectionItem.selected = false;
-        });
-        return of(new NewsSectionActions.LoadNewsSectionsFailed({currentlyViewingNewsSection, allNewsSections}));
-      })
-
+    switchMap(_ => {
+      return this.localStorageService.getNewsSectionViewing();
+    }),
+    map(viewedNewsSection => new NewsSectionActions.LoadCurrentlyViewingNewsSection(viewedNewsSection)),
+    catchError(_ => {
+      return of(new NewsSectionActions.LoadCurrentlyViewingNewsSectionDefault(new NewsSectionDefault().getDefaultViewingNewsSection));
+    })
   );
+
+@Effect()
+  getSelectedNewsSections$: Observable<Action> = this.actions$.pipe(
+    ofType(NewsSectionActionTypes.InitNewsSections),
+    switchMap(_ => this.localStorageService.getSelectedNewsSections()),
+    map( viewedNewsSection => {
+      const allNewsSections = new NewsSectionDefault().createAllNewsSections;
+      console.log(setSelectedNewsSections(viewedNewsSection, allNewsSections));
+      return new NewsSectionActions.LoadAllNewsSections(setSelectedNewsSections(viewedNewsSection, allNewsSections));
+    }),
+    catchError( _ => {
+      const allNewsSections = new NewsSectionDefault().createAllNewsSections;
+      const viewedNewsSection = new NewsSectionDefault().getDefaultSelectedNewsSections;
+      return of(new NewsSectionActions.LoadAllNewsSectionsDefault(setSelectedNewsSections(viewedNewsSection, allNewsSections)));
+    })
+  );
+
 
   @Effect()
   init$: Observable<Action> = this.actions$.pipe(
     ofType(ROOT_EFFECTS_INIT),
     map(result => new NewsSectionActions.InitNewsSections())
-
   );
 
   constructor(

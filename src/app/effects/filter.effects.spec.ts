@@ -8,7 +8,7 @@ import { FilterEffects } from './filter.effects';
 import * as fromFilter from './../reducers';
 import * as FilterActions from './../actions/filter.actions';
 import { ServiceMessageModel } from '../models/service-message.model';
-import { LocalStorageMessage } from '../messages/service.messages';
+import { LocalStorageGetMessage, LocalStorageSetMessage } from '../messages/service.messages';
 import { LocalStorageService } from './../services/local-storage.service';
 import { FilterDefault } from '../shared/defaults/filter.default';
 
@@ -60,7 +60,7 @@ describe('FilterEffects', () => {
   });
 
   it('AddFilter should return a SavedFilterToClient, with message, on success', () => {
-    const serviceMessage: ServiceMessageModel = new LocalStorageMessage().successMessage;
+    const serviceMessage: ServiceMessageModel = new LocalStorageSetMessage().successMessage;
     const action = new FilterActions.AddFilter('new_filter');
     const completion = new FilterActions.SavedFilterToClient(serviceMessage);
 
@@ -72,7 +72,7 @@ describe('FilterEffects', () => {
   });
 
   it('AddFilter should return a SavedFilterToClientFailed, with message, on failure', () => {
-    const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
+    const serviceMessage: ServiceMessageModel = new LocalStorageSetMessage().errorMessage;
     const action = new FilterActions.AddFilter('new_filter');
     const completion = new FilterActions.SavedFilterToClientFailed(serviceMessage);
 

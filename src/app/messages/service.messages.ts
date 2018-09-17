@@ -8,7 +8,24 @@ abstract class Message {
 }
 
 
-class LocalStorageMessage extends Message {
+class LocalStorageGetMessage extends Message {
+    get successMessage() {
+        return {
+            status: 2000,
+            statusText: `Get value from local storage`,
+            service: Service.LocalStorage
+        };
+    }
+    get errorMessage() {
+        return  {
+            status: 2100,
+            statusText: `Failed to get value from local storage`,
+            service: Service.LocalStorage
+        };
+    }
+}
+
+class LocalStorageSetMessage extends Message {
     get successMessage() {
         return {
             status: 2000,
@@ -111,7 +128,8 @@ class CurrentAppStatus extends Message {
 }
 
 export {
-    LocalStorageMessage,
+    LocalStorageGetMessage,
+    LocalStorageSetMessage,
     GetExpiredArticlesMessage,
     DeletedArticlesMessage,
     SavedIndexedDbMessage,

@@ -1,4 +1,5 @@
 import { NewsSection } from '../../enums/news-section.enum';
+import { NewsSectionModel } from '../../models/news-section.model';
 
 export interface NewsSectionItem {
     display: string;
@@ -13,36 +14,36 @@ export interface NewsSectionItem {
  * @param {string} cat
  * @returns {NewsSection}
  */
-export function stringToNewsSection(cat: string): NewsSection {
-    let returnCat;
+export function stringToNewsSection(section: string): NewsSection {
+    let returnSection;
 
-      switch (cat) {
+      switch (section) {
         case 'business' :
-          returnCat = NewsSection.Business;
+          returnSection = NewsSection.Business;
           break;
         case 'entertainment' :
-          returnCat = NewsSection.Entertainment;
+          returnSection = NewsSection.Entertainment;
           break;
         case 'general' :
-          returnCat = NewsSection.General;
+          returnSection = NewsSection.General;
           break;
         case 'health' :
-          returnCat = NewsSection.Health;
+          returnSection = NewsSection.Health;
           break;
         case 'science' :
-          returnCat = NewsSection.Science;
+          returnSection = NewsSection.Science;
           break;
         case 'sports' :
-          returnCat = NewsSection.Sports;
+          returnSection = NewsSection.Sports;
         break;
           case 'technology' :
-          returnCat = NewsSection.Technology;
+          returnSection = NewsSection.Technology;
           break;
         default :
-        returnCat = NewsSection.General;
+        returnSection = NewsSection.General;
       }
 
-    return returnCat;
+    return returnSection;
 
   }
 
@@ -69,7 +70,7 @@ export function stringToNewsSection(cat: string): NewsSection {
      * @param {NewsSection} section
      * @returns {NewsSectionItem}
      */
-    export function newsSectionToObject(section: NewsSection): NewsSectionItem {
+    export function newsSectionToObject(section: NewsSection): NewsSectionModel {
       let sectionObj;
       switch (section) {
         case NewsSection.Science :
@@ -129,4 +130,19 @@ export function stringToNewsSection(cat: string): NewsSection {
       sectionObj.selected = false;
       return sectionObj;
     }
+
+/* tslint:disable-next-line */
+export function setSelectedNewsSections(viewedNewsSection: Set<NewsSection>, allNewsSections: Map<string, NewsSectionModel>): Map<string, NewsSectionModel> {
+    viewedNewsSection.forEach(selectedNewsSection => {
+      allNewsSections.set(selectedNewsSection, {...allNewsSections.get(selectedNewsSection), selected: true});
+    });
+    // allNewsSections.forEach( section => {
+    //   if (viewedNewsSection.has(stringToNewsSection(section.id))) {
+    //     section.selected = true;
+    //   } else {
+    //     section.selected = false;
+    //   }
+    // });
+    return allNewsSections;
+}
 

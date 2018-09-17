@@ -1,6 +1,6 @@
 import { NewsSection } from '../../enums/news-section.enum';
 import { NewsSectionModel } from '../../models/news-section.model';
-import { stringToNewsSections, stringToNewsSection, newsSectionToObject } from './../utility/news-section.utility';
+import { newsSectionToObject } from './../utility/news-section.utility';
 
 export class NewsSectionDefault {
 

@@ -1,7 +1,6 @@
 import { NewsSectionActions, NewsSectionActionTypes } from '../actions/news-section.actions';
 import { NewsSectionModel } from '../models/news-section.model';
 import { NewsSection } from '../enums/news-section.enum';
-import { newsSectionToObject } from '../shared/utility/news-section.utility';
 
 export interface State {
   currentlyViewingNewsSection: NewsSection;
@@ -16,19 +15,26 @@ export const initialState: State = {
 export function reducer(state = initialState, action: NewsSectionActions): State {
   switch (action.type) {
 
-    case NewsSectionActionTypes.LoadNewsSections:
-    case NewsSectionActionTypes.LoadNewsSectionsFailed: {
+    // case NewsSectionActionTypes.LoadNewsSections:
+    // case NewsSectionActionTypes.LoadNewsSectionsFailed: {
+    //   return {
+    //     ...state,
+    //     allNewsSections: action.payload.allNewsSections,
+    //     currentlyViewingNewsSection: action.payload.currentlyViewingNewsSection
+    //   };
+    // }
+
+    case NewsSectionActionTypes.LoadAllNewsSections:
+    case NewsSectionActionTypes.LoadAllNewsSectionsDefault: {
       return {
         ...state,
-        allNewsSections: action.payload.allNewsSections,
-        currentlyViewingNewsSection: action.payload.currentlyViewingNewsSection
+        allNewsSections: action.payload,
       };
     }
 
     case NewsSectionActionTypes.AddNewsSection: {
-      const newsSectionItem = newsSectionToObject(action.payload);
       const copy = new Map(state.allNewsSections);
-      copy.set(newsSectionItem.id, Object.assign({}, copy.get(newsSectionItem.id), {selected: true}));
+      copy.set(action.payload, Object.assign({}, copy.get(action.payload), {selected: true}));
 
       return {
         ...state,
@@ -46,9 +52,8 @@ export function reducer(state = initialState, action: NewsSectionActions): State
     }
 
     case NewsSectionActionTypes.RemoveNewsSection: {
-      const newsSectionItem = newsSectionToObject(action.payload);
       const copy = new Map(state.allNewsSections);
-      copy.set(newsSectionItem.id, Object.assign({}, copy.get(newsSectionItem.id), {selected: false}));
+      copy.set(action.payload, Object.assign({}, copy.get(action.payload), {selected: false}));
 
       return {
         ...state,
@@ -56,6 +61,8 @@ export function reducer(state = initialState, action: NewsSectionActions): State
       };
     }
 
+    case NewsSectionActionTypes.LoadCurrentlyViewingNewsSection:
+    case NewsSectionActionTypes.LoadCurrentlyViewingNewsSectionDefault:
     case NewsSectionActionTypes.SetCurrentlyViewingNewsSection: {
       return {
         ...state,

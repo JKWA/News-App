@@ -10,12 +10,12 @@ import { NewsSection } from '../enums/news-section.enum';
 import * as NewsSectionActions from '../actions/news-section.actions';
 import * as NewsActions from '../actions/news.actions';
 import { ServiceMessageModel } from '../models/service-message.model';
-import { LocalStorageMessage } from '../messages/service.messages';
+import { LocalStorageGetMessage,  LocalStorageSetMessage} from '../messages/service.messages';
 import { LocalStorageService } from '../services/local-storage.service';
 import { SharedModule } from '../shared/shared.module';
 import { NewsSectionDefault } from '../shared/defaults/news-section.default';
 import { State } from '../reducers/news-section.reducer';
-
+import { setSelectedNewsSections } from '../shared/utility/news-section.utility';
 export class TestActions extends Actions {
   constructor() {
     super(empty());
@@ -66,7 +66,7 @@ describe('NewsSectionEffects', () => {
   });
 
   it('"SetCurrentlyViewingNewsSection" should return a SavedViewedNewsSection, with success message, on success', () => {
-    const serviceMessage: ServiceMessageModel = new LocalStorageMessage().successMessage;
+    const serviceMessage: ServiceMessageModel = new LocalStorageSetMessage().successMessage;
     const newsSelection = NewsSection.Science as NewsSection;
     const action = new NewsSectionActions.SetCurrentlyViewingNewsSection(newsSelection);
     const completion = new NewsSectionActions.SavedViewedNewsSection(serviceMessage);
@@ -80,7 +80,7 @@ describe('NewsSectionEffects', () => {
 
   it('"SetCurrentlyViewingNewsSection" should return a SavedViewedNewsSectionFailed, with error message, on failure', () => {
 
-    const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
+    const serviceMessage: ServiceMessageModel = new LocalStorageSetMessage().errorMessage;
     const newsSelection = NewsSection.Science as NewsSection;
     const action = new NewsSectionActions.SetCurrentlyViewingNewsSection(newsSelection);
     const completion = new NewsSectionActions.SavedViewedNewsSectionFailed(serviceMessage);
@@ -93,7 +93,7 @@ describe('NewsSectionEffects', () => {
   });
 
   it('"AddNewsSection" should return a SavedSelectedNewsSections, with success message, on success', () => {
-    const serviceMessage: ServiceMessageModel = new LocalStorageMessage().successMessage;
+    const serviceMessage: ServiceMessageModel = new LocalStorageSetMessage().successMessage;
     const newsSelection = NewsSection.Science as NewsSection;
     const action = new NewsSectionActions.AddNewsSection(newsSelection);
     const completion = new NewsSectionActions.SavedSelectedNewsSections(serviceMessage);
@@ -140,7 +140,7 @@ describe('NewsSectionEffects', () => {
 
   it('"AddNewsSection" should return an SavedViewedNewsSectionFailed, with error message, on failure', () => {
 
-    const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
+    const serviceMessage: ServiceMessageModel = new LocalStorageSetMessage().errorMessage;
     const newsSelection = NewsSection.Science as NewsSection;
     const action = new NewsSectionActions.AddNewsSection(newsSelection);
     const completion = new NewsSectionActions.SavedSelectedNewsSectionsFailed(serviceMessage);
@@ -154,7 +154,7 @@ describe('NewsSectionEffects', () => {
 
   it('"RemoveNewsSection" should return a SavedSelectedNewsSections, with success message, on success', () => {
 
-    const serviceMessage: ServiceMessageModel = new LocalStorageMessage().successMessage;
+    const serviceMessage: ServiceMessageModel = new LocalStorageSetMessage().successMessage;
     const newsSelection = NewsSection.Science as NewsSection;
     const action = new NewsSectionActions.RemoveNewsSection(newsSelection);
     const completion = new NewsSectionActions.SavedSelectedNewsSections(serviceMessage);
@@ -168,7 +168,7 @@ describe('NewsSectionEffects', () => {
 
   it('"RemoveNewsSection" should return a SavedSelectedNewsSectionsFailed, with error message, on failure', () => {
 
-    const serviceMessage: ServiceMessageModel = new LocalStorageMessage().errorMessage;
+    const serviceMessage: ServiceMessageModel = new LocalStorageSetMessage().errorMessage;
     const newsSelection = NewsSection.Science as NewsSection;
     const action = new NewsSectionActions.RemoveNewsSection(newsSelection);
     const completion = new NewsSectionActions.SavedSelectedNewsSectionsFailed(serviceMessage);
@@ -180,40 +180,58 @@ describe('NewsSectionEffects', () => {
     expect(effects.saveSelectedNewsSections$).toBeObservable(expected);
   });
 
-
-  it('"InitNewsSections" should return a LoadNewsSections, with default and/or saved data, on success', () => {
-
-    const newsSelection = NewsSection.Science as NewsSection;
-    const allNewsSections = new NewsSectionDefault().createAllNewsSections;
-    const selectedNewsSections = new Set([NewsSection.General, NewsSection.Health, NewsSection.Sports]);
-
-     // combine selected newsSelection data with all categories
-     selectedNewsSections.forEach(result => {
-      allNewsSections.set(result, {...allNewsSections.get(result), selected: true});
-    });
-
-    // the LoadNewsSections payload
-    const newState: State = {
-      allNewsSections: allNewsSections,
-      currentlyViewingNewsSection: newsSelection
-    };
-
+  it('"InitNewsSections" should return a LoadCurrentlyViewingNewsSection, with NewsSection, on success', () => {
+    const newsSection = NewsSection.Science as NewsSection;
     const action = new NewsSectionActions.InitNewsSections();
-    const completion = new NewsSectionActions.LoadNewsSections(newState);
+    const completion = new NewsSectionActions.LoadCurrentlyViewingNewsSection(newsSection);
 
     actions$.stream = hot('-a', { a: action });
-    const response = cold('-b|', { b: newState});
+    const response = cold('-b|', { b: newsSection});
     const expected = cold('--c', { c: completion });
+    storageService.getNewsSectionViewing.and.returnValue(response);
+    expect(effects.getNewsSectionViewing$).toBeObservable(expected);
+  });
 
-    // do I need to fire off both services?
-    storageService.getSelectedNewsSections.and.returnValue(selectedNewsSections);
-    storageService.getNewsSectionViewing.and.returnValue(newsSelection);
+  it('"InitNewsSections" should return a LoadCurrentlyViewingNewsSectionDefault, with NewsSection, on failure', () => {
+    const newsSection = new NewsSectionDefault().getDefaultViewingNewsSection;
+    const serviceMessage: ServiceMessageModel = new LocalStorageGetMessage().errorMessage;
+    const action = new NewsSectionActions.InitNewsSections();
+    const completion = new NewsSectionActions.LoadCurrentlyViewingNewsSectionDefault(newsSection);
 
-    // ***  here is the first problem ***
-    // loadInitialValues$ is not sending a stream,
-    // is "withLatestFrom" is the problem?
-    // perhaps because not flattened?
-    expect(effects.loadInitialValues$).toBeObservable(expected);
+    actions$.stream = hot('-a', { a: action });
+    const response = cold('-#', { b: serviceMessage});
+    const expected = cold('--c|', { c: completion });
+    storageService.getNewsSectionViewing.and.returnValue(response);
+    expect(effects.getNewsSectionViewing$).toBeObservable(expected);
+  });
+
+  it('"InitNewsSections" should return a LoadAllNewsSections, with all sections and seleted value, on success', () => {
+    const allNewsSections = new NewsSectionDefault().createAllNewsSections;
+    const viewedNewsSection = new Set([NewsSection.Business, NewsSection.Entertainment]);
+    const responseValue = setSelectedNewsSections(viewedNewsSection, allNewsSections);
+    const action = new NewsSectionActions.InitNewsSections();
+    const completion = new NewsSectionActions.LoadAllNewsSections(responseValue);
+
+    actions$.stream = hot('-a', { a: action });
+    const response = cold('-b|', { b: viewedNewsSection});
+    const expected = cold('--c', { c: completion });
+    storageService.getSelectedNewsSections.and.returnValue(response);
+    expect(effects.getSelectedNewsSections$).toBeObservable(expected);
+  });
+
+  it('"InitNewsSections" should return a LoadCurrentlyViewingNewsSection, with NewsSection, on success', () => {
+    const serviceMessage: ServiceMessageModel = new LocalStorageGetMessage().errorMessage;
+    const allNewsSections = new NewsSectionDefault().createAllNewsSections;
+    const viewedNewsSection = new NewsSectionDefault().getDefaultSelectedNewsSections;
+    const responseValue = setSelectedNewsSections(viewedNewsSection, allNewsSections);
+    const action = new NewsSectionActions.InitNewsSections();
+    const completion = new NewsSectionActions.LoadAllNewsSectionsDefault(responseValue);
+
+    actions$.stream = hot('-a', { a: action });
+    const response = cold('-#|', { b: serviceMessage});
+    const expected = cold('--c|', { c: completion });
+    storageService.getSelectedNewsSections.and.returnValue(response);
+    expect(effects.getSelectedNewsSections$).toBeObservable(expected);
   });
 
 });

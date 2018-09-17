@@ -2,10 +2,18 @@ import { Action } from '@ngrx/store';
 import { NewsSection } from '../enums/news-section.enum';
 import { ServiceMessageModel } from '../models/service-message.model';
 import { State } from '../reducers/news-section.reducer';
+import { NewsSectionModel } from '../models/news-section.model';
+
+
+
 export enum NewsSectionActionTypes {
   InitNewsSections = '[ROOT_EFFECTS_INIT] Initialize news section store',
-  LoadNewsSections = '[NewsSection Effect] Load either saved or default categories',
-  LoadNewsSectionsFailed = '[NewsSection Effect] Load default categories',
+  // LoadNewsSections = '[NewsSection Effect] Load either saved or default news sections',
+  // LoadNewsSectionsFailed = '[NewsSection Effect] Load default news sections',
+  LoadAllNewsSections = '[NewsSection Effect] Load all news sections',
+  LoadAllNewsSectionsDefault = '[NewsSection Effect] Load all news sections failed',
+  LoadCurrentlyViewingNewsSection = '[NewsSection Effect] Load currently viewed news sections from saved',
+  LoadCurrentlyViewingNewsSectionDefault = '[NewsSection Effect] Load currently viewed news sections from default',
   AddNewsSection = '[NewsSection Component] Add selected news section',
   AddGeneralNewsSection = '[NewsSection Effects] Add general news section',
   RemoveNewsSection = '[NewsSection Component] Remove selected news section',
@@ -21,14 +29,25 @@ export class InitNewsSections implements Action {
   readonly type = NewsSectionActionTypes.InitNewsSections;
 }
 
-export class LoadNewsSections implements Action {
-  readonly type = NewsSectionActionTypes.LoadNewsSections;
-  constructor(public payload: State) { }
+// export class LoadNewsSections implements Action {
+//   readonly type = NewsSectionActionTypes.LoadNewsSections;
+//   constructor(public payload: State) { }
+// }
+
+// export class LoadNewsSectionsFailed implements Action {
+//   readonly type = NewsSectionActionTypes.LoadNewsSectionsFailed;
+//   constructor(public payload: State) { }
+// }
+
+
+export class LoadAllNewsSections implements Action {
+  readonly type = NewsSectionActionTypes.LoadAllNewsSections;
+  constructor(public payload: Map<string, NewsSectionModel>) { }
 }
 
-export class LoadNewsSectionsFailed implements Action {
-  readonly type = NewsSectionActionTypes.LoadNewsSectionsFailed;
-  constructor(public payload: State) { }
+export class LoadAllNewsSectionsDefault implements Action {
+  readonly type = NewsSectionActionTypes.LoadAllNewsSectionsDefault;
+  constructor(public payload: Map<string, NewsSectionModel>) { }
 }
 
 export class AddNewsSection implements Action {
@@ -55,6 +74,16 @@ export class SetCurrentlyViewingNewsSectionFailed implements Action {
   constructor(public payload: NewsSection) { }
 }
 
+export class LoadCurrentlyViewingNewsSection implements Action {
+  readonly type = NewsSectionActionTypes.LoadCurrentlyViewingNewsSection;
+  constructor(public payload: NewsSection) { }
+}
+
+export class LoadCurrentlyViewingNewsSectionDefault implements Action {
+  readonly type = NewsSectionActionTypes.LoadCurrentlyViewingNewsSectionDefault;
+  constructor(public payload: NewsSection) { }
+}
+
 export class SavedSelectedNewsSections implements Action {
   readonly type = NewsSectionActionTypes.SavedSelectedNewsSections;
   constructor(public payload: ServiceMessageModel) { }
@@ -77,8 +106,10 @@ export class SavedViewedNewsSectionFailed implements Action {
 
 export type NewsSectionActions =
   InitNewsSections
-  | LoadNewsSections
-  | LoadNewsSectionsFailed
+  | LoadAllNewsSections
+  | LoadAllNewsSectionsDefault
+  | LoadCurrentlyViewingNewsSection
+  | LoadCurrentlyViewingNewsSectionDefault
   | AddNewsSection
   | AddGeneralNewsSection
   | RemoveNewsSection

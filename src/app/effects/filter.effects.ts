@@ -26,8 +26,8 @@ export class FilterEffects {
         : new Set([this.NONE]);
       return this.localStorageService.setFilters(setFilters)
       .pipe(
-        map(() => new FilterActions.SavedFilterToClient(new ServiceMessage.LocalStorageMessage().successMessage)),
-        catchError(() => of(new FilterActions.SavedFilterToClientFailed(new ServiceMessage.LocalStorageMessage().errorMessage)))
+        map(() => new FilterActions.SavedFilterToClient(new ServiceMessage.LocalStorageSetMessage().successMessage)),
+        catchError(() => of(new FilterActions.SavedFilterToClientFailed(new ServiceMessage.LocalStorageSetMessage().errorMessage)))
       );
     })
   );
