@@ -22,8 +22,7 @@ export function reducer(state = initialState, action: FilterActions): State {
 
     case FilterActionTypes.AddFilter: {
       const copy = new Set(state.listOfFilters);
-      copy.add(action.payload);
-      copy.delete('$NONE$');
+      copy.add(action.payload.toLowerCase().trim());
       return {
         ...state,
         listOfFilters: copy
@@ -33,7 +32,6 @@ export function reducer(state = initialState, action: FilterActions): State {
     case FilterActionTypes.RemoveFilter: {
       const copy = new Set(state.listOfFilters);
       copy.delete(action.payload);
-      copy.delete('$NONE$');
       return {
         ...state,
         listOfFilters: copy

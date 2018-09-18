@@ -83,7 +83,7 @@ export class LocalStorageService {
   setFilters(filters: Set<Filter>): Observable<ServiceMessageModel> {
     if (this.hasLocalStorage) {
       try {
-        const deduplicated = new Set(Array.from(filters).map( filter => filter.toLowerCase()));
+        const deduplicated = new Set(Array.from(filters).map( filter => filter.toLowerCase().trim()));
         localStorage.setItem('filters', JSON.stringify(Array.from(deduplicated)));
         return of(new LocalStorageSetMessage().successMessage);
       } catch (error) {
