@@ -7,7 +7,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
+    "e2e": "ng e2e --port 5300",
     "e2e-debug": "node --inspect-brk $(npm bin)/protractor protractor-debug.conf.js",
     "webdriver-update": "webdriver-manager update --gecko false"
 
