@@ -73,6 +73,8 @@ getNews (newsSection: NewsSection, pageNumber: number, filters): Observable<Arti
               delete article.urlToImage; // avoid image errors on console
               // make id unique by newsSection -- indexed DB issue
               article.title = `SECTION ${newsSection}: PAGE ${pageNumber.toString()}: ${article.title}`;
+              // tslint:disable-next-line
+              article.urlToImage = 'https://www.washingtonpost.com/resizer/NusgAHlCU7Gg2ma8Rq8KI6bmspk=/1484x0/arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/U5KXADYRIVAS5CPDEGLQ4OCMD4.jpg'
             }
             return article;
           });
