@@ -7,33 +7,37 @@
 <div detect-scroll  
     (onScroll)="handleScroll($event)" 
     [bottomOffset]="bottomOffset" 
-    [topOffset]="topOffset" >
+    [topOffset]="topOffset">
 
-
+  <div  class="card-wrapper" 
+        fxLayout="row center wrap"
+        fxLayoutAlign="center center">
   <div *ngFor="let article of getArticles | async">
 
-    <mat-card id="{{article.id}}" class="news-card mat-elevation-z8">
-      <mat-card-header>
-        <mat-card-title>
+      <div id="{{article.id}}" class="card mat-elevation-z8">
+          <div class="image-wrapper">
             <img src="{{article.urlToImage}}" 
-            alt="Image for {{article.source.name}} article"
-            mat-card-image>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <a (click)="gotToArticle(article)">
-          <div class="mat-title">{{article.title}}</div> 
-        </a>
-        <div class="mat-body-2">{{article.source.name}}</div>
-        <div class="mat-body-1">{{article.description}}</div>
-      </mat-card-content>
-      <mat-card-actions>
-        <button 
-          (click)="gotToArticle(article)" 
-          disabled="{{ isOffline | async}}"
-          color="primary"
-          mat-button>READ</button>
-      </mat-card-actions>
-    </mat-card>
+              alt="Image for {{article.source.name}} article"
+              class="image"
+              >
+          </div>
+          <div class="title">
+            <a (click)="gotToArticle(article)">
+              <div class="mat-title">{{article.title}}</div> 
+            </a>
+          </div>
+          <div class="content">
+            <div class="mat-body-2">{{article.source.name}}</div>
+            <div class="mat-body-1">{{article.description}}</div>
+          </div>
+          <div class="actions">
+            <button 
+              (click)="gotToArticle(article)" 
+              disabled="{{ isOffline | async}}"
+              color="primary"
+              mat-button>READ</button>
+          </div>
+        </div>
+  </div>
   </div>
 </div>
