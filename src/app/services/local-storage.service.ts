@@ -71,7 +71,10 @@ export class LocalStorageService {
     if (this.hasLocalStorage) {
       try {
         const filterArray = JSON.parse(localStorage.getItem('filters'));
-        return of (new Set(filterArray));
+        console.log(filterArray);
+        if ( filterArray ) {
+          return of (new Set(filterArray));
+        }
       } catch (error) {
         return throwError(new LocalStorageGetMessage().errorMessage);
       }

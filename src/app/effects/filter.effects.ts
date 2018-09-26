@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, switchMap, concatMap, withLatestFrom, catchError } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom, catchError } from 'rxjs/operators';
 import { Store, select, Action } from '@ngrx/store';
 import { Actions, Effect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { FilterActionTypes } from '../actions/filter.actions';
@@ -9,11 +9,9 @@ import * as fromFilter from './../reducers';
 import { LocalStorageService } from '../services/local-storage.service';
 import * as ServiceMessage from '../messages/service.messages';
 import { FilterDefault } from '../shared/defaults/filter.default';
-import { Filter } from '../models/filter';
 
 @Injectable()
 export class FilterEffects {
-  NONE: string;
 
   @Effect()
   setFilters$: Observable<Action> = this.actions$.pipe(
@@ -21,10 +19,7 @@ export class FilterEffects {
     withLatestFrom(this.store, ( _ , state) => state),
     select(fromFilter.getAllFilters),
     switchMap(filters => {
-      const setFilters = filters.size
-        ? filters
-        : new Set([this.NONE]);
-      return this.localStorageService.setFilters(setFilters)
+      return this.localStorageService.setFilters(filters)
       .pipe(
         map(() => new FilterActions.SavedFilterToClient(new ServiceMessage.LocalStorageSetMessage().successMessage)),
         catchError(() => of(new FilterActions.SavedFilterToClientFailed(new ServiceMessage.LocalStorageSetMessage().errorMessage)))
@@ -35,23 +30,11 @@ export class FilterEffects {
   @Effect()
   loadInitialFilters$: Observable<Action> = this.actions$.pipe(
     ofType(FilterActionTypes.InitFilters),
-    withLatestFrom(
-      of(new FilterDefault().getDefaultFilters),
-      ( _ , defaultFilters ) => defaultFilters),
-      switchMap( defaultFilters => {
-        return this.localStorageService.getFilters().pipe(
-          map(savedFilters => {
-            const selectFilters: Set<Filter> = savedFilters.size
-            ? savedFilters
-            : defaultFilters;
-            selectFilters.delete(this.NONE);
-            return selectFilters;
-          }),
-          map(filters => new FilterActions.LoadFilters(filters)),
-          catchError(_ => of(new FilterActions.LoadFiltersFailed(new FilterDefault().getDefaultFilters)))
-        );
-      })
+    switchMap(_ => this.localStorageService.getFilters()),
+    map(filters => new FilterActions.LoadFilters(filters)),
+    catchError(_ => of(new FilterActions.LoadFiltersFailed(new FilterDefault().getDefaultFilters)))
   );
+
 
   @Effect()
   init$: Observable<Action> = this.actions$.pipe(
@@ -63,6 +46,6 @@ export class FilterEffects {
     private actions$: Actions,
     private store: Store<fromFilter.State>,
     private localStorageService: LocalStorageService
-  ) { this.NONE = '$none$'; }
+  ) { }
 
 }
