@@ -200,7 +200,7 @@ describe('NewsSectionEffects', () => {
 
     actions$.stream = hot('-a', { a: action });
     const response = cold('-#', { b: serviceMessage});
-    const expected = cold('--c|', { c: completion });
+    const expected = cold('--(c|)', { c: completion });
     storageService.getNewsSectionViewing.and.returnValue(response);
     expect(effects.getNewsSectionViewing$).toBeObservable(expected);
   });
@@ -219,7 +219,7 @@ describe('NewsSectionEffects', () => {
     expect(effects.getSelectedNewsSections$).toBeObservable(expected);
   });
 
-  it('"InitNewsSections" should return a LoadCurrentlyViewingNewsSection, with NewsSection, on success', () => {
+  it('"InitNewsSections" should return a LoadCurrentlyViewingNewsSection, with NewsSection, on failure', () => {
     const serviceMessage: ServiceMessageModel = new LocalStorageGetMessage().errorMessage;
     const allNewsSections = new NewsSectionDefault().createAllNewsSections;
     const viewedNewsSection = new NewsSectionDefault().getDefaultSelectedNewsSections;
@@ -228,8 +228,8 @@ describe('NewsSectionEffects', () => {
     const completion = new NewsSectionActions.LoadAllNewsSectionsDefault(responseValue);
 
     actions$.stream = hot('-a', { a: action });
-    const response = cold('-#|', { b: serviceMessage});
-    const expected = cold('--c|', { c: completion });
+    const response = cold('-#', { b: serviceMessage});
+    const expected = cold('--(c|)', { c: completion });
     storageService.getSelectedNewsSections.and.returnValue(response);
     expect(effects.getSelectedNewsSections$).toBeObservable(expected);
   });
